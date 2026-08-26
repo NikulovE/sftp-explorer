@@ -81,12 +81,12 @@ jobs:
       SFTP_TEST_PASSWORD: password
       SFTP_TEST_WRITABLE_PATH: /upload
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: recursive
 
       - name: Install .NET 10 SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.0.x
 
@@ -183,7 +183,7 @@ jobs:
 
       - name: Upload Linux test results and coverage
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: test-results-linux
           path: |
@@ -199,12 +199,12 @@ jobs:
     runs-on: windows-latest # windows-2025 image with Visual Studio 2026
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: recursive
 
       - name: Install .NET 10 SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.0.x
 
@@ -257,7 +257,7 @@ jobs:
 
       - name: Upload Windows test results and coverage
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: test-results-windows
           path: |
@@ -269,12 +269,12 @@ jobs:
     needs: [tests-linux, tests-windows]
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: test-results-linux
           path: coverage/linux
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: test-results-windows
           path: coverage/windows
@@ -301,7 +301,7 @@ jobs:
       #     files: coverage/linux/CoverageLinux/coverage.cobertura.xml,coverage/windows/CoverageWindows/coverage.cobertura.xml
 
       - name: Upload combined coverage artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: code-coverage
           path: coverage
@@ -319,12 +319,12 @@ jobs:
       BuildPlatform: ${{ matrix.platform }}
       StorePackageVersion: ${{ needs.compute-version.outputs.store_version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: recursive
 
       - name: Install .NET 10 SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.0.x
 
@@ -558,14 +558,14 @@ jobs:
           }
 
       - name: Upload Microsoft Store submission package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: store-upload-${{ matrix.platform }}
           path: ${{ runner.temp }}/StoreUploadStaging/*.msixupload
           if-no-files-found: error
 
       - name: Upload MSIX release artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: msix-${{ matrix.platform }}
           path: ${{ runner.temp }}/ReleaseStaging
@@ -577,12 +577,12 @@ jobs:
     if: github.event_name == 'push'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: msix-x64
           path: packages/x64
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: msix-ARM64
           path: packages/ARM64
