@@ -279,11 +279,18 @@ jobs:
       - name: Require both coverage reports
         shell: pwsh
         run: |
-          $reports = @(Get-ChildItem -LiteralPath "${{ github.workspace }}/coverage" -Recurse -Filter *.cobertura.xml -File)
-          if ($reports.Count -ne 2) {
-            throw "Expected one Linux and one Windows coverage report, found $($reports.Count)."
+          # Each test artifact contains its original TestResults directory as
+          # well as this staged copy. Select the staged copies explicitly so
+          # the duplicate reports do not invalidate a successful test run.
+          $reports = @(
+            "${{ github.workspace }}/coverage/linux/CoverageLinux/coverage.cobertura.xml"
+            "${{ github.workspace }}/coverage/windows/CoverageWindows/coverage.cobertura.xml"
+          )
+          $missingReports = @($reports | Where-Object { !(Test-Path -LiteralPath $_ -PathType Leaf) })
+          if ($missingReports.Count -gt 0) {
+            throw "Missing staged coverage report(s): $($missingReports -join ', ')"
           }
-          Write-Host "Publishing $($reports.Count) coverage reports."
+          Write-Host "Publishing the staged Linux and Windows coverage reports."
 
       # Optional: push to Codecov instead of (or in addition to) the artifact.
       # - uses: codecov/codecov-action@v4
