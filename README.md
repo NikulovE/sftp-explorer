@@ -111,7 +111,7 @@ CI runs on Azure Pipelines (`.NET 10`, Ubuntu 24.04) with TRX results and Cobert
 │                                   #   SSH client factory, terminal connection, file locks…
 ├── Helpers/                        # Localization and other helpers
 ├── Strings/en-US|ru-RU/            # Localized resources (.resw)
-├── ThirdParty/Microsoft.Terminal.WinUI3/  # WinUI 3 port of the Microsoft Terminal control
+├── Microsoft.Terminal.WinUI3/             # Git submodule: WinUI 3 port of the Microsoft Terminal control
 └── SftpExplorer.Tests/             # xUnit unit + integration tests
 ```
 

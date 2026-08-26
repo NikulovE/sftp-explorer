@@ -55,11 +55,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="ThirdParty\Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3.csproj" />
-    <Compile Remove="ThirdParty\**\*.cs" />
-    <Page Remove="ThirdParty\**\*.xaml" />
-    <None Remove="ThirdParty\**\*" />
-    <Content Remove="ThirdParty\**\*" />
+    <ProjectReference Include="Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3.csproj" />
+    <Compile Remove="Microsoft.Terminal.WinUI3\**\*.cs" />
+    <Page Remove="Microsoft.Terminal.WinUI3\**\*.xaml" />
+    <None Remove="Microsoft.Terminal.WinUI3\**\*" />
+    <Content Remove="Microsoft.Terminal.WinUI3\**\*" />
   </ItemGroup>
 
   <ItemGroup>
@@ -74,7 +74,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-    <Content Include="ThirdParty\Microsoft.Terminal.WinUI3\TerminalControl.xaml">
+    <Content Include="Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3\TerminalControl.xaml">
       <Link>Microsoft.Terminal.WinUI3\TerminalControl.xaml</Link>
       <TargetPath>Microsoft.Terminal.WinUI3\TerminalControl.xaml</TargetPath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -101,7 +101,7 @@
 
   <Target Name="CopyTerminalXbfToLooseOutput" AfterTargets="Build">
     <PropertyGroup>
-      <TerminalXbfSource>$(MSBuildProjectDirectory)\ThirdParty\Microsoft.Terminal.WinUI3\bin\$(Platform)\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\Microsoft.Terminal.WinUI3\TerminalControl.xbf</TerminalXbfSource>
+      <TerminalXbfSource>$(MSBuildProjectDirectory)\Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3\bin\$(Platform)\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\Microsoft.Terminal.WinUI3\TerminalControl.xbf</TerminalXbfSource>
     </PropertyGroup>
     <MakeDir Directories="$(TargetDir)Microsoft.Terminal.WinUI3" />
     <Copy SourceFiles="$(TerminalXbfSource)" DestinationFolder="$(TargetDir)Microsoft.Terminal.WinUI3" SkipUnchangedFiles="true" />

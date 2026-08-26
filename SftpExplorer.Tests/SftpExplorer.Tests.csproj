@@ -31,14 +31,14 @@
     <Compile Include="..\Services\SshConnectionSecurity.cs" Link="Production\Services\SshConnectionSecurity.cs" />
     <Compile Include="..\Services\SshTerminalConnection.cs" Link="Production\Services\SshTerminalConnection.cs" />
     <Compile Include="..\Services\WindowsCredentialStore.cs" Link="Production\Services\WindowsCredentialStore.cs" />
-    <Compile Include="..\ThirdParty\Microsoft.Terminal.WinUI3\TerminalConnectionBinding.cs" Link="Production\Terminal\TerminalConnectionBinding.cs" />
-    <Compile Include="..\ThirdParty\Microsoft.Terminal.WinUI3\TerminalConnectionLifecycle.cs" Link="Production\Terminal\TerminalConnectionLifecycle.cs" />
-    <Compile Include="..\ThirdParty\Microsoft.Terminal.WinUI3\TerminalRenderBuffer.cs" Link="Production\Terminal\TerminalRenderBuffer.cs" />
-    <Compile Include="..\ThirdParty\Microsoft.Terminal.WinUI3\NativeWindowResizeOrder.cs" Link="Production\Terminal\NativeWindowResizeOrder.cs" />
-    <Compile Include="..\ThirdParty\Microsoft.Terminal.WinUI3\NativeWindowPositionUpdatePolicy.cs" Link="Production\Terminal\NativeWindowPositionUpdatePolicy.cs" />
-    <Compile Include="..\ThirdParty\Microsoft.Terminal.WinUI3\TerminalTheme.cs" Link="Production\Terminal\TerminalTheme.cs" />
-    <Compile Include="..\ThirdParty\Microsoft.Terminal.WinUI3\TerminalThemeDefaults.cs" Link="Production\Terminal\TerminalThemeDefaults.cs" />
-    <Compile Include="..\ThirdParty\Microsoft.Terminal.WinUI3\ITerminalConnection.cs" Link="Production\Terminal\ITerminalConnection.cs" />
-    <Compile Include="..\ThirdParty\Microsoft.Terminal.WinUI3\TerminalOutputEventArgs.cs" Link="Production\Terminal\TerminalOutputEventArgs.cs" />
+    <Compile Include="..\Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3\TerminalConnectionBinding.cs" Link="Production\Terminal\TerminalConnectionBinding.cs" />
+    <Compile Include="..\Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3\TerminalConnectionLifecycle.cs" Link="Production\Terminal\TerminalConnectionLifecycle.cs" />
+    <Compile Include="..\Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3\TerminalRenderBuffer.cs" Link="Production\Terminal\TerminalRenderBuffer.cs" />
+    <Compile Include="..\Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3\NativeWindowResizeOrder.cs" Link="Production\Terminal\NativeWindowResizeOrder.cs" />
+    <Compile Include="..\Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3\NativeWindowPositionUpdatePolicy.cs" Link="Production\Terminal\NativeWindowPositionUpdatePolicy.cs" />
+    <Compile Include="..\Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3\TerminalTheme.cs" Link="Production\Terminal\TerminalTheme.cs" />
+    <Compile Include="..\Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3\TerminalThemeDefaults.cs" Link="Production\Terminal\TerminalThemeDefaults.cs" />
+    <Compile Include="..\Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3\ITerminalConnection.cs" Link="Production\Terminal\ITerminalConnection.cs" />
+    <Compile Include="..\Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3\TerminalOutputEventArgs.cs" Link="Production\Terminal\TerminalOutputEventArgs.cs" />
   </ItemGroup>
 </Project>

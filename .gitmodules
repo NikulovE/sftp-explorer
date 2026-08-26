@@ -1,0 +1,4 @@
+[submodule "Microsoft.Terminal.WinUI3"]
+	path = Microsoft.Terminal.WinUI3
+	url = https://github.com/NikulovE/Microsoft.Terminal.WinUI3.git
+	branch = master

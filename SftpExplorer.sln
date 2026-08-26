@@ -4,7 +4,7 @@ VisualStudioVersion = 18.0.11222.15 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SftpExplorerWinUI", "SftpExplorerWinUI.csproj", "{A3F2E6B1-7C4D-4E2A-9B6C-1234567890AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Terminal.WinUI3", "ThirdParty\Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3.csproj", "{C6E965CB-A53E-4D12-B203-4D6C6F03FD03}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Terminal.WinUI3", "Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3.csproj", "{C6E965CB-A53E-4D12-B203-4D6C6F03FD03}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SftpExplorer.Tests", "SftpExplorer.Tests\SftpExplorer.Tests.csproj", "{5F320813-7DAA-4F45-BD25-A9C6621A164C}"
 EndProject
