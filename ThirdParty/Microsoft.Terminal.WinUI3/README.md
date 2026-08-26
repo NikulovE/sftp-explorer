@@ -13,3 +13,4 @@ mismatch while retaining the native Microsoft Terminal renderer from
 
 Upstream licenses and the Windows Terminal notice are included next to the
 source files.
+
