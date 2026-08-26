@@ -370,6 +370,7 @@ jobs:
             "-p:Configuration=$($env:buildConfiguration)" `
             "-p:Platform=$env:BuildPlatform" `
             "-p:RuntimeIdentifier=$runtimeIdentifier" `
+            -p:GeneratePackageOnBuild=false `
             -p:GenerateAppxPackageOnBuild=true `
             "-p:AppxPackageDir=$packageDir" `
             -p:UapAppxPackageBuildMode=StoreUpload `
