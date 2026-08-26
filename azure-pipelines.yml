@@ -1,10 +1,10 @@
 trigger:
   branches:
     include:
-      - master
+      - main
 
 # Azure Repos PR validation must also be enabled for this pipeline in the
-# master branch's Build validation policy.
+# main branch's Build validation policy.
 
 variables:
   buildConfiguration: Release

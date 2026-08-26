@@ -7,16 +7,19 @@
 # Notes:
 # - PR validation is provided by the pull_request trigger below; no extra
 #   branch policy is required.
-# - The release job publishes the .msixupload (Store submission package) and
-#   the extracted unsigned .msix to a GitHub Release on every push to master.
+# - A push to main creates a GitHub Release with the x64 and ARM64 MSIX files.
+# - The Store submission packages (.msixupload) are retained as workflow
+#   artifacts: download both of them from the successful run and submit them
+#   to Partner Center. They are not public release downloads.
 
 name: CI
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -506,12 +509,14 @@ jobs:
               $symbolArchive.Dispose()
             }
 
-            # Stage the Store upload and the extracted (unsigned, dev-mode
-            # installable) MSIX for the GitHub Release.
-            $stageRoot = Join-Path $env:RUNNER_TEMP 'ReleaseStaging'
-            New-Item -ItemType Directory -Path $stageRoot -Force | Out-Null
-            Copy-Item -LiteralPath $uploads[0].FullName -Destination (Join-Path $stageRoot "SftpExplorer_${version}_${platform}.msixupload") -Force
-            Copy-Item -LiteralPath $msixPath -Destination (Join-Path $stageRoot "SftpExplorer_${version}_${platform}.msix") -Force
+            # Store upload files are available only as workflow artifacts.
+            # GitHub Releases receive the per-architecture MSIX files.
+            $storeArtifactRoot = Join-Path $env:RUNNER_TEMP 'StoreUploadStaging'
+            $releaseRoot = Join-Path $env:RUNNER_TEMP 'ReleaseStaging'
+            New-Item -ItemType Directory -Path $storeArtifactRoot -Force | Out-Null
+            New-Item -ItemType Directory -Path $releaseRoot -Force | Out-Null
+            Copy-Item -LiteralPath $uploads[0].FullName -Destination (Join-Path $storeArtifactRoot "SftpExplorer_${version}_${platform}.msixupload") -Force
+            Copy-Item -LiteralPath $msixPath -Destination (Join-Path $releaseRoot "SftpExplorer_${version}_${platform}.msix") -Force
 
             Write-Host "Validated Store upload: $($uploads[0].FullName)"
           }
@@ -521,11 +526,19 @@ jobs:
             }
           }
 
-      - name: Upload MSIX artifacts
+      - name: Upload Microsoft Store submission package
+        uses: actions/upload-artifact@v4
+        with:
+          name: store-upload-${{ matrix.platform }}
+          path: ${{ runner.temp }}/StoreUploadStaging/*.msixupload
+          if-no-files-found: error
+
+      - name: Upload MSIX release artifact
         uses: actions/upload-artifact@v4
         with:
           name: msix-${{ matrix.platform }}
           path: ${{ runner.temp }}/ReleaseStaging
+          if-no-files-found: error
 
   release:
     name: Publish MSIX to GitHub Release
@@ -550,9 +563,8 @@ jobs:
           fail_on_unmatched_files: true
           files: |
             packages/**/*.msix
-            packages/**/*.msixupload
           body: |
-            SFTP Explorer ${{ needs.compute-version.outputs.store_version }} (CI build from `master`).
+            SFTP Explorer ${{ needs.compute-version.outputs.store_version }} (CI build from `main`).
 
-            - `*.msixupload` — Microsoft Store submission package (includes `.appxsym` symbols).
-            - `*.msix` — extracted unsigned package; install with developer mode enabled (`Add-AppxPackage`).
+            - `*.msix` — unsigned Store build output for x64 and ARM64.
+            - The corresponding `*.msixupload` files (with `.appxsym` symbols) are available as private workflow artifacts for Microsoft Store submission.
