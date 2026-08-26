@@ -1,0 +1,72 @@
+<UserControl
+    x:Class="SftpExplorerWinUI.Controls.AppearancePicker"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <StackPanel Spacing="6">
+        <TextBlock x:Name="HeaderText"
+                   Style="{StaticResource CaptionTextBlockStyle}"/>
+
+        <StackPanel Orientation="Horizontal" Spacing="10">
+            <Button x:Name="GlyphButton"
+                    Width="42"
+                    Height="42"
+                    Padding="0"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center">
+                <FontIcon x:Name="GlyphPreview"
+                          FontFamily="Segoe Fluent Icons"
+                          FontSize="22"/>
+                <Button.Flyout>
+                    <Flyout x:Name="GlyphFlyout" Placement="BottomEdgeAlignedLeft">
+                        <Grid Width="380" Height="430" RowSpacing="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBox x:Name="GlyphCodeBox"
+                                     TextChanged="GlyphCodeBox_TextChanged"
+                                     MaxLength="6"/>
+
+                            <GridView Grid.Row="1"
+                                      x:Name="GlyphGrid"
+                                      IsItemClickEnabled="True"
+                                      ItemClick="GlyphGrid_ItemClick"
+                                      SelectionMode="None">
+                                <GridView.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <ItemsWrapGrid ItemWidth="54" ItemHeight="58"/>
+                                    </ItemsPanelTemplate>
+                                </GridView.ItemsPanel>
+                                <GridView.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Width="50" Height="54"
+                                                    ToolTipService.ToolTip="{Binding Name}"
+                                                    AutomationProperties.Name="{Binding Name}"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center">
+                                            <FontIcon Glyph="{Binding Glyph}"
+                                                      FontFamily="Segoe Fluent Icons"
+                                                      FontSize="20"
+                                                      HorizontalAlignment="Center"/>
+                                            <TextBlock Text="{Binding Code}"
+                                                       FontSize="9"
+                                                       Opacity="0.7"
+                                                       HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridView.ItemTemplate>
+                            </GridView>
+                        </Grid>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+
+            <StackPanel x:Name="ColorPanel"
+                        Orientation="Horizontal"
+                        Spacing="6"
+                        VerticalAlignment="Center"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

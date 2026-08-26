@@ -1,0 +1,513 @@
+trigger:
+  branches:
+    include:
+      - master
+
+# Azure Repos PR validation must also be enabled for this pipeline in the
+# master branch's Build validation policy.
+
+variables:
+  buildConfiguration: Release
+  packageMajor: 2
+  packageMinor: 0
+  # Microsoft Store reserves the fourth component for Store use. A pipeline
+  # counter in the third component keeps every submission monotonic and unique.
+  # 2.0.15.0 is the locally validated baseline produced with this change.
+  # CI starts at the next Store version to avoid ever reusing that identity.
+  packageBuild: $[counter('sftp-explorer-store-2.0', 16)]
+  packageRevision: 0
+  # Pinned linux/amd64 manifest from Docker Hub (2026-08-10). Update explicitly
+  # after reviewing upstream changes; never replace this with a floating tag.
+  sftpTestImage: atmoz/sftp@sha256:81fa92512bf8ead4849f33c1c153907b86d32d77704d1c62a9c70b4316ae9e50
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+stages:
+  - stage: Test
+    displayName: Unit and disposable-SFTP tests
+    jobs:
+      - job: Tests
+        displayName: Test on .NET 10
+        pool:
+          vmImage: ubuntu-24.04
+        steps:
+          - checkout: self
+
+          - task: UseDotNet@2
+            displayName: Install .NET 10 SDK
+            inputs:
+              packageType: sdk
+              version: 10.0.x
+
+          - pwsh: |
+              $project = "$(Build.SourcesDirectory)/SftpExplorer.Tests/SftpExplorer.Tests.csproj"
+              if (!(Test-Path -LiteralPath $project -PathType Leaf)) {
+                throw "Required test project is missing: $project"
+              }
+            displayName: Require the real test project
+
+          - task: DotNetCoreCLI@2
+            displayName: Restore tests
+            inputs:
+              command: restore
+              projects: SftpExplorer.Tests/SftpExplorer.Tests.csproj
+
+          - bash: |
+              set -euo pipefail
+              key_dir="$(Agent.TempDirectory)/sftp-explorer-host-key"
+              mkdir -p "$key_dir"
+              ssh-keygen -q -t ed25519 -N '' -f "$key_dir/ssh_host_ed25519_key"
+              chmod 600 "$key_dir/ssh_host_ed25519_key"
+
+              docker run --detach \
+                --name sftp-explorer-ci \
+                --publish 127.0.0.1:2222:22 \
+                --volume "$key_dir/ssh_host_ed25519_key:/etc/ssh/ssh_host_ed25519_key:ro" \
+                --volume "$key_dir/ssh_host_ed25519_key.pub:/etc/ssh/ssh_host_ed25519_key.pub:ro" \
+                "$(sftpTestImage)" \
+                test:password:::upload
+
+              fingerprint="$(docker exec sftp-explorer-ci ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub -E sha256 | awk '{print $2}')"
+              fingerprint="${fingerprint#SHA256:}"
+              if [ -z "$fingerprint" ]; then
+                echo "Unable to calculate the disposable server's mounted host-key fingerprint" >&2
+                exit 1
+              fi
+              echo "##vso[task.setvariable variable=SFTP_TEST_HOST_KEY_SHA256]$fingerprint"
+
+              for attempt in $(seq 1 30); do
+                if nc -z 127.0.0.1 2222; then
+                  exit 0
+                fi
+                sleep 2
+              done
+
+              docker logs sftp-explorer-ci
+              exit 1
+            displayName: Start pinned disposable SFTP server
+
+          - task: DotNetCoreCLI@2
+            displayName: Run unit and SFTP integration tests
+            inputs:
+              command: test
+              projects: SftpExplorer.Tests/SftpExplorer.Tests.csproj
+              arguments: >-
+                --no-restore
+                --configuration $(buildConfiguration)
+                --logger "trx;LogFileName=sftp-explorer-tests.trx"
+                --collect "Code Coverage;Format=Cobertura"
+                --settings SftpExplorer.Tests/coverage.runsettings
+                --results-directory $(Agent.TempDirectory)/TestResults
+              publishTestResults: false
+            env:
+              SFTP_TEST_ENABLED: 1
+              SFTP_TEST_HOST: 127.0.0.1
+              SFTP_TEST_PORT: 2222
+              SFTP_TEST_USERNAME: test
+              SFTP_TEST_PASSWORD: password
+              SFTP_TEST_WRITABLE_PATH: /upload
+              SFTP_TEST_HOST_KEY_SHA256: $(SFTP_TEST_HOST_KEY_SHA256)
+
+          - pwsh: |
+              $resultsDirectory = "$(Agent.TempDirectory)/TestResults"
+              $results = @(Get-ChildItem -LiteralPath $resultsDirectory -Filter *.trx -File -ErrorAction SilentlyContinue)
+              if ($results.Count -ne 1) {
+                throw "Expected exactly one TRX result file, found $($results.Count)."
+              }
+
+              [xml]$trx = Get-Content -LiteralPath $results[0].FullName -Raw
+              $counters = $trx.SelectSingleNode("//*[local-name()='Counters']")
+              if ($null -eq $counters -or [int]$counters.total -lt 1 -or [int]$counters.executed -lt 1) {
+                throw "The test run did not execute any tests."
+              }
+
+              $integrationName = 'SftpExplorerWinUI.Tests.SftpIntegrationTests.DisposableServerSupportsBasicFileAndDirectoryLifecycle'
+              $integration = $trx.SelectSingleNode("//*[local-name()='UnitTestResult' and @testName='$integrationName']")
+              if ($null -eq $integration -or $integration.outcome -ne 'Passed') {
+                throw "The disposable-SFTP integration test did not pass."
+              }
+
+              Write-Host "Verified $($counters.executed) executed test(s), including disposable SFTP."
+            displayName: Require non-empty test run and SFTP smoke test
+            condition: succeededOrFailed()
+
+          - task: PublishTestResults@2
+            displayName: Publish test results
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: VSTest
+              testResultsFiles: '*.trx'
+              searchFolder: $(Agent.TempDirectory)/TestResults
+              testRunTitle: SFTP Explorer - Linux unit and SFTP
+              failTaskOnFailedTests: true
+              failTaskOnMissingResultsFile: true
+
+          - pwsh: |
+              $reports = @(Get-ChildItem -LiteralPath "$(Agent.TempDirectory)/TestResults" -Recurse -Filter *.cobertura.xml -File)
+              if ($reports.Count -lt 1) {
+                throw "The Linux test run did not produce a Cobertura report."
+              }
+              $artifactDirectory = "$(Agent.TempDirectory)/CoverageLinux"
+              New-Item -ItemType Directory -Path $artifactDirectory -Force | Out-Null
+              Copy-Item -LiteralPath $reports[0].FullName -Destination (Join-Path $artifactDirectory "coverage.cobertura.xml") -Force
+            displayName: Prepare Linux coverage report
+            condition: succeededOrFailed()
+
+          - task: PublishPipelineArtifact@1
+            displayName: Stage Linux coverage report
+            condition: succeededOrFailed()
+            inputs:
+              targetPath: $(Agent.TempDirectory)/CoverageLinux
+              artifact: coverage-linux
+
+          - bash: docker rm --force sftp-explorer-ci
+            displayName: Stop disposable SFTP server
+            condition: always()
+            continueOnError: true
+
+      - job: WindowsTests
+        displayName: Windows persistence and security tests
+        pool:
+          vmImage: windows-2025-vs2026
+        steps:
+          - checkout: self
+
+          - task: UseDotNet@2
+            displayName: Install .NET 10 SDK
+            inputs:
+              packageType: sdk
+              version: 10.0.x
+
+          - task: DotNetCoreCLI@2
+            displayName: Restore Windows tests
+            inputs:
+              command: restore
+              projects: SftpExplorer.Tests/SftpExplorer.Tests.csproj
+
+          - task: DotNetCoreCLI@2
+            displayName: Run Windows persistence and security tests
+            inputs:
+              command: test
+              projects: SftpExplorer.Tests/SftpExplorer.Tests.csproj
+              arguments: >-
+                --no-restore
+                --configuration $(buildConfiguration)
+                --logger "trx;LogFileName=sftp-explorer-windows-tests.trx"
+                --collect "Code Coverage;Format=Cobertura"
+                --settings SftpExplorer.Tests/coverage.runsettings
+                --results-directory $(Agent.TempDirectory)/WindowsTestResults
+              publishTestResults: false
+
+          - pwsh: |
+              $results = @(Get-ChildItem -LiteralPath "$(Agent.TempDirectory)/WindowsTestResults" -Filter *.trx -File -ErrorAction SilentlyContinue)
+              if ($results.Count -ne 1) {
+                throw "Expected exactly one Windows TRX result file, found $($results.Count)."
+              }
+
+              [xml]$trx = Get-Content -LiteralPath $results[0].FullName -Raw
+              $counters = $trx.SelectSingleNode("//*[local-name()='Counters']")
+              if ($null -eq $counters -or [int]$counters.executed -lt 1) {
+                throw "The Windows test run did not execute any tests."
+              }
+
+              $legacyPasswordTest = 'SftpExplorerWinUI.Tests.ConnectionManagerTests.LegacyPasswordRemainsUsableWhenCredentialMigrationFails'
+              $result = $trx.SelectSingleNode("//*[local-name()='UnitTestResult' and @testName='$legacyPasswordTest']")
+              if ($null -eq $result -or $result.outcome -ne 'Passed') {
+                throw "The Windows DPAPI migration fallback test did not pass."
+              }
+            displayName: Require Windows DPAPI coverage
+            condition: succeededOrFailed()
+
+          - task: PublishTestResults@2
+            displayName: Publish Windows test results
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: VSTest
+              testResultsFiles: '*.trx'
+              searchFolder: $(Agent.TempDirectory)/WindowsTestResults
+              testRunTitle: SFTP Explorer - Windows persistence and security
+              failTaskOnFailedTests: true
+              failTaskOnMissingResultsFile: true
+
+          - pwsh: |
+              $reports = @(Get-ChildItem -LiteralPath "$(Agent.TempDirectory)/WindowsTestResults" -Recurse -Filter *.cobertura.xml -File)
+              if ($reports.Count -lt 1) {
+                throw "The Windows test run did not produce a Cobertura report."
+              }
+              $artifactDirectory = "$(Agent.TempDirectory)/CoverageWindows"
+              New-Item -ItemType Directory -Path $artifactDirectory -Force | Out-Null
+              Copy-Item -LiteralPath $reports[0].FullName -Destination (Join-Path $artifactDirectory "coverage.cobertura.xml") -Force
+            displayName: Prepare Windows coverage report
+            condition: succeededOrFailed()
+
+          - task: PublishPipelineArtifact@1
+            displayName: Stage Windows coverage report
+            condition: succeededOrFailed()
+            inputs:
+              targetPath: $(Agent.TempDirectory)/CoverageWindows
+              artifact: coverage-windows
+
+      - job: Coverage
+        displayName: Publish combined code coverage
+        dependsOn:
+          - Tests
+          - WindowsTests
+        pool:
+          vmImage: ubuntu-24.04
+        steps:
+          - checkout: self
+
+          - task: DownloadPipelineArtifact@2
+            displayName: Download Linux coverage
+            inputs:
+              artifact: coverage-linux
+              path: $(Pipeline.Workspace)/coverage-linux
+
+          - task: DownloadPipelineArtifact@2
+            displayName: Download Windows coverage
+            inputs:
+              artifact: coverage-windows
+              path: $(Pipeline.Workspace)/coverage-windows
+
+          - pwsh: |
+              $reports = @(Get-ChildItem -LiteralPath "$(Pipeline.Workspace)" -Recurse -Filter *.cobertura.xml -File)
+              if ($reports.Count -ne 2) {
+                throw "Expected one Linux and one Windows coverage report, found $($reports.Count)."
+              }
+              Write-Host "Publishing $($reports.Count) coverage reports."
+            displayName: Require both coverage reports
+
+          - task: PublishCodeCoverageResults@2
+            displayName: Publish code coverage
+            inputs:
+              summaryFileLocation: $(Pipeline.Workspace)/coverage-*/**/*.cobertura.xml
+              pathToSources: $(Build.SourcesDirectory)
+              failIfCoverageEmpty: true
+
+  - stage: Package
+    displayName: Windows Store packages
+    dependsOn: Test
+    jobs:
+      - job: BuildMsix
+        displayName: Build MSIX Store upload
+        pool:
+          vmImage: windows-2025-vs2026
+        strategy:
+          matrix:
+            x64:
+              buildPlatform: x64
+            ARM64:
+              buildPlatform: ARM64
+        steps:
+          - checkout: self
+
+          - task: UseDotNet@2
+            displayName: Install .NET 10 SDK
+            inputs:
+              packageType: sdk
+              version: 10.0.x
+
+          - pwsh: |
+              $version = "$(packageMajor).$(packageMinor).$(packageBuild).$(packageRevision)"
+              $parsedVersion = [Version]$version
+              if ($parsedVersion.Revision -ne 0) {
+                throw "Store package revision must remain zero: $version"
+              }
+              if (@($parsedVersion.Major, $parsedVersion.Minor, $parsedVersion.Build, $parsedVersion.Revision) |
+                  Where-Object { $_ -lt 0 -or $_ -gt 65535 }) {
+                throw "Every Store package version component must be between 0 and 65535: $version"
+              }
+
+              [xml]$manifest = Get-Content -LiteralPath "$(Build.SourcesDirectory)/Package.appxmanifest"
+              $manifest.Package.Identity.Version = $version
+              $manifest.Save("$(Build.SourcesDirectory)/Package.appxmanifest")
+              Write-Host "##vso[task.setvariable variable=storePackageVersion]$version"
+              Write-Host "Packaging version $version for $(buildPlatform)"
+            displayName: Set monotonic Store package version
+
+          - task: VSBuild@1
+            displayName: Build $(buildPlatform) Store package
+            inputs:
+              solution: SftpExplorerWinUI.csproj
+              vsVersion: latest
+              platform: $(buildPlatform)
+              configuration: $(buildConfiguration)
+              msbuildArgs: >-
+                /restore
+                /p:GenerateAppxPackageOnBuild=true
+                /p:AppxPackageDir="$(Build.ArtifactStagingDirectory)/StorePackages/$(buildPlatform)/"
+                /p:UapAppxPackageBuildMode=StoreUpload
+                /p:AppxPackageSigningEnabled=false
+                /p:AppxAutoIncrementPackageRevision=false
+                /p:AppxBundle=Never
+                /p:AppxSymbolPackageEnabled=true
+                /p:DebugSymbols=true
+                /p:Version=$(storePackageVersion)
+                /p:AssemblyVersion=$(storePackageVersion)
+                /p:FileVersion=$(storePackageVersion)
+
+          - pwsh: |
+              Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+              function Get-PeMachine([string]$Path) {
+                $stream = [IO.File]::OpenRead($Path)
+                $reader = [IO.BinaryReader]::new($stream)
+                try {
+                  if ($reader.ReadUInt16() -ne 0x5A4D) {
+                    throw "'$Path' does not have an MZ header."
+                  }
+                  $stream.Position = 0x3C
+                  $peOffset = $reader.ReadInt32()
+                  if ($peOffset -lt 0x40 -or $peOffset -gt ($stream.Length - 6)) {
+                    throw "'$Path' has an invalid PE offset."
+                  }
+                  $stream.Position = $peOffset
+                  if ($reader.ReadUInt32() -ne 0x00004550) {
+                    throw "'$Path' does not have a PE signature."
+                  }
+                  return $reader.ReadUInt16()
+                }
+                finally {
+                  $reader.Dispose()
+                  $stream.Dispose()
+                }
+              }
+
+              $packageRoot = "$(Build.ArtifactStagingDirectory)/StorePackages/$(buildPlatform)"
+              $uploads = @(Get-ChildItem -LiteralPath $packageRoot -Recurse -Filter *.msixupload -File)
+              if ($uploads.Count -ne 1) {
+                throw "Expected exactly one .msixupload in $packageRoot, found $($uploads.Count)."
+              }
+
+              $agentTemp = [IO.Path]::GetFullPath("$(Agent.TempDirectory)").TrimEnd([IO.Path]::DirectorySeparatorChar) + [IO.Path]::DirectorySeparatorChar
+              $validationRoot = [IO.Path]::GetFullPath((Join-Path $agentTemp "validate-msix-$(buildPlatform)-$([Guid]::NewGuid().ToString('N'))"))
+              if (!$validationRoot.StartsWith($agentTemp, [StringComparison]::OrdinalIgnoreCase)) {
+                throw "Unsafe validation directory: $validationRoot"
+              }
+              New-Item -ItemType Directory -Path $validationRoot | Out-Null
+
+              try {
+                $uploadArchive = [IO.Compression.ZipFile]::OpenRead($uploads[0].FullName)
+                try {
+                  $msixEntries = @($uploadArchive.Entries | Where-Object FullName -Match '\.msix$')
+                  $symbolEntries = @($uploadArchive.Entries | Where-Object FullName -Match '\.appxsym$')
+                  if ($msixEntries.Count -ne 1) {
+                    throw "Store upload must contain exactly one .msix; found $($msixEntries.Count)."
+                  }
+                  if ($symbolEntries.Count -ne 1) {
+                    throw "Store upload must contain exactly one .appxsym; found $($symbolEntries.Count)."
+                  }
+
+                  $msixPath = Join-Path $validationRoot 'package.msix'
+                  $symbolPath = Join-Path $validationRoot 'package.appxsym'
+                  [IO.Compression.ZipFileExtensions]::ExtractToFile($msixEntries[0], $msixPath, $true)
+                  [IO.Compression.ZipFileExtensions]::ExtractToFile($symbolEntries[0], $symbolPath, $true)
+                }
+                finally {
+                  $uploadArchive.Dispose()
+                }
+
+                $msixArchive = [IO.Compression.ZipFile]::OpenRead($msixPath)
+                try {
+                  $entryNames = @($msixArchive.Entries | ForEach-Object { $_.FullName.Replace('\', '/') })
+                  $requiredEntries = @(
+                    'AppxManifest.xml',
+                    'SftpExplorer.exe',
+                    'SftpExplorer.dll',
+                    'Microsoft.Terminal.Control.dll',
+                    'Microsoft.Terminal.WinUI3.dll',
+                    'Microsoft.Terminal.WinUI3/TerminalControl.xbf'
+                  )
+                  foreach ($requiredEntry in $requiredEntries) {
+                    if ($entryNames -notcontains $requiredEntry) {
+                      throw "MSIX is missing required entry '$requiredEntry'."
+                    }
+                  }
+
+                  $manifestEntry = $msixArchive.Entries | Where-Object FullName -EQ 'AppxManifest.xml' | Select-Object -First 1
+                  $reader = [IO.StreamReader]::new($manifestEntry.Open())
+                  try { [xml]$packageManifest = $reader.ReadToEnd() }
+                  finally { $reader.Dispose() }
+
+                  $actualVersion = [string]$packageManifest.Package.Identity.Version
+                  $actualArchitecture = ([string]$packageManifest.Package.Identity.ProcessorArchitecture).ToLowerInvariant()
+                  $expectedArchitecture = "$(buildPlatform)".ToLowerInvariant()
+                  if ($actualVersion -ne "$(storePackageVersion)") {
+                    throw "MSIX version '$actualVersion' does not match expected '$(storePackageVersion)'."
+                  }
+                  if (([Version]$actualVersion).Revision -ne 0) {
+                    throw "MSIX revision must be zero: $actualVersion"
+                  }
+                  if ($actualArchitecture -ne $expectedArchitecture) {
+                    throw "MSIX architecture '$actualArchitecture' does not match '$expectedArchitecture'."
+                  }
+
+                  foreach ($payloadName in @('SftpExplorer.exe', 'SftpExplorer.dll', 'Microsoft.Terminal.Control.dll')) {
+                    $payloadEntry = $msixArchive.Entries | Where-Object FullName -EQ $payloadName | Select-Object -First 1
+                    [IO.Compression.ZipFileExtensions]::ExtractToFile(
+                      $payloadEntry,
+                      (Join-Path $validationRoot $payloadName),
+                      $true)
+                  }
+                }
+                finally {
+                  $msixArchive.Dispose()
+                }
+
+                $expectedVersion = [Version]"$(storePackageVersion)"
+                foreach ($versionedPayload in @('SftpExplorer.exe', 'SftpExplorer.dll')) {
+                  $payloadPath = Join-Path $validationRoot $versionedPayload
+                  $versionInfo = [Diagnostics.FileVersionInfo]::GetVersionInfo($payloadPath)
+                  if ([Version]$versionInfo.FileVersion -ne $expectedVersion) {
+                    throw "$versionedPayload file version '$($versionInfo.FileVersion)' does not match '$expectedVersion'."
+                  }
+                  $numericProductVersion = [Version]::new(
+                    $versionInfo.ProductMajorPart,
+                    $versionInfo.ProductMinorPart,
+                    $versionInfo.ProductBuildPart,
+                    $versionInfo.ProductPrivatePart)
+                  if ($numericProductVersion -ne $expectedVersion) {
+                    throw "$versionedPayload product version '$($versionInfo.ProductVersion)' does not match '$expectedVersion'."
+                  }
+                }
+
+                $assemblyVersion = [Reflection.AssemblyName]::GetAssemblyName(
+                  (Join-Path $validationRoot 'SftpExplorer.dll')).Version
+                if ($assemblyVersion -ne $expectedVersion) {
+                  throw "SftpExplorer.dll assembly version '$assemblyVersion' does not match '$expectedVersion'."
+                }
+
+                $expectedMachine = if ($expectedArchitecture -eq 'x64') { 0x8664 } else { 0xAA64 }
+                foreach ($nativePayload in @('SftpExplorer.exe', 'Microsoft.Terminal.Control.dll')) {
+                  $actualMachine = Get-PeMachine (Join-Path $validationRoot $nativePayload)
+                  if ($actualMachine -ne $expectedMachine) {
+                    throw ("{0} PE machine 0x{1:X4} does not match {2} (0x{3:X4})." -f `
+                      $nativePayload, $actualMachine, $expectedArchitecture, $expectedMachine)
+                  }
+                }
+
+                $symbolArchive = [IO.Compression.ZipFile]::OpenRead($symbolPath)
+                try {
+                  $pdbs = @($symbolArchive.Entries | Where-Object FullName -Match '(^|[/\\])SftpExplorer\.pdb$')
+                  if ($pdbs.Count -lt 1) {
+                    throw "The .appxsym package does not contain SftpExplorer.pdb."
+                  }
+                }
+                finally {
+                  $symbolArchive.Dispose()
+                }
+
+                Write-Host "Validated Store upload: $($uploads[0].FullName)"
+              }
+              finally {
+                if (Test-Path -LiteralPath $validationRoot) {
+                  Remove-Item -LiteralPath $validationRoot -Recurse -Force
+                }
+              }
+            displayName: Validate upload, symbols, version, architecture, and payload
+
+          - task: PublishPipelineArtifact@1
+            displayName: Publish $(buildPlatform) Store package
+            inputs:
+              targetPath: $(Build.ArtifactStagingDirectory)/StorePackages/$(buildPlatform)
+              artifact: store-$(buildPlatform)

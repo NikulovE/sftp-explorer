@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "MsixPackage": {
+      "commandName": "MsixPackage",
+      "commandLineArgs": "",
+      "nativeDebugging": false
+    }
+  }
+}

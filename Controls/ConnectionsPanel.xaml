@@ -1,0 +1,213 @@
+<UserControl
+    x:Class="SftpExplorerWinUI.Controls.ConnectionsPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:SftpExplorerWinUI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <controls:StringNotEmptyToVisibilityConverter x:Key="StringNotEmptyToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid Background="{ThemeResource LayerFillColorDefaultBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Grid Grid.Row="0" Padding="24,20,24,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock x:Uid="ConnectionsPanelTitle" 
+                          Style="{StaticResource TitleTextBlockStyle}"
+                          FontWeight="SemiBold"/>
+                <TextBlock x:Name="SubtitleText"
+                          x:Uid="ConnectionsPanelSubtitle"
+                          Style="{StaticResource CaptionTextBlockStyle}"
+                          Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+            </StackPanel>
+
+            <Button Grid.Column="1"
+                   x:Name="NewConnectionButton"
+                   x:Uid="NewConnectionButton"
+                   Click="NewConnectionButton_Click"
+                   Style="{StaticResource AccentButtonStyle}"
+                   VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <FontIcon Glyph="&#xE710;" FontSize="16"/>
+                    <TextBlock x:Uid="NewConnectionText"/>
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <!-- Connections List -->
+        <ScrollViewer Grid.Row="1"
+                      Padding="16,0"
+                      HorizontalScrollBarVisibility="Disabled"
+                      VerticalScrollBarVisibility="Auto">
+            <ItemsRepeater x:Name="ConnectionsRepeater" Margin="0,8">
+                <ItemsRepeater.Layout>
+                    <StackLayout Spacing="8"/>
+                </ItemsRepeater.Layout>
+
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate>
+                      <StackPanel Spacing="4">
+                        <Grid Margin="8,8,8,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <FontIcon Glyph="{Binding Glyph}"
+                                      FontFamily="Segoe Fluent Icons"
+                                      FontSize="14"
+                                      Foreground="{Binding Color}"/>
+                            <TextBlock Grid.Column="1"
+                                       Margin="7,0,0,0"
+                                       Text="{Binding Name}"
+                                       Style="{StaticResource CaptionTextBlockStyle}"
+                                       FontWeight="SemiBold"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <Button Grid.Column="2"
+                                    Width="24"
+                                    Height="24"
+                                    Padding="0"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Visibility="{Binding CollapseButtonVisibility}"
+                                    ToolTipService.ToolTip="{Binding CollapseButtonName}"
+                                    AutomationProperties.Name="{Binding CollapseButtonName}"
+                                    Click="ToggleGroup_Click"
+                                    Tag="{Binding}">
+                                <FontIcon Glyph="{Binding CollapseGlyph}"
+                                          FontSize="12"/>
+                            </Button>
+                        </Grid>
+                        <ItemsRepeater ItemsSource="{Binding Connections}"
+                                       Visibility="{Binding ConnectionsVisibility}">
+                          <ItemsRepeater.Layout>
+                            <StackLayout Spacing="6"/>
+                          </ItemsRepeater.Layout>
+                          <ItemsRepeater.ItemTemplate>
+                            <DataTemplate>
+                        <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                CornerRadius="8">
+                            <Grid>
+                              <Grid Padding="12,8" ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Icon with color accent -->
+                                <Border Grid.Column="0"
+                                       Width="32" Height="32"
+                                       CornerRadius="6"
+                                       Background="Transparent">
+                                    <FontIcon Glyph="{Binding Glyph}"
+                                             FontFamily="Segoe Fluent Icons"
+                                             FontSize="18"
+                                             Foreground="{Binding Color}"/>
+                                </Border>
+
+                                <!-- Connection Info -->
+                                <StackPanel Grid.Column="1"
+                                           VerticalAlignment="Center"
+                                           Spacing="0">
+                                    <TextBlock Text="{Binding Name}" 
+                                              Style="{StaticResource BodyStrongTextBlockStyle}"/>
+                                    <TextBlock Opacity="0.7">
+                                        <Run Text="{Binding Username}"/>
+                                        <Run Text="@"/>
+                                        <Run Text="{Binding Hostname}"/>
+                                        <Run Text=":"/>
+                                        <Run Text="{Binding Port}"/>
+                                    </TextBlock>
+                                    <TextBlock Text="{Binding Notes}"
+                                              Visibility="{Binding Notes, Converter={StaticResource StringNotEmptyToVisibilityConverter}}"
+                                              Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                                              Style="{StaticResource CaptionTextBlockStyle}"
+                                              TextWrapping="Wrap"
+                                              TextTrimming="CharacterEllipsis"
+                                              MaxLines="1"/>
+                                </StackPanel>
+
+                              </Grid>
+
+                              <controls:ConnectionProtocolReveal SftpRequested="ConnectionSftp_Requested"
+                                                                 SshRequested="ConnectionSsh_Requested"/>
+
+                              <!-- More Options Button stays above the protocol hit targets. -->
+                              <Button Width="28" Height="28"
+                                      Margin="0,0,12,0"
+                                      HorizontalAlignment="Right"
+                                      VerticalAlignment="Center"
+                                      Padding="0"
+                                      Background="Transparent"
+                                      BorderThickness="0"
+                                      Click="MoreOptions_Click"
+                                      Tag="{Binding}">
+                                    <FontIcon Glyph="&#xE712;" FontSize="16"/>
+                                    <Button.Flyout>
+                                        <MenuFlyout>
+                                            <MenuFlyoutItem x:Uid="EditMenuItem" 
+                                                          Click="EditConnection_Click"
+                                                          Tag="{Binding}">
+                                                <MenuFlyoutItem.Icon>
+                                                    <FontIcon Glyph="&#xE70F;"/>
+                                                </MenuFlyoutItem.Icon>
+                                            </MenuFlyoutItem>
+                                            <MenuFlyoutItem x:Uid="DeleteMenuItem" 
+                                                          Click="DeleteConnection_Click"
+                                                          Tag="{Binding}">
+                                                <MenuFlyoutItem.Icon>
+                                                    <FontIcon Glyph="&#xE74D;"/>
+                                                </MenuFlyoutItem.Icon>
+                                            </MenuFlyoutItem>
+                                        </MenuFlyout>
+                                    </Button.Flyout>
+                              </Button>
+                            </Grid>
+                        </Border>
+                            </DataTemplate>
+                          </ItemsRepeater.ItemTemplate>
+                        </ItemsRepeater>
+                      </StackPanel>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+        </ScrollViewer>
+
+        <!-- Empty State -->
+        <StackPanel Grid.Row="1"
+                   x:Name="EmptyState"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Spacing="16"
+                   Visibility="Collapsed">
+            <FontIcon Glyph="&#xE968;" 
+                     FontSize="64"
+                     Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
+            <TextBlock x:Uid="NoConnectionsTitle"
+                      Style="{StaticResource SubtitleTextBlockStyle}"
+                      Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+            <TextBlock x:Uid="NoConnectionsMessage"
+                      Style="{StaticResource CaptionTextBlockStyle}"
+                      Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                      TextAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

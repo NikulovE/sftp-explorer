@@ -1,0 +1,125 @@
+<ContentDialog
+    x:Class="SftpExplorerWinUI.SftpConnectionDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:SftpExplorerWinUI.Controls"
+    x:Uid="ConnectDialog"
+    DefaultButton="Primary"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick"
+    SecondaryButtonClick="ContentDialog_SecondaryButtonClick"
+    Closing="ContentDialog_Closing">
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollViewer x:Name="DialogScrollViewer"
+                      Grid.Row="0"
+                      VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="12" Padding="0,12,0,0">
+        <TextBox x:Name="ConnectionNameBox"
+                x:Uid="ConnectionNameBox"
+                Text=""/>
+
+        <controls:AppearancePicker x:Name="ConnectionAppearancePicker"/>
+
+        <ComboBox x:Name="GroupBox"
+                  x:Uid="ConnectionGroupBox"
+                  IsEditable="True"
+                  HorizontalAlignment="Stretch"
+                  MaxDropDownHeight="240"
+                  SelectionChanged="GroupBox_SelectionChanged"
+                  LostFocus="GroupBox_LostFocus"/>
+
+        <controls:AppearancePicker x:Name="GroupAppearancePicker"/>
+        
+        <TextBox x:Name="HostnameBox"
+                x:Uid="HostnameBox"
+                Text=""/>
+
+        <NumberBox x:Name="PortBox"
+                  x:Uid="PortBox"
+                  Value="22"
+                  SpinButtonPlacementMode="Inline"
+                  Minimum="1"
+                  Maximum="65535"/>
+
+        <TextBox x:Name="UsernameBox"
+                x:Uid="UsernameBox"
+                Text=""/>
+
+        <ComboBox x:Name="AuthenticationModeBox"
+                  x:Uid="AuthenticationModeBox"
+                  HorizontalAlignment="Stretch"
+                  SelectedIndex="0"
+                  SelectionChanged="AuthenticationModeBox_SelectionChanged">
+            <ComboBoxItem x:Name="PasswordAuthenticationItem" x:Uid="PasswordAuthenticationItem"/>
+            <ComboBoxItem x:Name="PrivateKeyAuthenticationItem" x:Uid="PrivateKeyAuthenticationItem"/>
+        </ComboBox>
+
+        <StackPanel x:Name="PasswordAuthenticationPanel">
+            <PasswordBox x:Name="PasswordBox" x:Uid="PasswordBox"/>
+        </StackPanel>
+
+        <StackPanel x:Name="PrivateKeyAuthenticationPanel" Spacing="8" Visibility="Collapsed">
+            <TextBlock x:Uid="PrivateKeyHelpText" TextWrapping="Wrap"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <TextBox x:Name="PrivateKeyPathBox" x:Uid="PrivateKeyPathBox" Grid.Column="0"/>
+                <Button x:Name="BrowsePrivateKeyButton" x:Uid="BrowsePrivateKeyButton"
+                        Grid.Column="1" Click="BrowsePrivateKeyButton_Click"/>
+            </Grid>
+            <PasswordBox x:Name="PrivateKeyPassphraseBox" x:Uid="PrivateKeyPassphraseBox"/>
+        </StackPanel>
+
+        <InfoBar x:Name="ConnectionTestInfoBar"
+                 IsOpen="False"
+                 IsClosable="False"/>
+
+        <TextBox x:Name="NotesBox"
+                 x:Uid="ConnectionNotesBox"
+                 AcceptsReturn="True"
+                 TextWrapping="Wrap"
+                 MinHeight="80"
+                 MaxHeight="160"/>
+
+        <StackPanel x:Name="SaveCredentialsPanel"
+                    Orientation="Horizontal"
+                    Spacing="4">
+            <CheckBox x:Name="SaveCredentialsCheckbox"
+                      x:Uid="SaveCredentialsCheckbox"
+                      IsChecked="False"
+                      VerticalAlignment="Center"/>
+            <Button x:Name="CredentialStorageInfoButton"
+                    x:Uid="CredentialStorageInfoButton"
+                    Padding="4"
+                    MinWidth="28"
+                    MinHeight="28"
+                    VerticalAlignment="Center">
+                <FontIcon Glyph="&#xE946;"
+                          FontFamily="Segoe Fluent Icons"
+                          FontSize="16"/>
+                <Button.Flyout>
+                    <Flyout Placement="Bottom">
+                        <TextBlock x:Uid="CredentialStorageInfoText"
+                                   Width="360"
+                                   TextWrapping="Wrap"/>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </StackPanel>
+        </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel x:Name="ConnectionProgressPanel"
+                    Grid.Row="1"
+                    Orientation="Horizontal"
+                    Spacing="10"
+                    Margin="0,12,0,0"
+                    Visibility="Collapsed">
+            <ProgressRing x:Name="ConnectionProgressRing"
+                          Width="20"
+                          Height="20"
+                          IsActive="False"/>
+            <TextBlock x:Uid="ConnectingStatusText"
+                       VerticalAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</ContentDialog>

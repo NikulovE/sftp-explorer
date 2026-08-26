@@ -1,0 +1,800 @@
+<UserControl
+    x:Class="SftpExplorerWinUI.SftpTabContent"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:primitives="using:Microsoft.UI.Xaml.Controls.Primitives"
+    xmlns:terminal="using:Microsoft.Terminal.Wpf"
+    mc:Ignorable="d"
+    HorizontalAlignment="Stretch"
+    VerticalAlignment="Stretch">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+        <Style x:Key="ToolbarIconButtonStyle"
+               TargetType="Button"
+               BasedOn="{StaticResource DefaultButtonStyle}">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BackgroundSizing" Value="InnerBorderEdge"/>
+            <Setter Property="UseSystemFocusVisuals" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter x:Name="ContentPresenter"
+                                          Background="{TemplateBinding Background}"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          BackgroundSizing="{TemplateBinding BackgroundSizing}"
+                                          BorderBrush="{TemplateBinding BorderBrush}"
+                                          BorderThickness="{TemplateBinding BorderThickness}"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          ContentTransitions="{TemplateBinding ContentTransitions}"
+                                          CornerRadius="{TemplateBinding CornerRadius}"
+                                          Padding="{TemplateBinding Padding}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
+                            <ContentPresenter.BackgroundTransition>
+                                <BrushTransition Duration="0:0:0.083"/>
+                            </ContentPresenter.BackgroundTransition>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal"/>
+                                    <VisualState x:Name="PointerOver">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                                           Storyboard.TargetProperty="Background">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                                                        Value="{ThemeResource ControlFillColorSecondaryBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                                           Storyboard.TargetProperty="BorderBrush">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                                                        Value="{ThemeResource ControlElevationBorderBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                                           Storyboard.TargetProperty="Background">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                                                        Value="{ThemeResource ControlFillColorTertiaryBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                                           Storyboard.TargetProperty="BorderBrush">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                                                        Value="{ThemeResource ControlStrokeColorDefaultBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                                           Storyboard.TargetProperty="Background">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                                                        Value="{ThemeResource ControlFillColorTransparentBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                                           Storyboard.TargetProperty="BorderBrush">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                                                        Value="{ThemeResource ControlFillColorTransparentBrush}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentPresenter"
+                                                                           Storyboard.TargetProperty="Foreground">
+                                                <DiscreteObjectKeyFrame KeyTime="0"
+                                                                        Value="{ThemeResource ButtonForegroundDisabled}"/>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                        </ContentPresenter>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TerminalToolbarIconButtonStyle"
+               TargetType="Button"
+               BasedOn="{StaticResource ToolbarIconButtonStyle}"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid Background="{ThemeResource LayerFillColorDefaultBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Navigation Bar -->
+          <Border x:Name="NavigationBar" Grid.Row="0" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="0,0,0,1">
+                <Grid Padding="12,6" ColumnSpacing="12" Height="48">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0"
+                            Orientation="Horizontal"
+                            Spacing="8"
+                            HorizontalAlignment="Left">
+                    <Button x:Name="BackButton"
+                            x:Uid="BackButton"
+                            Style="{StaticResource ToolbarIconButtonStyle}"
+                            Click="BackButton_Click"
+                            IsEnabled="False">
+                        <FontIcon Glyph="&#xE72B;" FontSize="16"/>
+                    </Button>
+                    <Button x:Name="ForwardButton"
+                            x:Uid="ForwardButton"
+                            Style="{StaticResource ToolbarIconButtonStyle}"
+                            Click="ForwardButton_Click"
+                            IsEnabled="False">
+                        <FontIcon Glyph="&#xE72A;" FontSize="16"/>
+                    </Button>
+                    <Button x:Uid="UpButton"
+                            Style="{StaticResource ToolbarIconButtonStyle}"
+                            Click="UpButton_Click">
+                        <FontIcon Glyph="&#xE74A;" FontSize="16"/>
+                    </Button>
+                    <Button x:Name="RefreshButton"
+                            x:Uid="RefreshButton"
+                            Style="{StaticResource ToolbarIconButtonStyle}"
+                            Click="RefreshButton_Click">
+                        <FontIcon Glyph="&#xE72C;" FontSize="16"/>
+                    </Button>
+                </StackPanel>
+
+                <Border Grid.Column="1"
+                        Background="{ThemeResource ControlFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Height="32"
+                        Padding="4,0"
+                        PointerPressed="AddressBar_PointerPressed">
+                    <Grid>
+                        <!-- Breadcrumb Navigation -->
+                        <ScrollViewer x:Name="BreadcrumbScroll"
+                                    HorizontalScrollBarVisibility="Auto"
+                                    VerticalScrollBarVisibility="Disabled"
+                                    HorizontalScrollMode="Auto"
+                                    VerticalScrollMode="Disabled">
+                            <StackPanel x:Name="BreadcrumbPanel"
+                                      Orientation="Horizontal"
+                                      Spacing="0"
+                                      VerticalAlignment="Center"/>
+                        </ScrollViewer>
+                        
+                        <!-- Edit mode with remote path suggestions -->
+                        <AutoSuggestBox x:Name="PathBox"
+                                        Visibility="Collapsed"
+                                        BorderThickness="0"
+                                        Background="Transparent"
+                                        Padding="4,0"
+                                        VerticalAlignment="Center"
+                                        MaxSuggestionListHeight="360"
+                                        TextChanged="PathBox_TextChanged"
+                                        SuggestionChosen="PathBox_SuggestionChosen"
+                                        QuerySubmitted="PathBox_QuerySubmitted"
+                                        KeyDown="PathBox_KeyDown"
+                                        LostFocus="PathBox_LostFocus"
+                                        FontSize="14"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Main Content Area (Toolbar + Files) -->
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition x:Name="FilesRow" Height="*"/>
+                <RowDefinition x:Name="TerminalSplitterRow" Height="0"/>
+                <RowDefinition x:Name="TerminalRow" Height="0"/>
+            </Grid.RowDefinitions>
+            
+            <!-- Action Toolbar -->
+            <Border x:Name="ActionToolbar" Grid.Row="0" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
+                    BorderThickness="0,0,0,1">
+                <Grid Padding="12,8" ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                <!-- New Button with Flyout -->
+                <Button x:Name="NewButton"
+                        x:Uid="CreateButton"
+                        Style="{StaticResource ToolbarIconButtonStyle}">
+                    <Button.Flyout>
+                        <MenuFlyout Placement="Bottom">
+                            <MenuFlyoutItem x:Uid="NewFolderItem" Click="NewFolderButton_Click">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE8F4;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem x:Uid="NewFileItem" Click="NewFileButton_Click">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE7C3;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                    <FontIcon Glyph="&#xE710;" FontSize="16"/>
+                </Button>
+                
+                <MenuFlyoutSeparator Height="24" Margin="4,0"/>
+                
+                <!-- Cut -->
+                <Button x:Name="CutButton"
+                        x:Uid="CutButton"
+                        Style="{StaticResource ToolbarIconButtonStyle}"
+                        Click="CutButton_Click"
+                        IsEnabled="False">
+                    <FontIcon Glyph="&#xE8C6;" FontSize="16"/>
+                </Button>
+                
+                <!-- Copy -->
+                <Button x:Name="CopyButton"
+                        x:Uid="CopyButton"
+                        Style="{StaticResource ToolbarIconButtonStyle}"
+                        Click="CopyButton_Click"
+                        IsEnabled="False">
+                    <FontIcon Glyph="&#xE8C8;" FontSize="16"/>
+                </Button>
+                
+                <!-- Paste -->
+                <Button x:Name="PasteButton"
+                        x:Uid="PasteButton"
+                        Style="{StaticResource ToolbarIconButtonStyle}"
+                        Click="PasteButton_Click"
+                        IsEnabled="False">
+                    <FontIcon Glyph="&#xE77F;" FontSize="16"/>
+                </Button>
+                
+                <MenuFlyoutSeparator Height="24" Margin="4,0"/>
+                
+                <!-- Rename -->
+                <Button x:Name="RenameButton"
+                        x:Uid="RenameButton"
+                        Style="{StaticResource ToolbarIconButtonStyle}"
+                        Click="RenameButton_Click"
+                        IsEnabled="False">
+                    <FontIcon Glyph="&#xE8AC;" FontSize="16"/>
+                </Button>
+                
+                <!-- Delete -->
+                <Button x:Name="DeleteButton"
+                        x:Uid="DeleteButton"
+                        Style="{StaticResource ToolbarIconButtonStyle}"
+                        Click="DeleteButton_Click"
+                        IsEnabled="False">
+                    <FontIcon Glyph="&#xE74D;" FontSize="16"/>
+                </Button>
+                
+                <MenuFlyoutSeparator Height="24" Margin="4,0"/>
+                
+                <!-- Upload -->
+                <Button x:Name="UploadButton"
+                        x:Uid="UploadToolbarButton"
+                        Style="{StaticResource ToolbarIconButtonStyle}"
+                        Click="UploadButton_Click">
+                    <FontIcon Glyph="&#xE898;" FontSize="16"/>
+                </Button>
+                
+                <!-- Download -->
+                <Button x:Name="DownloadButton"
+                        x:Uid="DownloadToolbarButton"
+                        Style="{StaticResource ToolbarIconButtonStyle}"
+                        Click="DownloadButton_Click"
+                        IsEnabled="False">
+                    <FontIcon Glyph="&#xE896;" FontSize="16"/>
+                </Button>
+                
+                <MenuFlyoutSeparator Height="24" Margin="4,0"/>
+                
+                <!-- Sort Button with Flyout -->
+                <Button x:Name="SortButton"
+                        x:Uid="SortButton"
+                        Style="{StaticResource ToolbarIconButtonStyle}">
+                    <Button.Flyout>
+                        <MenuFlyout Placement="Bottom">
+                            <MenuFlyoutItem x:Uid="SortByNameAsc" Click="SortByNameAsc_Click">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE8CB;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem x:Uid="SortByNameDesc" Click="SortByNameDesc_Click">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE8CB;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutSeparator/>
+                            <MenuFlyoutItem x:Uid="SortBySizeAsc" Click="SortBySizeAsc_Click">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE7C8;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem x:Uid="SortBySizeDesc" Click="SortBySizeDesc_Click">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE7C8;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutSeparator/>
+                            <MenuFlyoutItem x:Uid="SortByDateAsc" Click="SortByDateAsc_Click">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE787;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                            <MenuFlyoutItem x:Uid="SortByDateDesc" Click="SortByDateDesc_Click">
+                                <MenuFlyoutItem.Icon>
+                                    <FontIcon Glyph="&#xE787;"/>
+                                </MenuFlyoutItem.Icon>
+                            </MenuFlyoutItem>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                    <FontIcon Glyph="&#xE8CB;" FontSize="16"/>
+                </Button>
+                    </StackPanel>
+
+                    <Button x:Name="TerminalToggleButton"
+                            Grid.Column="1"
+                            x:Uid="TerminalToggleButton"
+                            Style="{StaticResource ToolbarIconButtonStyle}"
+                            Click="TerminalToggleButton_Click">
+                        <Grid Width="20" Height="20">
+                            <FontIcon Glyph="&#xE737;"
+                                      FontFamily="Segoe Fluent Icons"
+                                      FontSize="18"/>
+                            <TextBlock Text="&gt;_"
+                                       FontFamily="Consolas"
+                                       FontSize="8"
+                                       FontWeight="SemiBold"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Margin="-2,-2,2,1"
+                                        IsHitTestVisible="False"/>
+                        </Grid>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- SFTP Files Panel -->
+                <Border Grid.Row="1" 
+                    Background="Transparent"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" 
+                    BorderThickness="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Column Headers -->
+                    <Border Grid.Row="0" 
+                            Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="0,0,0,1"
+                            Padding="12,0">
+                        <Grid x:Name="FileColumnsHeaderGrid" Height="36">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="36"/>
+                                <ColumnDefinition Width="*" MinWidth="150"/>
+                                <ColumnDefinition Width="0"/>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="155"/>
+                                <ColumnDefinition Width="120"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            
+                            <TextBlock Grid.Column="0" Grid.ColumnSpan="2" x:Uid="ColumnName" VerticalAlignment="Center" FontWeight="SemiBold" Opacity="0.8"/>
+                            <TextBlock x:Name="FreeSpaceColumnHeader" Grid.Column="2" x:Uid="ColumnFreeSpace" VerticalAlignment="Center" FontWeight="SemiBold" Opacity="0.8" Visibility="Collapsed"/>
+                            <TextBlock Grid.Column="3" x:Uid="ColumnPermissions" VerticalAlignment="Center" FontWeight="SemiBold" Opacity="0.8"/>
+                            <TextBlock Grid.Column="4" x:Uid="ColumnOwner" VerticalAlignment="Center" FontWeight="SemiBold" Opacity="0.8"/>
+                            <TextBlock Grid.Column="5" x:Uid="ColumnGroup" VerticalAlignment="Center" FontWeight="SemiBold" Opacity="0.8"/>
+                            <TextBlock Grid.Column="6" x:Uid="ColumnModified" VerticalAlignment="Center" FontWeight="SemiBold" Opacity="0.8"/>
+                            <TextBlock Grid.Column="7" x:Uid="ColumnSize" VerticalAlignment="Center" FontWeight="SemiBold" Opacity="0.8"/>
+                        </Grid>
+                    </Border>
+                    
+                    <!-- SFTP Files List -->
+                    <ListView x:Name="RemoteFilesListView"
+                             Grid.Row="1"
+                             SelectionMode="Extended"
+                             AllowDrop="True"
+                             CanDragItems="True"
+                             IsItemClickEnabled="True"
+                             ItemClick="RemoteFiles_ItemClick"
+                             DragItemsStarting="RemoteFiles_DragItemsStarting"
+                             DragOver="RemoteFiles_DragOver"
+                             Drop="RemoteFiles_Drop"
+                             DoubleTapped="RemoteFiles_DoubleTapped">
+
+                        <!-- Keep container padding at 0: our template already handles alignment/padding. -->
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+
+                        <!-- DragStarting will be attached in code-behind to avoid XAML codegen issues. -->
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Height="52" Padding="12,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*" MinWidth="150"/>
+                                        <ColumnDefinition Width="240"/>
+                                        <ColumnDefinition Width="100"/>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="80"/>
+                                        <ColumnDefinition Width="155"/>
+                                        <ColumnDefinition Width="120"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <Grid Grid.Column="0" Width="24" Height="24" Margin="0,0,12,0" IsHitTestVisible="False">
+                                        <!-- Yellow filled folder background -->
+                                        <FontIcon x:Name="FolderFill" Glyph="&#xE8D5;" FontSize="20" Foreground="Gold"
+                                                  HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <!-- Main icon -->
+                                        <FontIcon Glyph="{Binding Icon}" FontSize="20"
+                                                  HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                        <!-- Executable Bash/extensionless file overlay -->
+                                        <FontIcon Glyph="&#xF5B0;"
+                                                  FontFamily="Segoe Fluent Icons"
+                                                  FontSize="11"
+                                                  Foreground="#1E90FF"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Bottom"
+                                                  Visibility="{Binding ExecutableOverlayVisibility}"/>
+                                        <!-- Symbolic link overlay -->
+                                        <FontIcon Glyph="&#xE83A;"
+                                                  FontFamily="Segoe Fluent Icons"
+                                                  FontSize="22"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Bottom"
+                                                  Visibility="{Binding SymbolicLinkOverlayVisibility}"/>
+                                        <!-- Access restriction overlay -->
+                                        <FontIcon Glyph="&#xEB59;"
+                                                  FontFamily="Segoe Fluent Icons"
+                                                  FontSize="20"
+                                                  Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                                  HorizontalAlignment="Right"
+                                                  VerticalAlignment="Top"
+                                                  Translation="4,-14,0"
+                                                  Visibility="{Binding RestrictedOverlayVisibility}"/>
+                                    </Grid>
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" IsHitTestVisible="False"/>
+                                    <StackPanel Grid.Column="2"
+                                                Margin="0,4,16,4"
+                                                Spacing="2"
+                                                VerticalAlignment="Center"
+                                                Visibility="{Binding FreeSpaceVisibility}"
+                                                IsHitTestVisible="False">
+                                        <ProgressBar Minimum="0"
+                                                     Maximum="100"
+                                                     Value="{Binding OccupiedPercentage}"
+                                                     Height="8"
+                                                     HorizontalAlignment="Stretch"/>
+                                        <TextBlock Text="{Binding FreeSpaceText}"
+                                                   FontSize="12"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   TextWrapping="NoWrap"/>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="3" Text="{Binding Permissions}" Opacity="0.6" VerticalAlignment="Center" FontFamily="Consolas" IsHitTestVisible="False"/>
+                                    <TextBlock Grid.Column="4" Text="{Binding Owner}" Opacity="0.6" VerticalAlignment="Center" FontFamily="Consolas" IsHitTestVisible="False"/>
+                                    <TextBlock Grid.Column="5" Text="{Binding Group}" Opacity="0.6" VerticalAlignment="Center" FontFamily="Consolas" IsHitTestVisible="False"/>
+                                    <TextBlock Grid.Column="6" Text="{Binding Modified}" Opacity="0.6" VerticalAlignment="Center" FontFamily="Consolas" IsHitTestVisible="False"/>
+                                    <TextBlock Grid.Column="7" Text="{Binding Size}" Opacity="0.6" VerticalAlignment="Center" IsHitTestVisible="False"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <!-- Loading Overlay -->
+                    <Border x:Name="LoadingOverlay" 
+                            Grid.RowSpan="2"
+                            Background="{ThemeResource AcrylicInAppFillColorDefaultBrush}"
+                            Visibility="Collapsed">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
+                            <ProgressRing IsActive="True" Width="48" Height="48"/>
+                            <TextBlock Text="Loading..." FontSize="16" Opacity="0.7"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Connect Overlay -->
+                    <Border x:Name="ConnectOverlay" 
+                            Grid.RowSpan="2"
+                            Background="{ThemeResource AcrylicInAppFillColorDefaultBrush}">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16">
+                            <FontIcon Glyph="&#xE753;" FontSize="48" Opacity="0.5"/>
+                            <TextBlock x:Uid="NoConnectionText" FontSize="16" Opacity="0.7"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Resizable SSH terminal panel -->
+            <Grid x:Name="TerminalSplitter"
+                  Grid.Row="2"
+                  Visibility="Collapsed"
+                  Background="{ThemeResource CardStrokeColorDefaultBrush}">
+                <Border Height="1"
+                        VerticalAlignment="Center"
+                        Background="{ThemeResource ControlStrokeColorDefaultBrush}"/>
+                <primitives:Thumb DragDelta="TerminalSplitter_DragDelta"
+                                  Background="Transparent"/>
+            </Grid>
+
+            <Border x:Name="TerminalPanel"
+                    Grid.Row="3"
+                    Visibility="Collapsed"
+                    RequestedTheme="Dark"
+                    Background="#0C0C0C"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="0,1,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Background="#1E1E1E" Padding="12,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Button x:Name="TerminalSaveButton"
+                                x:Uid="TerminalSaveButton"
+                                Grid.Column="0"
+                                Style="{StaticResource TerminalToolbarIconButtonStyle}"
+                                Foreground="#F2F2F2"
+                                Click="TerminalSaveButton_Click">
+                            <FontIcon Glyph="&#xE74E;"
+                                      FontFamily="Segoe Fluent Icons"
+                                      FontSize="13"
+                                      Foreground="#F2F2F2"/>
+                        </Button>
+                        <TextBlock Grid.Column="1"
+                                   Text="&gt;_"
+                                   FontFamily="Consolas"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Foreground="#F2F2F2"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,8,0"/>
+                        <TextBlock x:Name="TerminalTitle"
+                                   Grid.Column="2"
+                                   x:Uid="TerminalTitle"
+                                   VerticalAlignment="Center"
+                                   Foreground="#F2F2F2"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   TextTrimming="CharacterEllipsis"/>
+
+                        <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="2">
+                            <Button x:Name="TerminalClearButton"
+                                    x:Uid="TerminalClearButton"
+                                    Style="{StaticResource TerminalToolbarIconButtonStyle}"
+                                    Foreground="#F2F2F2"
+                                    Click="TerminalClearButton_Click">
+                                <FontIcon Glyph="&#xE74D;"
+                                          FontFamily="Segoe Fluent Icons"
+                                          FontSize="13"
+                                          Foreground="#F2F2F2"/>
+                            </Button>
+                            <Button x:Name="TerminalMaximizeButton"
+                                    x:Uid="TerminalMaximizeButton"
+                                    Style="{StaticResource TerminalToolbarIconButtonStyle}"
+                                    Foreground="#F2F2F2"
+                                    Click="TerminalMaximizeButton_Click">
+                                <FontIcon x:Name="TerminalMaximizeIcon"
+                                          Glyph="&#xE740;"
+                                          FontFamily="Segoe Fluent Icons"
+                                          FontSize="13"
+                                          Foreground="#F2F2F2"/>
+                            </Button>
+                            <Button x:Name="TerminalCloseButton"
+                                    x:Uid="TerminalCloseButton"
+                                    Style="{StaticResource TerminalToolbarIconButtonStyle}"
+                                    Foreground="#F2F2F2"
+                                    Click="TerminalCloseButton_Click">
+                                <FontIcon Glyph="&#xE8BB;"
+                                          FontFamily="Segoe Fluent Icons"
+                                          FontSize="12"
+                                          Foreground="#F2F2F2"/>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+
+                    <terminal:TerminalControl x:Name="NativeTerminal"
+                                              Grid.Row="1"
+                                              Visibility="Collapsed"
+                                              HorizontalAlignment="Stretch"
+                                              VerticalAlignment="Stretch"
+                                              AutoResize="True"/>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="2" Background="#F3F3F3"
+               BorderBrush="#E5E5E5" BorderThickness="0,1,0,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <!-- Overall Progress Bar (folder/batch progress by file count) -->
+                <ProgressBar x:Name="OverallProgressBar"
+                            Grid.Row="0"
+                            Minimum="0"
+                             Maximum="100"
+                             Value="0"
+                             Height="5"
+                            Visibility="Collapsed"
+                            Foreground="{ThemeResource SystemAccentColorLight2}"
+                            Background="{ThemeResource ControlFillColorDisabledBrush}"/>
+                
+                <!-- File Progress Bar (current file progress) -->
+                <ProgressBar x:Name="TransferProgressBar"
+                            Grid.Row="1"
+                            Minimum="0"
+                             Maximum="100"
+                             Value="0"
+                             Height="5"
+                            Visibility="Collapsed"
+                            Foreground="{ThemeResource AccentFillColorDefaultBrush}"
+                            Background="{ThemeResource ControlFillColorDisabledBrush}"/>
+                
+                <!-- Status Info Row -->
+                <Grid Grid.Row="2" Padding="16,6" ColumnSpacing="12" Height="32">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock x:Name="ConnectionText" 
+                              Grid.Column="0"
+                              Text="" 
+                              VerticalAlignment="Center" 
+                              Foreground="#1F1F1F"
+                              FontSize="12"
+                              FontFamily="Segoe UI"
+                              TextTrimming="CharacterEllipsis"
+                              TextWrapping="NoWrap"/>
+                    
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="8"
+                                VerticalAlignment="Center">
+                        <ProgressRing x:Name="PreparationProgressRing"
+                                      Width="16"
+                                      Height="16"
+                                      IsActive="False"
+                                      Visibility="Collapsed"/>
+                        <TextBlock x:Name="StatusText"
+                                   x:Uid="ReadyStatus"
+                                   VerticalAlignment="Center"
+                                   Foreground="#1F1F1F"
+                                   FontSize="12"
+                                   FontFamily="Segoe UI"
+                                   TextTrimming="CharacterEllipsis"
+                                   TextWrapping="NoWrap"/>
+                    </StackPanel>
+                    
+                    <!-- Overall progress (files count) -->
+                    <TextBlock x:Name="OverallProgressText"
+                              Grid.Column="2"
+                              VerticalAlignment="Center"
+                              Foreground="#1F1F1F"
+                              FontFamily="Segoe UI"
+                              FontSize="12"
+                              Visibility="Collapsed"
+                              TextTrimming="CharacterEllipsis"
+                              TextWrapping="NoWrap"
+                              Margin="6,0"/>
+                    
+                    <TextBlock x:Name="ProgressPercent"
+                              Grid.Column="3"
+                              VerticalAlignment="Center"
+                              Foreground="#1F1F1F"
+                              FontFamily="Segoe UI"
+                              FontSize="12"
+                              Visibility="Collapsed"
+                              TextTrimming="CharacterEllipsis"
+                              TextWrapping="NoWrap"
+                              Margin="6,0"
+                              MinWidth="36"
+                              TextAlignment="Center"/>
+                    
+                    <TextBlock x:Name="ProgressSpeed"
+                              Grid.Column="4"
+                              VerticalAlignment="Center"
+                              Foreground="#1F1F1F"
+                              FontFamily="Segoe UI"
+                              FontSize="12"
+                              Visibility="Collapsed"
+                              TextTrimming="CharacterEllipsis"
+                              TextWrapping="NoWrap"
+                              Margin="6,0"
+                              MaxWidth="120"/>
+                    
+                    <TextBlock x:Name="ProgressETA"
+                              Grid.Column="5"
+                              VerticalAlignment="Center"
+                              Foreground="#1F1F1F"
+                              FontFamily="Segoe UI"
+                              FontSize="12"
+                              Visibility="Collapsed"
+                              TextTrimming="CharacterEllipsis"
+                              TextWrapping="NoWrap"
+                              Margin="6,0"
+                              MaxWidth="120"/>
+                    
+                    <!-- Item count -->
+                    <Button x:Name="CancelOperationButton"
+                            Grid.Column="6"
+                            Visibility="Collapsed"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Height="24"
+                            MinHeight="24"
+                            Margin="6,0"
+                            Click="CancelOperationButton_Click"
+                            MinWidth="72"
+                            Padding="8,2">
+                        <TextBlock Text="Cancel" TextTrimming="CharacterEllipsis"/>
+                    </Button>
+
+                    <TextBlock x:Name="ItemCountText" 
+                              Grid.Column="7"
+                              VerticalAlignment="Center" 
+                              Foreground="#1F1F1F"
+                              FontSize="12"
+                              FontFamily="Segoe UI"
+                              TextTrimming="CharacterEllipsis"
+                              TextWrapping="NoWrap"
+                              HorizontalAlignment="Right"
+                              Margin="6,0"/>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <TeachingTip x:Name="LargeFolderPreparationTip"
+                     Target="{x:Bind StatusText}"
+                     PreferredPlacement="Top"
+                     IsLightDismissEnabled="True"
+                     TailVisibility="Visible"/>
+    </Grid>
+</UserControl>

@@ -1,0 +1,109 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.22621.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.22000.0</TargetPlatformMinVersion>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <RuntimeIdentifier Condition="'$(Platform)' == 'x64'">win-x64</RuntimeIdentifier>
+    <RuntimeIdentifier Condition="'$(Platform)' == 'ARM64'">win-arm64</RuntimeIdentifier>
+    <Platforms>x64;ARM64</Platforms>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <WindowsPackageType>MSIX</WindowsPackageType>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>false</PublishSingleFile>
+    <PublishTrimmed>false</PublishTrimmed>
+    <GenerateAppInstallerFile>false</GenerateAppInstallerFile>
+    <AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
+    <UapAppxPackageBuildMode>StoreUpload</UapAppxPackageBuildMode>
+    <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
+    <GenerateTestArtifacts>False</GenerateTestArtifacts>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets\sftp.ico</ApplicationIcon>
+    <AssemblyName>SftpExplorer</AssemblyName>
+    <Version>2.0.15</Version>
+    <AssemblyVersion>2.0.15.0</AssemblyVersion>
+    <FileVersion>2.0.15.0</FileVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateTemporaryStoreCertificate>false</GenerateTemporaryStoreCertificate>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+    <AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+    <EnableDefaultPriItems>false</EnableDefaultPriItems>
+    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+    <AppxBundlePlatforms>x64|arm64</AppxBundlePlatforms>
+    <Copyright>Evgeniy Nikulov</Copyright>
+    <PackageIcon>sftp.png</PackageIcon>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <AppxBundle>Never</AppxBundle>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="SftpExplorer.Tests\**\*.cs" />
+    <Content Remove="SftpExplorer.Tests\**\*" />
+    <None Remove="SftpExplorer.Tests\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.8249" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.3.1" />
+    <PackageReference Include="CI.Microsoft.Terminal.Wpf" Version="1.25.260303002" GeneratePathProperty="true" ExcludeAssets="all" />
+    <PackageReference Include="SSH.NET" Version="2026.0.0" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="ThirdParty\Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3.csproj" />
+    <Compile Remove="ThirdParty\**\*.cs" />
+    <Page Remove="ThirdParty\**\*.xaml" />
+    <None Remove="ThirdParty\**\*" />
+    <Content Remove="ThirdParty\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Manifest Include="$(ApplicationManifest)" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="Assets\**" />
+    <Content Include="$(PkgCI_Microsoft_Terminal_Wpf)\runtimes\$(RuntimeIdentifier)\native\Microsoft.Terminal.Control.dll">
+      <Link>Microsoft.Terminal.Control.dll</Link>
+      <TargetPath>Microsoft.Terminal.Control.dll</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="ThirdParty\Microsoft.Terminal.WinUI3\TerminalControl.xaml">
+      <Link>Microsoft.Terminal.WinUI3\TerminalControl.xaml</Link>
+      <TargetPath>Microsoft.Terminal.WinUI3\TerminalControl.xaml</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <None Include="Package.appxmanifest" />
+    <None Include="SftpExplorer.sln" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PRIResource Include="Strings\**\*.resw" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Assets\sftp.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <Target Name="CopyTerminalXbfToLooseOutput" AfterTargets="Build">
+    <PropertyGroup>
+      <TerminalXbfSource>$(MSBuildProjectDirectory)\ThirdParty\Microsoft.Terminal.WinUI3\bin\$(Platform)\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\Microsoft.Terminal.WinUI3\TerminalControl.xbf</TerminalXbfSource>
+    </PropertyGroup>
+    <MakeDir Directories="$(TargetDir)Microsoft.Terminal.WinUI3" />
+    <Copy SourceFiles="$(TerminalXbfSource)" DestinationFolder="$(TargetDir)Microsoft.Terminal.WinUI3" SkipUnchangedFiles="true" />
+  </Target>
+</Project>

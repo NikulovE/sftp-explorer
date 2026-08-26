@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <AppxShowAllApps>True</AppxShowAllApps>
+    <UapAppxPackageBuildMode>StoreOnly</UapAppxPackageBuildMode>
+    <Source>C:\Users\Nikul\source\repos\sftp\Assets\SFTP Explorer .png</Source>
+    <SmallTileSource>C:\Users\Nikul\source\repos\sftp\Assets\Small.png</SmallTileSource>
+    <MediumTileSource>C:\Users\Nikul\source\repos\sftp\Assets\Medium.png</MediumTileSource>
+    <WideTileSource>C:\Users\Nikul\source\repos\sftp\Assets\SFTP Explorer .png</WideTileSource>
+    <LargeTileSource>C:\Users\Nikul\source\repos\sftp\Assets\SFTP Explorer .png</LargeTileSource>
+    <AppIconSource>C:\Users\Nikul\source\repos\sftp\Assets\Icon.png</AppIconSource>
+    <SplashScreenSource>C:\Users\Nikul\source\repos\sftp\Assets\SFTP Explorer .png</SplashScreenSource>
+    <PackageLogoSource>C:\Users\Nikul\source\repos\sftp\Assets\SFTP Explorer .png</PackageLogoSource>
+    <AppxBuildConfigurationSelection>x64|arm64</AppxBuildConfigurationSelection>
+    <PackageOptionalProjectsInIdeBuilds>False</PackageOptionalProjectsInIdeBuilds>
+    <BadgeLogoSource>C:\Users\Nikul\source\repos\sftp\Assets\sftp.png</BadgeLogoSource>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Update="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Update="Strings\ru-RU\Resources.resw">
+      <SubType>Designer</SubType>
+    </PRIResource>
+  </ItemGroup>
+</Project>

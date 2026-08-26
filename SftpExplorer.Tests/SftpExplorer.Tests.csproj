@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="SSH.NET" Version="2026.0.0" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.0" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Models\ConnectionGroupSettings.cs" Link="Production\Models\ConnectionGroupSettings.cs" />
+    <Compile Include="..\Models\SavedConnection.cs" Link="Production\Models\SavedConnection.cs" />
+    <Compile Include="..\Services\AtomicJsonFile.cs" Link="Production\Services\AtomicJsonFile.cs" />
+    <Compile Include="..\Services\ConnectionManager.cs" Link="Production\Services\ConnectionManager.cs" />
+    <Compile Include="..\Services\CredentialStore.cs" Link="Production\Services\CredentialStore.cs" />
+    <Compile Include="..\Services\InterprocessFileLock.cs" Link="Production\Services\InterprocessFileLock.cs" />
+    <Compile Include="..\Services\KnownHostStore.cs" Link="Production\Services\KnownHostStore.cs" />
+    <Compile Include="..\Services\LocalPathSafety.cs" Link="Production\Services\LocalPathSafety.cs" />
+    <Compile Include="..\Services\SshClientFactory.cs" Link="Production\Services\SshClientFactory.cs" />
+    <Compile Include="..\Services\SshConnectionSecurity.cs" Link="Production\Services\SshConnectionSecurity.cs" />
+    <Compile Include="..\Services\SshTerminalConnection.cs" Link="Production\Services\SshTerminalConnection.cs" />
+    <Compile Include="..\Services\WindowsCredentialStore.cs" Link="Production\Services\WindowsCredentialStore.cs" />
+    <Compile Include="..\ThirdParty\Microsoft.Terminal.WinUI3\TerminalConnectionBinding.cs" Link="Production\Terminal\TerminalConnectionBinding.cs" />
+    <Compile Include="..\ThirdParty\Microsoft.Terminal.WinUI3\TerminalConnectionLifecycle.cs" Link="Production\Terminal\TerminalConnectionLifecycle.cs" />
+    <Compile Include="..\ThirdParty\Microsoft.Terminal.WinUI3\TerminalRenderBuffer.cs" Link="Production\Terminal\TerminalRenderBuffer.cs" />
+    <Compile Include="..\ThirdParty\Microsoft.Terminal.WinUI3\NativeWindowResizeOrder.cs" Link="Production\Terminal\NativeWindowResizeOrder.cs" />
+    <Compile Include="..\ThirdParty\Microsoft.Terminal.WinUI3\NativeWindowPositionUpdatePolicy.cs" Link="Production\Terminal\NativeWindowPositionUpdatePolicy.cs" />
+    <Compile Include="..\ThirdParty\Microsoft.Terminal.WinUI3\TerminalTheme.cs" Link="Production\Terminal\TerminalTheme.cs" />
+    <Compile Include="..\ThirdParty\Microsoft.Terminal.WinUI3\TerminalThemeDefaults.cs" Link="Production\Terminal\TerminalThemeDefaults.cs" />
+    <Compile Include="..\ThirdParty\Microsoft.Terminal.WinUI3\ITerminalConnection.cs" Link="Production\Terminal\ITerminalConnection.cs" />
+    <Compile Include="..\ThirdParty\Microsoft.Terminal.WinUI3\TerminalOutputEventArgs.cs" Link="Production\Terminal\TerminalOutputEventArgs.cs" />
+  </ItemGroup>
+</Project>

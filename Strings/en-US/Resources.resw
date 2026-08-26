@@ -1,0 +1,970 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" msdata:Ordinal="5" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- Main Window -->
+  <data name="AppTitle.Text" xml:space="preserve">
+    <value>SFTP Explorer</value>
+  </data>
+  <data name="WelcomeTitle.Text" xml:space="preserve">
+    <value>Welcome to SFTP Explorer</value>
+  </data>
+  <data name="WelcomeMessage.Text" xml:space="preserve">
+    <value>Select a saved connection from the left panel or create a new one to get started.</value>
+  </data>
+  <data name="ConnectionsTitle.Text" xml:space="preserve">
+    <value>Connections</value>
+  </data>
+  <data name="ConnectionsSubtitle.Text" xml:space="preserve">
+    <value>Switch between servers</value>
+  </data>
+  <data name="SettingsText.Text" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  
+  <!-- Toolbar -->
+  <data name="BackButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="ForwardButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Forward</value>
+  </data>
+  <data name="UpButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Up one level</value>
+  </data>
+  <data name="RefreshButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="HomeButton" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  
+  <!-- Action Buttons -->
+  <data name="CreateButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="NewFolderItem.Text" xml:space="preserve">
+    <value>New Folder</value>
+  </data>
+  <data name="NewFileItem.Text" xml:space="preserve">
+    <value>New File</value>
+  </data>
+  <data name="UploadButton" xml:space="preserve">
+    <value>Upload</value>
+  </data>
+  <data name="DownloadButton" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="CutButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Cut</value>
+  </data>
+  <data name="CopyButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="PasteButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Paste</value>
+  </data>
+  <data name="RenameButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="DeleteButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="SortButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Sort</value>
+  </data>
+  <data name="TerminalToggleButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Open SSH terminal</value>
+  </data>
+  <data name="TerminalTitle.Text" xml:space="preserve">
+    <value>Terminal</value>
+  </data>
+  <data name="TerminalTitleLabel" xml:space="preserve">
+    <value>Terminal</value>
+  </data>
+  <data name="TerminalClearButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Clear terminal</value>
+  </data>
+  <data name="TerminalSaveButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Save terminal output</value>
+  </data>
+  <data name="TerminalMaximizeButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maximize terminal</value>
+  </data>
+  <data name="TerminalCloseButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Close terminal</value>
+  </data>
+  <data name="TerminalConnecting" xml:space="preserve">
+    <value>Connecting SSH terminal...&#x0D;&#x0A;</value>
+  </data>
+  <data name="TerminalUnavailable" xml:space="preserve">
+    <value>SFTP connection is not available.&#x0D;&#x0A;</value>
+  </data>
+  <data name="TerminalConnectionFailed" xml:space="preserve">
+    <value>SSH terminal connection failed</value>
+  </data>
+  <data name="TerminalOutputSavePickerTitle" xml:space="preserve">
+    <value>Save terminal output</value>
+  </data>
+  <data name="TerminalOutputSaved" xml:space="preserve">
+    <value>Terminal output saved</value>
+  </data>
+  <data name="TerminalOutputSaveFailed" xml:space="preserve">
+    <value>Unable to save terminal output: {0}</value>
+  </data>
+  
+  <!-- Sort Options -->
+  <data name="SortByNameAsc.Text" xml:space="preserve">
+    <value>By name ↑</value>
+  </data>
+  <data name="SortByNameDesc.Text" xml:space="preserve">
+    <value>By name ↓</value>
+  </data>
+  <data name="SortBySizeAsc.Text" xml:space="preserve">
+    <value>By size ↑</value>
+  </data>
+  <data name="SortBySizeDesc.Text" xml:space="preserve">
+    <value>By size ↓</value>
+  </data>
+  <data name="SortByDateAsc.Text" xml:space="preserve">
+    <value>By date ↑</value>
+  </data>
+  <data name="SortByDateDesc.Text" xml:space="preserve">
+    <value>By date ↓</value>
+  </data>
+  
+  <!-- Dialogs -->
+  <data name="UploadPickerTitle" xml:space="preserve">
+    <value>Select files to upload</value>
+  </data>
+  <data name="DownloadFolderPickerTitle" xml:space="preserve">
+    <value>Select a download folder</value>
+  </data>
+  <data name="CreateFolderTitle" xml:space="preserve">
+    <value>Create new folder</value>
+  </data>
+  <data name="CreateFileTitle" xml:space="preserve">
+    <value>Create new file</value>
+  </data>
+  <data name="RenameTitle" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="DeleteTitle" xml:space="preserve">
+    <value>Delete Confirmation</value>
+  </data>
+  <data name="DeleteConfirmation" xml:space="preserve">
+    <value>Are you sure you want to delete the selected items ({0})?</value>
+  </data>
+  <data name="CreateButtonDialog" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="RenameButtonDialog" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="DeleteButtonDialog" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="CancelButton" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="FileNamePlaceholder" xml:space="preserve">
+    <value>File name</value>
+  </data>
+  <data name="NewNamePlaceholder" xml:space="preserve">
+    <value>New name</value>
+  </data>
+  <data name="DefaultFileName" xml:space="preserve">
+    <value>new_file.txt</value>
+  </data>
+  <data name="NewFolder" xml:space="preserve">
+    <value>New Folder</value>
+  </data>
+  
+  <!-- Connection Dialog -->
+  <data name="ConnectDialog.Title" xml:space="preserve">
+    <value>Connect to SFTP Server</value>
+  </data>
+  <data name="ConnectDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Save &amp; Connect</value>
+  </data>
+  <data name="ConnectDialog.CloseButtonText" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ConnectDialog.SecondaryButtonText" xml:space="preserve">
+    <value>Test Connection</value>
+  </data>
+  <data name="TestingConnection" xml:space="preserve">
+    <value>Testing connection...</value>
+  </data>
+  <data name="ConnectingStatusText.Text" xml:space="preserve">
+    <value>Connecting...</value>
+  </data>
+  <data name="ConnectionTestSucceeded" xml:space="preserve">
+    <value>Connection successful</value>
+  </data>
+  <data name="ConnectionTestFailed" xml:space="preserve">
+    <value>Connection failed</value>
+  </data>
+  <data name="ConnectionTestMissingFields" xml:space="preserve">
+    <value>Enter a hostname and username first</value>
+  </data>
+  <data name="ConnectionNameBox.Header" xml:space="preserve">
+    <value>Connection Name</value>
+  </data>
+  <data name="ConnectionNameBox.PlaceholderText" xml:space="preserve">
+    <value>My Server</value>
+  </data>
+  <data name="ConnectionGroupBox.Header" xml:space="preserve">
+    <value>Group (optional)</value>
+  </data>
+  <data name="ConnectionGroupBox.PlaceholderText" xml:space="preserve">
+    <value>Select or create a group</value>
+  </data>
+  <data name="ConnectionGroupLabel" xml:space="preserve">
+    <value>Group (optional)</value>
+  </data>
+  <data name="ConnectionGroupPlaceholder" xml:space="preserve">
+    <value>Select or create a group</value>
+  </data>
+  <data name="ConnectionAppearanceLabel" xml:space="preserve">
+    <value>Connection symbol and color</value>
+  </data>
+  <data name="GroupAppearanceLabel" xml:space="preserve">
+    <value>Group symbol and color</value>
+  </data>
+  <data name="SymbolCodeLabel" xml:space="preserve">
+    <value>Segoe Fluent Icons symbol</value>
+  </data>
+  <data name="SymbolCodePlaceholder" xml:space="preserve">
+    <value>Unicode hex, for example E753</value>
+  </data>
+  <data name="EditConnectionTitle" xml:space="preserve">
+    <value>Edit Connection</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="EditPasswordLabel" xml:space="preserve">
+    <value>Password (leave empty to keep current)</value>
+  </data>
+  <data name="EditPasswordPlaceholder" xml:space="preserve">
+    <value>Enter a new password or leave empty</value>
+  </data>
+  <data name="HostnameBox.Header" xml:space="preserve">
+    <value>Hostname or IP</value>
+  </data>
+  <data name="HostnameBox.PlaceholderText" xml:space="preserve">
+    <value>example.com or 192.168.1.1</value>
+  </data>
+  <data name="PortBox.Header" xml:space="preserve">
+    <value>Port</value>
+  </data>
+  <data name="UsernameBox.Header" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="UsernameBox.PlaceholderText" xml:space="preserve">
+    <value>root</value>
+  </data>
+  <data name="PasswordBox.Header" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="PasswordBox.PlaceholderText" xml:space="preserve">
+    <value>Enter password</value>
+  </data>
+  <data name="ConnectionNotesBox.Header" xml:space="preserve">
+    <value>Notes (optional)</value>
+  </data>
+  <data name="ConnectionNotesBox.PlaceholderText" xml:space="preserve">
+    <value>Add details about this connection</value>
+  </data>
+  <data name="ConnectionNotesLabel" xml:space="preserve">
+    <value>Notes (optional)</value>
+  </data>
+  <data name="ConnectionNotesPlaceholder" xml:space="preserve">
+    <value>Add details about this connection</value>
+  </data>
+  <data name="SaveCredentialsCheckbox.Content" xml:space="preserve">
+    <value>Save password or passphrase</value>
+  </data>
+  <data name="CredentialStorageInfoButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>How password storage works</value>
+  </data>
+  <data name="CredentialStorageInfoButton.AutomationProperties.Name" xml:space="preserve">
+    <value>How password storage works</value>
+  </data>
+  <data name="CredentialStorageInfoText.Text" xml:space="preserve">
+    <value>Saved passwords and key passphrases are stored as SFTP Explorer generic credentials in Windows Credential Manager. Windows encrypts them and makes them available only to your current user. Private key files remain at the selected path. You can view or remove credentials in Control Panel &gt; Credential Manager &gt; Windows Credentials.</value>
+  </data>
+
+  <!-- Connections Panel -->
+  <data name="ConnectionsPanelTitle.Text" xml:space="preserve">
+    <value>Connections</value>
+  </data>
+  <data name="ConnectionsPanelSubtitle.Text" xml:space="preserve">
+    <value>Select a saved connection or create new</value>
+  </data>
+  <data name="NoConnectionsTitle.Text" xml:space="preserve">
+    <value>No saved connections</value>
+  </data>
+  <data name="NoConnectionsMessage.Text" xml:space="preserve">
+    <value>Create your first SFTP connection to get started</value>
+  </data>
+  <data name="EditMenuItem.Text" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="DeleteMenuItem.Text" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="RenameMenuItem" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="OpenMenuItem" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="OpenWithMenuItem" xml:space="preserve">
+    <value>Open with...</value>
+  </data>
+  <data name="RunMenuItem" xml:space="preserve">
+    <value>Run</value>
+  </data>
+  <data name="RunWithSudoMenuItem" xml:space="preserve">
+    <value>Run with sudo</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Download</value>
+  </data>
+  <data name="DownloadMultiple" xml:space="preserve">
+    <value>Download ({0} items)</value>
+  </data>
+  <data name="Cut" xml:space="preserve">
+    <value>Cut</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="Paste" xml:space="preserve">
+    <value>Paste</value>
+  </data>
+  <data name="NewConnectionText.Text" xml:space="preserve">
+    <value>New Connection</value>
+  </data>
+  <data name="UngroupedConnections" xml:space="preserve">
+    <value>Ungrouped</value>
+  </data>
+  <data name="CollapseConnectionGroup" xml:space="preserve">
+    <value>Collapse group</value>
+  </data>
+  <data name="ExpandConnectionGroup" xml:space="preserve">
+    <value>Expand group</value>
+  </data>
+  
+  <!-- Status Messages -->
+  <data name="FileUploaded" xml:space="preserve">
+    <value>File '{0}' uploaded</value>
+  </data>
+  <data name="FileDownloaded" xml:space="preserve">
+    <value>File '{0}' downloaded</value>
+  </data>
+  <data name="FileCreated" xml:space="preserve">
+    <value>File '{0}' created</value>
+  </data>
+  <data name="SelectFilesToDownload" xml:space="preserve">
+    <value>Select files to download</value>
+  </data>
+  <data name="ErrorCreatingFile" xml:space="preserve">
+    <value>Error creating file: {0}</value>
+  </data>
+  <data name="ReadyStatus.Text" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="Ready" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="PreparingDragDrop" xml:space="preserve">
+    <value>Preparing files for drag...</value>
+  </data>
+  <data name="DragReady" xml:space="preserve">
+    <value>Ready! Drag again to copy</value>
+  </data>
+  <data name="DragDropComplete" xml:space="preserve">
+    <value>Download complete</value>
+  </data>
+  <data name="NoConnectionText.Text" xml:space="preserve">
+    <value>No SFTP connection</value>
+  </data>
+  <data name="FolderCreated" xml:space="preserve">
+    <value>Folder '{0}' created</value>
+  </data>
+  <data name="ErrorCreatingFolder" xml:space="preserve">
+    <value>Error creating folder: {0}</value>
+  </data>
+  <data name="ErrorUploading" xml:space="preserve">
+    <value>Error uploading '{0}': {1}</value>
+  </data>
+  <data name="DownloadingFile" xml:space="preserve">
+    <value>Downloading '{0}'</value>
+  </data>
+  <data name="ErrorDownloading" xml:space="preserve">
+    <value>Error downloading '{0}': {1}</value>
+  </data>
+  <data name="ErrorDeleting" xml:space="preserve">
+    <value>Error deleting '{0}': {1}</value>
+  </data>
+  <data name="ItemsDeleted" xml:space="preserve">
+    <value>Items deleted: {0}</value>
+  </data>
+  <data name="ItemsCut" xml:space="preserve">
+    <value>Items cut: {0}</value>
+  </data>
+  <data name="ItemsCopied" xml:space="preserve">
+    <value>Items copied: {0}</value>
+  </data>
+  <data name="Copying" xml:space="preserve">
+    <value>Copying</value>
+  </data>
+  <data name="ItemsMoved" xml:space="preserve">
+    <value>Items moved</value>
+  </data>
+  <data name="ItemsPasted" xml:space="preserve">
+    <value>Items copied</value>
+  </data>
+  <data name="ErrorPasting" xml:space="preserve">
+    <value>Error pasting: {0}</value>
+  </data>
+  <data name="RenamedTo" xml:space="preserve">
+    <value>Renamed to '{0}'</value>
+  </data>
+  <data name="ErrorRenaming" xml:space="preserve">
+    <value>Error renaming: {0}</value>
+  </data>
+  <data name="SortedByNameAsc" xml:space="preserve">
+    <value>Sorted by name (A-Z)</value>
+  </data>
+  <data name="SortedByNameDesc" xml:space="preserve">
+    <value>Sorted by name (Z-A)</value>
+  </data>
+  <data name="SortedBySizeAsc" xml:space="preserve">
+    <value>Sorted by size (↑)</value>
+  </data>
+  <data name="SortedBySizeDesc" xml:space="preserve">
+    <value>Sorted by size (↓)</value>
+  </data>
+  <data name="SortedByDateAsc" xml:space="preserve">
+    <value>Sorted by date (↑)</value>
+  </data>
+  <data name="SortedByDateDesc" xml:space="preserve">
+    <value>Sorted by date (↓)</value>
+  </data>
+  <data name="FileAlreadyOpen" xml:space="preserve">
+    <value>'{0}' already open (working with cache)</value>
+  </data>
+  <data name="LoadingFile" xml:space="preserve">
+    <value>Loading '{0}'...</value>
+  </data>
+  <data name="FileLoadedAutoSync" xml:space="preserve">
+    <value>'{0}' loaded (changes will be automatically uploaded)</value>
+  </data>
+  <data name="ErrorOpeningFile" xml:space="preserve">
+    <value>Error opening file: {0}</value>
+  </data>
+  <data name="FileSyncing" xml:space="preserve">
+    <value>⏳ File syncing: '{0}'...</value>
+  </data>
+  <data name="ChangesSynced" xml:space="preserve">
+    <value>✓ Changes '{0}' uploaded</value>
+  </data>
+  <data name="ErrorUploadingChanges" xml:space="preserve">
+    <value>Error uploading: {0}</value>
+  </data>
+  <data name="OpenedDialogFor" xml:space="preserve">
+    <value>Opened selection dialog for '{0}'</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error: {0}</value>
+  </data>
+  <data name="FilesDownloaded" xml:space="preserve">
+    <value>Files downloaded: {0}</value>
+  </data>
+  <data name="ErrorDownloadingMultiple" xml:space="preserve">
+    <value>Error downloading: {0}</value>
+  </data>
+  <data name="DownloadingProgress" xml:space="preserve">
+    <value>Downloading ({0}/{1}): '{2}'</value>
+  </data>
+  <data name="DownloadingFileNum" xml:space="preserve">
+    <value>Downloading file #{0}: '{1}'</value>
+  </data>
+  <data name="TotalDownloaded" xml:space="preserve">
+    <value>Total: {0}</value>
+  </data>
+  <data name="FileProgress" xml:space="preserve">
+    <value>File {0} of {1}</value>
+  </data>
+  <data name="FilesDownloadedCount" xml:space="preserve">
+    <value>{0} files</value>
+  </data>
+  <data name="ErrorDialogTitle" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ErrorOpeningFileDialog" xml:space="preserve">
+    <value>Failed to open file '{0}':\n{1}</value>
+  </data>
+  <data name="ErrorOpeningDialogSelection" xml:space="preserve">
+    <value>Failed to open selection dialog:\n{0}</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="PropertiesTitle" xml:space="preserve">
+    <value>Properties</value>
+  </data>
+  <data name="PropertiesName" xml:space="preserve">
+    <value>Name: {0}</value>
+  </data>
+  <data name="PropertiesPath" xml:space="preserve">
+    <value>Path: {0}</value>
+  </data>
+  <data name="PropertiesSize" xml:space="preserve">
+    <value>Size: {0}</value>
+  </data>
+  <data name="PropertiesModified" xml:space="preserve">
+    <value>Modified: {0}</value>
+  </data>
+  <data name="PropertiesPermissions" xml:space="preserve">
+    <value>Permissions: {0}</value>
+  </data>
+  <data name="PropertiesType" xml:space="preserve">
+    <value>Type: {0}</value>
+  </data>
+  <data name="PropertiesTypeFolder" xml:space="preserve">
+    <value>Folder</value>
+  </data>
+  <data name="PropertiesTypeFile" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="PropertiesTypeFileSystem" xml:space="preserve">
+    <value>File system</value>
+  </data>
+  <data name="PropertiesCapacity" xml:space="preserve">
+    <value>Capacity: {0}</value>
+  </data>
+  <data name="PropertiesUsedSpace" xml:space="preserve">
+    <value>Used space: {0}</value>
+  </data>
+  <data name="PropertiesFreeSpace" xml:space="preserve">
+    <value>Free space: {0}</value>
+  </data>
+  <data name="FreeSpaceFormat" xml:space="preserve">
+    <value>{0} free of {1}</value>
+  </data>
+  <data name="RefreshContextMenuItem" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="UploadingProgress" xml:space="preserve">
+    <value>Uploading ({0}/{1}): '{2}'</value>
+  </data>
+  <data name="FilesUploaded" xml:space="preserve">
+    <value>{0} file(s) uploaded</value>
+  </data>
+  
+  <!-- Progress indicators -->
+  <data name="SpeedPerSecond" xml:space="preserve">
+    <value>{0}/s</value>
+  </data>
+  <data name="TimeRemaining" xml:space="preserve">
+    <value>ETA: {0}</value>
+  </data>
+  <data name="LoadedItems" xml:space="preserve">
+    <value>Loaded {0} items</value>
+  </data>
+  <data name="ItemCount" xml:space="preserve">
+    <value>{0} items</value>
+  </data>
+  <data name="ItemCountSelected" xml:space="preserve">
+    <value>{0} of {1} selected</value>
+  </data>
+  
+  <!-- Column Headers -->
+  <data name="ColumnName.Text" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ColumnFreeSpace.Text" xml:space="preserve">
+    <value>Free space</value>
+  </data>
+  <data name="ColumnPermissions.Text" xml:space="preserve">
+    <value>Permissions</value>
+  </data>
+  <data name="ColumnOwner.Text" xml:space="preserve">
+    <value>Owner</value>
+  </data>
+  <data name="ColumnGroup.Text" xml:space="preserve">
+    <value>Group</value>
+  </data>
+  <data name="ColumnModified.Text" xml:space="preserve">
+    <value>Modified</value>
+  </data>
+  <data name="ColumnSize.Text" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  
+  <!-- Toolbar tooltips -->
+  <data name="UploadToolbarButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Upload files</value>
+  </data>
+  <data name="DownloadToolbarButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Download selected</value>
+  </data>
+  
+  <!-- Tab Context Menu -->
+  <data name="TabContextMenuCloseTab" xml:space="preserve">
+    <value>Close tab</value>
+  </data>
+  <data name="TabContextMenuCloseOtherTabs" xml:space="preserve">
+    <value>Close other tabs</value>
+  </data>
+  <data name="TabContextMenuCloseTabsToTheRight" xml:space="preserve">
+    <value>Close tabs to the right</value>
+  </data>
+  <data name="TabContextMenuDuplicateTab" xml:space="preserve">
+    <value>Duplicate tab</value>
+  </data>
+  <data name="CalculatingFiles" xml:space="preserve">
+    <value>Calculating files...</value>
+  </data>
+  <data name="NoReadPermission" xml:space="preserve">
+    <value>No read permission for "{0}"</value>
+  </data>
+  <data name="NoWritePermission" xml:space="preserve">
+    <value>No write permission for folder "{0}"</value>
+  </data>
+  <data name="SomeFilesNoReadPermission" xml:space="preserve">
+    <value>Cannot download {0} item(s) due to insufficient permissions</value>
+  </data>
+  <data name="PermissionDenied" xml:space="preserve">
+    <value>Permission denied</value>
+  </data>
+  <data name="InsufficientPermissions" xml:space="preserve">
+    <value>Insufficient permissions</value>
+  </data>
+  <data name="OpenFolderWithSudoPrompt" xml:space="preserve">
+    <value>You do not have permission to open "{0}". Open this folder with sudo?</value>
+  </data>
+  <data name="OpenFileWithSudoPrompt" xml:space="preserve">
+    <value>You do not have permission to read "{0}". Open this file read-only with sudo?</value>
+  </data>
+  <data name="OpenWithSudoButton" xml:space="preserve">
+    <value>Open with sudo</value>
+  </data>
+  <data name="OpenedFileWithSudoReadOnly" xml:space="preserve">
+    <value>Opened read-only with sudo: {0}</value>
+  </data>
+  <data name="SudoFolderInvalidResponse" xml:space="preserve">
+    <value>The server returned an invalid response while opening the folder with sudo.</value>
+  </data>
+  <data name="ContinueDownloadingRemaining" xml:space="preserve">
+    <value>Continue downloading remaining files?</value>
+  </data>
+  <data name="ContinueButton" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="EnterPassword" xml:space="preserve">
+    <value>Enter password</value>
+  </data>
+  <data name="EnterPasswordLabel" xml:space="preserve">
+    <value>Enter password</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>Password required to connect</value>
+  </data>
+  <data name="PasswordFor" xml:space="preserve">
+    <value>Password for</value>
+  </data>
+  <data name="Connect" xml:space="preserve">
+    <value>Connect</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="DeleteFailedTitle" xml:space="preserve">
+    <value>Deletion incomplete</value>
+  </data>
+  <data name="DeleteFailedMessage" xml:space="preserve">
+    <value>The following items could not be deleted due to errors or insufficient permissions:\n{0}</value>
+  </data>
+  <data name="UsernameLabel" xml:space="preserve">
+    <value>Username</value>
+  </data>
+  <data name="PasswordLabel" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="EnterUsernameLabel" xml:space="preserve">
+    <value>Enter username</value>
+  </data>
+  <data name="ConnectionFailedTitle" xml:space="preserve">
+    <value>Connection Failed</value>
+  </data>
+  <data name="ConnectionFailedMessage" xml:space="preserve">
+    <value>Failed to connect to {0}:</value>
+  </data>
+  <data name="InvalidURLTitle" xml:space="preserve">
+    <value>Invalid URL</value>
+  </data>
+  <data name="InvalidURLMessage" xml:space="preserve">
+    <value>Failed to parse URL:</value>
+  </data>
+  <data name="Deleting" xml:space="preserve">
+    <value>Deleting...</value>
+  </data>
+  <data name="Canceling" xml:space="preserve">
+    <value>Canceling operation...</value>
+  </data>
+  <data name="OperationCanceled" xml:space="preserve">
+    <value>Operation canceled</value>
+  </data>
+  <data name="DragTransferCanceled" xml:space="preserve">
+    <value>Drag-and-drop transfer canceled</value>
+  </data>
+  <data name="DragTransferFailed" xml:space="preserve">
+    <value>No files could be downloaded</value>
+  </data>
+  <data name="DragTransferFailedWithError" xml:space="preserve">
+    <value>Drag-and-drop transfer failed: {0}</value>
+  </data>
+  <data name="DragTransferCompleteWithSkipped" xml:space="preserve">
+    <value>Transfer prepared; skipped {0} inaccessible item(s)</value>
+  </data>
+  <data name="DragPermissionErrorDescription" xml:space="preserve">
+    <value>This item cannot be downloaded because the connected user does not have read access. Choose how to continue.</value>
+  </data>
+  <data name="DragTransferErrorTitle" xml:space="preserve">
+    <value>Download error</value>
+  </data>
+  <data name="DragTransferErrorDescription" xml:space="preserve">
+    <value>This item could not be downloaded. Choose how to continue.</value>
+  </data>
+  <data name="DragOptionSkipItem" xml:space="preserve">
+    <value>Skip this item</value>
+  </data>
+  <data name="DragOptionSkipAllPermissionErrors" xml:space="preserve">
+    <value>Skip all permission errors in this transfer</value>
+  </data>
+  <data name="DragOptionTrySudo" xml:space="preserve">
+    <value>Try sudo: grant this user read access using ACL, then retry</value>
+  </data>
+  <data name="DragOptionRetry" xml:space="preserve">
+    <value>Retry this item</value>
+  </data>
+  <data name="DragOptionSkipAllSimilarErrors" xml:space="preserve">
+    <value>Skip all similar errors in this transfer</value>
+  </data>
+  <data name="DragOptionCancelTransfer" xml:space="preserve">
+    <value>Cancel the entire transfer</value>
+  </data>
+  <data name="DragSudoFixInProgress" xml:space="preserve">
+    <value>Trying to grant read access with sudo: {0}</value>
+  </data>
+  <data name="DragSudoFixFailed" xml:space="preserve">
+    <value>sudo could not grant access: {0}</value>
+  </data>
+  <data name="DragSudoNoConnection" xml:space="preserve">
+    <value>SSH connection information is unavailable</value>
+  </data>
+  <data name="DragSudoInvalidUsername" xml:space="preserve">
+    <value>The SSH username cannot be used safely in an ACL command</value>
+  </data>
+  <data name="DragSudoExitCode" xml:space="preserve">
+    <value>sudo/setfacl exited with code {0}</value>
+  </data>
+  <data name="DragTransferIncompleteTitle" xml:space="preserve">
+    <value>Transfer completed with skipped items</value>
+  </data>
+  <data name="DragTransferIncompleteMessage" xml:space="preserve">
+    <value>{0} item(s) were skipped. Accessible files were copied.&#x0A;&#x0A;{1}</value>
+  </data>
+  <data name="DragSkippedMoreItems" xml:space="preserve">
+    <value>... and {0} more item(s)</value>
+  </data>
+  <data name="DragPreparedDataProvided" xml:space="preserve">
+    <value>Prepared folder handed to Windows</value>
+  </data>
+  <data name="DragPreparationAlreadyRunning" xml:space="preserve">
+    <value>Folder preparation is still in progress. Wait for the ready message.</value>
+  </data>
+  <data name="DragPreparationReady" xml:space="preserve">
+    <value>Folder is ready. Drag it to the destination again.</value>
+  </data>
+  <data name="DragPreparationReadyWithSkipped" xml:space="preserve">
+    <value>Folder is ready with {0} skipped item(s). Drag it to the destination again.</value>
+  </data>
+  <data name="DragPreparationReadyTitle" xml:space="preserve">
+    <value>Folder is ready to copy</value>
+  </data>
+  <data name="DragPreparationReadyMessage" xml:space="preserve">
+    <value>The folder has been downloaded to the temporary cache. Drag the same selection to the destination again; the next drop will start copying immediately.</value>
+  </data>
+  <data name="DragPreparationReadyWithSkippedMessage" xml:space="preserve">
+    <value>The folder has been downloaded to the temporary cache with {0} skipped item(s). Drag the same selection to the destination again; the next drop will copy all accessible files.&#x0A;&#x0A;{1}</value>
+  </data>
+  <data name="DragPreparationFailedTitle" xml:space="preserve">
+    <value>Folder preparation failed</value>
+  </data>
+  <data name="DragPreparationFailedMessage" xml:space="preserve">
+    <value>No items were prepared. Nothing was sent to the destination.</value>
+  </data>
+  <data name="DragPreparationFailedWithErrorMessage" xml:space="preserve">
+    <value>The folder could not be prepared. Nothing was sent to the destination.&#x0A;&#x0A;{0}</value>
+  </data>
+  <data name="DragLargeFolderPreparingTitle" xml:space="preserve">
+    <value>Large folder preparation started</value>
+  </data>
+  <data name="DragLargeFolderPreparingMessage" xml:space="preserve">
+    <value>This first gesture prepares the folder locally. Watch the progress below; when the ready message appears, drag the folder to the destination again.</value>
+  </data>
+  <data name="OpenSftpConnection" xml:space="preserve">
+    <value>Open SFTP connection</value>
+  </data>
+  <data name="OpenSshTerminal" xml:space="preserve">
+    <value>Open SSH terminal</value>
+  </data>
+  <data name="UnknownHostKeyTitle" xml:space="preserve">
+    <value>Unknown SSH host key</value>
+  </data>
+  <data name="TrustHostKeyButton" xml:space="preserve">
+    <value>Trust and connect</value>
+  </data>
+  <data name="HostKeyChangedTitle" xml:space="preserve">
+    <value>SSH host key changed — connection blocked</value>
+  </data>
+  <data name="ForgetHostKeyButton" xml:space="preserve">
+    <value>Forget saved host key</value>
+  </data>
+  <data name="HostKeyRemovedTitle" xml:space="preserve">
+    <value>Saved host key removed</value>
+  </data>
+  <data name="HostKeyRemoveFailedTitle" xml:space="preserve">
+    <value>Could not remove saved host key</value>
+  </data>
+  <data name="ConnectionDataErrorTitle" xml:space="preserve">
+    <value>Saved connection data error</value>
+  </data>
+  <data name="SavedConnectionsUnavailableTitle" xml:space="preserve">
+    <value>Saved connections are unavailable</value>
+  </data>
+  <data name="SavedConnectionsErrorTitle" xml:space="preserve">
+    <value>Saved connections error</value>
+  </data>
+  <data name="SavedConnectionsUnavailableSubtitle" xml:space="preserve">
+    <value>Saved connections are unavailable</value>
+  </data>
+  <data name="HostKeyFirstUseMessage" xml:space="preserve">
+    <value>This is the first connection to {0}:{1}. Verify this fingerprint with the server administrator before trusting it.&#x0A;{2}  {3}</value>
+  </data>
+  <data name="HostKeyChangedFollowUpMessage" xml:space="preserve">
+    <value>Forgetting the saved key will not connect to or trust the replacement key. After independently verifying it, start a new connection attempt.</value>
+  </data>
+  <data name="HostKeyChangedDetailsMessage" xml:space="preserve">
+    <value>SECURITY WARNING: the SSH host key for {0}:{1} has changed. The connection was blocked because this can indicate a server replacement or a man-in-the-middle attack.&#x0A;&#x0A;Expected: {2} SHA256:{3}&#x0A;Received: {4} SHA256:{5}</value>
+  </data>
+  <data name="HostKeyForgottenMessage" xml:space="preserve">
+    <value>No connection was made. Verify the new fingerprint, then connect again to explicitly trust it.</value>
+  </data>
+  <data name="SavedConnectionsLoadErrorMessage" xml:space="preserve">
+    <value>Saved connections could not be loaded. The existing files were left unchanged.</value>
+  </data>
+  <data name="GroupStateSaveErrorMessage" xml:space="preserve">
+    <value>The group state could not be saved.</value>
+  </data>
+  <data name="ConnectionSaveErrorMessage" xml:space="preserve">
+    <value>The connection could not be saved. Its previous data was preserved.</value>
+  </data>
+  <data name="ConnectionDeleteErrorMessage" xml:space="preserve">
+    <value>The connection could not be deleted. Its profile and credential were preserved when possible.</value>
+  </data>
+  <data name="ConnectionTestTimedOut" xml:space="preserve">
+    <value>The connection test timed out after 30 seconds.</value>
+  </data>
+  <data name="AuthenticationModeBox.Header" xml:space="preserve"><value>Authentication</value></data>
+  <data name="PasswordAuthenticationItem.Content" xml:space="preserve"><value>Password</value></data>
+  <data name="PrivateKeyAuthenticationItem.Content" xml:space="preserve"><value>Private key</value></data>
+  <data name="PrivateKeyHelpText.Text" xml:space="preserve"><value>Select an OpenSSH, PEM, or supported private key file. The key file is not copied or stored by SFTP Explorer.</value></data>
+  <data name="PrivateKeyPathBox.Header" xml:space="preserve"><value>Private key file</value></data>
+  <data name="PrivateKeyPathBox.PlaceholderText" xml:space="preserve"><value>Select or enter the path to a private key</value></data>
+  <data name="BrowsePrivateKeyButton.Content" xml:space="preserve"><value>Browse...</value></data>
+  <data name="PrivateKeyPassphraseBox.Header" xml:space="preserve"><value>Key passphrase (optional)</value></data>
+  <data name="PrivateKeyPassphraseBox.PlaceholderText" xml:space="preserve"><value>Leave empty for an unencrypted key</value></data>
+  <data name="EditPassphraseLabel" xml:space="preserve"><value>Key passphrase (leave empty to keep current)</value></data>
+  <data name="EditPassphrasePlaceholder" xml:space="preserve"><value>Enter a new passphrase only to replace the saved one</value></data>
+  <data name="PrivateKeyRequired" xml:space="preserve"><value>Select a private key file</value></data>
+  <data name="PrivateKeyNotFound" xml:space="preserve"><value>The private key file was not found</value></data>
+  <data name="PrivateKeyPickerTitle" xml:space="preserve"><value>Select a private key</value></data>
+  <data name="ConnectToProfileTitle" xml:space="preserve"><value>Connect to {0}</value></data>
+  <data name="PassphrasePromptHelp" xml:space="preserve"><value>Enter the key passphrase, or leave it empty if the key is not encrypted.</value></data>
+  <data name="PrivateKeyPassphraseLabel" xml:space="preserve"><value>Key passphrase</value></data>
+  <data name="NewConnectionButton.AutomationProperties.Name" xml:space="preserve"><value>New Connection</value></data>
+  <data name="ConnectionProfileSaveFailedTitle" xml:space="preserve"><value>Connection not saved</value></data>
+  <data name="ConnectionProfileSaveFailedMessage" xml:space="preserve"><value>The connection is active, but its profile or password could not be saved. Check access to AppData and Windows Credential Manager.</value></data>
+  <data name="ConnectionProfileDeleteFailedTitle" xml:space="preserve"><value>Connection not deleted</value></data>
+  <data name="ConnectionProfileDeleteFailedMessage" xml:space="preserve"><value>The connection was kept because its profile could not be saved safely. Check access to AppData and try again.</value></data>
+  <data name="UploadCompletedWithErrors" xml:space="preserve"><value>{0} of {1} items uploaded. Failed: {2}</value></data>
+  <data name="DeleteCompletedWithErrors" xml:space="preserve"><value>Delete completed with {0} failed item(s).</value></data>
+</root>

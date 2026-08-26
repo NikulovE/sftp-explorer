@@ -1,0 +1,14 @@
+bin/*
+obj/*
+**/bin/
+**/obj/
+/TestResults/
+/.vs
+/.vscode
+# MSIX Package artifacts
+AppPackages/
+BundleArtifacts/
+*.msixupload
+*.msixbundle
+*.appxsym
+*.pfx
