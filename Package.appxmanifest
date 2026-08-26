@@ -8,7 +8,7 @@
   <Identity
     Name="5924EvgeniyNikulov.SFTPExplorer"
     Publisher="CN=6B0C8669-51CF-41B7-8B9B-DECF50BF5090"
-    Version="2.0.15.0" />
+    Version="2.0.40.0" />
 
   <Properties>
     <DisplayName>SFTP Explorer</DisplayName>

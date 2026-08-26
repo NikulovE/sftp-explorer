@@ -12,9 +12,8 @@ variables:
   packageMinor: 0
   # Microsoft Store reserves the fourth component for Store use. A pipeline
   # counter in the third component keeps every submission monotonic and unique.
-  # 2.0.15.0 is the locally validated baseline produced with this change.
-  # CI starts at the next Store version to avoid ever reusing that identity.
-  packageBuild: $[counter('sftp-explorer-store-2.0', 16)]
+  # The next CI build must be version 2.0.40.0; subsequent runs increment it.
+  packageBuild: $[counter('sftp-explorer-store-2.0', 40)]
   packageRevision: 0
   # Pinned linux/amd64 manifest from Docker Hub (2026-08-10). Update explicitly
   # after reviewing upstream changes; never replace this with a floating tag.

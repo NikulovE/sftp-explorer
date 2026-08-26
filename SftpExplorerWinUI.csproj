@@ -22,9 +22,9 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\sftp.ico</ApplicationIcon>
     <AssemblyName>SftpExplorer</AssemblyName>
-    <Version>2.0.15</Version>
-    <AssemblyVersion>2.0.15.0</AssemblyVersion>
-    <FileVersion>2.0.15.0</FileVersion>
+    <Version>2.0.40</Version>
+    <AssemblyVersion>2.0.40.0</AssemblyVersion>
+    <FileVersion>2.0.40.0</FileVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateTemporaryStoreCertificate>false</GenerateTemporaryStoreCertificate>

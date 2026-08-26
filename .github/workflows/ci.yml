@@ -31,11 +31,10 @@ env:
   # Microsoft Store reserves the fourth component for Store use. The third
   # component must stay monotonic across every submission. GitHub Actions has
   # no pipeline counter, so github.run_number (per workflow) is used with an
-  # offset: run 1 produces 2.0.16.0, the first version after the locally
-  # validated 2.0.15.0 baseline. If this workflow file is ever deleted and
-  # recreated, bump packageBuildOffset so the first new version stays above
-  # the last Store-submitted version.
-  packageBuildOffset: 15
+  # Offset 36 makes the next run (#4) version 2.0.40.0. If this workflow file
+  # is ever deleted and recreated, bump packageBuildOffset so the first new
+  # version stays above the last Store-submitted version.
+  packageBuildOffset: 36
   # Pinned linux/amd64 manifest from Docker Hub (2026-08-10). Update explicitly
   # after reviewing upstream changes; never replace this with a floating tag.
   sftpTestImage: atmoz/sftp@sha256:81fa92512bf8ead4849f33c1c153907b86d32d77704d1c62a9c70b4316ae9e50
