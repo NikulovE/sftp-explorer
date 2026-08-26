@@ -344,11 +344,27 @@ jobs:
       - name: Build Store package
         shell: pwsh
         run: |
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          if (!(Test-Path -LiteralPath $vswhere -PathType Leaf)) {
+            throw "Visual Studio locator is missing: $vswhere"
+          }
+
+          $msbuild = @(& $vswhere -latest -products * -requires Microsoft.Component.MSBuild `
+            -find 'MSBuild\Current\Bin\amd64\MSBuild.exe') | Select-Object -First 1
+          if (!$msbuild -or !(Test-Path -LiteralPath $msbuild -PathType Leaf)) {
+            throw 'The required 64-bit Visual Studio MSBuild executable was not found.'
+          }
+
           $packageDir = Join-Path $env:RUNNER_TEMP "StorePackages/$env:BuildPlatform/"
-          dotnet msbuild SftpExplorerWinUI.csproj `
-            -restore `
+          $runtimeIdentifier = "win-$($env:BuildPlatform.ToLowerInvariant())"
+          & $msbuild SftpExplorerWinUI.csproj `
+            /m `
+            /nr:false `
+            /restore `
+            /t:Publish `
             "-p:Configuration=$($env:buildConfiguration)" `
             "-p:Platform=$env:BuildPlatform" `
+            "-p:RuntimeIdentifier=$runtimeIdentifier" `
             -p:GenerateAppxPackageOnBuild=true `
             "-p:AppxPackageDir=$packageDir" `
             -p:UapAppxPackageBuildMode=StoreUpload `
@@ -360,6 +376,9 @@ jobs:
             "-p:Version=$env:StorePackageVersion" `
             "-p:AssemblyVersion=$env:StorePackageVersion" `
             "-p:FileVersion=$env:StorePackageVersion"
+          if ($LASTEXITCODE -ne 0) {
+            throw "Visual Studio MSBuild failed with exit code $LASTEXITCODE."
+          }
 
       - name: Validate upload, symbols, version, architecture, and payload
         shell: pwsh
