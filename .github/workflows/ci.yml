@@ -268,6 +268,8 @@ jobs:
     name: Publish combined code coverage
     needs: [tests-linux, tests-windows]
     runs-on: ubuntu-24.04
+    permissions:
+      id-token: write
     steps:
       - uses: actions/download-artifact@v7
         with:
@@ -295,10 +297,13 @@ jobs:
           }
           Write-Host "Publishing the staged Linux and Windows coverage reports."
 
-      # Optional: push to Codecov instead of (or in addition to) the artifact.
-      # - uses: codecov/codecov-action@v4
-      #   with:
-      #     files: coverage/linux/CoverageLinux/coverage.cobertura.xml,coverage/windows/CoverageWindows/coverage.cobertura.xml
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          use_oidc: true
+          disable_search: true
+          files: coverage/linux/CoverageLinux/coverage.cobertura.xml,coverage/windows/CoverageWindows/coverage.cobertura.xml
+          fail_ci_if_error: false
 
       - name: Upload combined coverage artifact
         uses: actions/upload-artifact@v6
