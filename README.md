@@ -121,6 +121,10 @@ CI runs on Azure Pipelines (`.NET 10`, Ubuntu 24.04) with TRX results and Cobert
 - The app performs **TOFU host-key pinning**: the first fingerprint you accept is remembered; any later mismatch aborts the connection with a detailed warning showing both fingerprints.
 - Remote uploads use staging + backup transactions so interrupted transfers do not corrupt existing files.
 
+## Support the project
+
+SFTP Explorer is free and open source. If it saves you time and you would like to support its maintenance, see the optional [support options](SUPPORT.md). All application features remain available to everyone.
+
 ## License
 
 This project is licensed under the [GNU General Public License v3.0](LICENSE).
