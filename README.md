@@ -2,7 +2,7 @@
 
 [![CI/CD](https://github.com/NikulovE/sftp-explorer/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/NikulovE/sftp-explorer/actions/workflows/ci.yml?query=branch%3Amain)
 [![Tests](https://img.shields.io/github/actions/workflow/status/NikulovE/sftp-explorer/ci.yml?branch=main&label=tests)](https://github.com/NikulovE/sftp-explorer/actions/workflows/ci.yml?query=branch%3Amain)
-[![Code coverage](https://img.shields.io/codecov/c/github/NikulovE/sftp-explorer/main)](https://codecov.io/gh/NikulovE/sftp-explorer)
+[![Code coverage](https://img.shields.io/codecov/c/github/NikulovE/sftp-explorer/main)](https://app.codecov.io/gh/NikulovE/sftp-explorer)
 
 A modern, fast **SFTP client for Windows 11** built with [WinUI 3](https://github.com/microsoft/winui) and [.NET 10](https://dotnet.microsoft.com/). It combines a fluent file manager with an integrated SSH terminal, drag-and-drop transfers, and solid security practices — all in a native-feeling Windows app.
 
@@ -100,7 +100,7 @@ $env:SFTP_TEST_HOST_KEY_SHA256 = "<fingerprint>"
 dotnet test SftpExplorer.Tests/SftpExplorer.Tests.csproj -c Release
 ```
 
-GitHub Actions runs the Linux and Windows suites, publishes TRX results and uploads their Cobertura reports to [Codecov](https://codecov.io/gh/NikulovE/sftp-explorer).
+GitHub Actions runs the Linux and Windows suites, publishes TRX results and uploads their Cobertura reports to [Codecov](https://app.codecov.io/gh/NikulovE/sftp-explorer).
 
 ## Project structure
 

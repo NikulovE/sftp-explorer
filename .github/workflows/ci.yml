@@ -268,8 +268,6 @@ jobs:
     name: Publish combined code coverage
     needs: [tests-linux, tests-windows]
     runs-on: ubuntu-24.04
-    permissions:
-      id-token: write
     steps:
       - uses: actions/download-artifact@v7
         with:
@@ -300,10 +298,10 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
-          use_oidc: true
+          token: ${{ secrets.CODECOV_TOKEN }}
           disable_search: true
           files: coverage/linux/CoverageLinux/coverage.cobertura.xml,coverage/windows/CoverageWindows/coverage.cobertura.xml
-          fail_ci_if_error: false
+          fail_ci_if_error: true
 
       - name: Upload combined coverage artifact
         uses: actions/upload-artifact@v6
