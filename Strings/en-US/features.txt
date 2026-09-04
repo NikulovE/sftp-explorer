@@ -1,0 +1,9 @@
+Secure SFTP transfers over SSH
+Multiple saved connections
+Encrypted local credential storage
+Tabbed server sessions
+Drag-and-drop file operations
+Remote file editing with automatic sync
+Integrated SSH terminal
+Inline command prediction
+File permissions and symlink support

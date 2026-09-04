@@ -188,6 +188,13 @@ public sealed class SshClientFactory
     private static void ConfigureClient(BaseClient client)
     {
         client.KeepAliveInterval = TimeSpan.FromSeconds(30);
+        if (client is SftpClient sftpClient)
+        {
+            // The SSH.NET default is conservative. A larger packet substantially
+            // reduces request/response overhead for high-latency folder transfers
+            // without changing transfer semantics or opening unbounded buffers.
+            sftpClient.BufferSize = 256 * 1024;
+        }
     }
 
     private static string NormalizeSha256Fingerprint(string? fingerprint)

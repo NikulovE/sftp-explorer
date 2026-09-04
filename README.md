@@ -114,7 +114,8 @@ GitHub Actions runs the Linux and Windows suites, publishes TRX results and uplo
 ├── Services/                       # Connection manager, credential & host-key stores,
 │                                   #   SSH client factory, terminal connection, file locks…
 ├── Helpers/                        # Localization and other helpers
-├── Strings/en-US|ru-RU/            # Localized resources (.resw)
+├── Strings/<locale>/               # Localized resources: en-US, ru-RU, zh-CN, zh-TW,
+│                                   #   es-ES, es-MX, pt-PT, pt-BR, id-ID (.resw)
 ├── Microsoft.Terminal.WinUI3/             # Git submodule: WinUI 3 port of the Microsoft Terminal control
 └── SftpExplorer.Tests/             # xUnit unit + integration tests
 ```

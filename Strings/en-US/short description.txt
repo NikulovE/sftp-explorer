@@ -1,0 +1,1 @@
+A modern SFTP client for Windows 11 with secure SSH transfers, tabs, drag-and-drop, remote editing, and an integrated terminal.

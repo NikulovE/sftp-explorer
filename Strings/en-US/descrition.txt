@@ -1,0 +1,23 @@
+SFTP Explorer is a focused, modern file manager for working with remote servers over secure SFTP and SSH connections.
+Requirements: .NET Desktop Runtime (automatically installed on first launch).
+Browse remote files in a clean Windows 11 interface, move files with drag-and-drop, and manage more than one server in a tabbed workspace. Open remote documents for editing and let SFTP Explorer upload changes automatically when you save.
+
+Built for everyday server work
+
+- Secure SFTP transfers over SSH
+- Multiple saved connections with encrypted local password storage
+- Tabbed sessions for working with several servers at once
+- Fast remote browsing with breadcrumbs, sorting, and file details
+- Upload and download files and folders with progress feedback
+- Drag-and-drop file operations
+- Remote file actions: create, rename, copy, move, delete, and manage permissions
+- Open and edit remote files with automatic synchronization
+- Integrated SSH terminal in the same workspace
+- Inline command prediction based on the current remote user's shell history
+- Symlink-aware navigation and server-side file workflows
+
+SFTP Explorer keeps connection credentials on your Windows device and uses them only to connect to the servers you choose. It does not require a third-party cloud account or route your files through an external service.
+
+Designed for developers, system administrators, IT professionals, and anyone who needs a dependable graphical SFTP client on Windows 11.
+
+This application is an open-source project, so, you can verified code, that will work with your critical data.

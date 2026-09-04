@@ -1,0 +1,981 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" msdata:Ordinal="5" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- Main Window -->
+  <data name="AppTitle.Text" xml:space="preserve">
+    <value>Penjelajah SFTP</value>
+  </data>
+  <data name="WelcomeTitle.Text" xml:space="preserve">
+    <value>Selamat datang di Penjelajah SFTP</value>
+  </data>
+  <data name="WelcomeMessage.Text" xml:space="preserve">
+    <value>Pilih koneksi tersimpan dari panel kiri atau buat koneksi baru untuk memulai.</value>
+  </data>
+  <data name="ConnectionsTitle.Text" xml:space="preserve">
+    <value>Koneksi</value>
+  </data>
+  <data name="ConnectionsSubtitle.Text" xml:space="preserve">
+    <value>Beralih antar server</value>
+  </data>
+  <data name="SettingsText.Text" xml:space="preserve">
+    <value>Pengaturan</value>
+  </data>
+  
+  <!-- Toolbar -->
+  <data name="BackButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Kembali</value>
+  </data>
+  <data name="ForwardButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maju</value>
+  </data>
+  <data name="UpButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Naik satu tingkat</value>
+  </data>
+  <data name="RefreshButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Segarkan</value>
+  </data>
+  <data name="HomeButton" xml:space="preserve">
+    <value>Rumah</value>
+  </data>
+  
+  <!-- Action Buttons -->
+  <data name="CreateButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Buat</value>
+  </data>
+  <data name="NewFolderItem.Text" xml:space="preserve">
+    <value>Folder Baru</value>
+  </data>
+  <data name="NewFileItem.Text" xml:space="preserve">
+    <value>Berkas Baru</value>
+  </data>
+  <data name="UploadButton" xml:space="preserve">
+    <value>Unggah</value>
+  </data>
+  <data name="DownloadButton" xml:space="preserve">
+    <value>Unduh</value>
+  </data>
+  <data name="CutButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Potong</value>
+  </data>
+  <data name="CopyButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Salin</value>
+  </data>
+  <data name="PasteButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Tempel</value>
+  </data>
+  <data name="RenameButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Ganti nama</value>
+  </data>
+  <data name="DeleteButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Hapus</value>
+  </data>
+  <data name="SortButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Sortir</value>
+  </data>
+  <data name="TerminalToggleButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Buka terminal SSH</value>
+  </data>
+  <data name="TerminalTitle.Text" xml:space="preserve">
+    <value>Terminal</value>
+  </data>
+  <data name="TerminalTitleLabel" xml:space="preserve">
+    <value>Terminal</value>
+  </data>
+  <data name="TerminalClearButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Hapus terminal</value>
+  </data>
+  <data name="TerminalSaveButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Simpan keluaran terminal</value>
+  </data>
+  <data name="TerminalMaximizeButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Maksimalkan terminal</value>
+  </data>
+  <data name="TerminalCloseButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Tutup terminalnya</value>
+  </data>
+  <data name="TerminalConnecting" xml:space="preserve">
+    <value>Menghubungkan terminal SSH...</value>
+  </data>
+  <data name="TerminalUnavailable" xml:space="preserve">
+    <value>Koneksi SFTP tidak tersedia.
+</value>
+  </data>
+  <data name="TerminalConnectionFailed" xml:space="preserve">
+    <value>Koneksi terminal SSH gagal</value>
+  </data>
+  <data name="TerminalOutputSavePickerTitle" xml:space="preserve">
+    <value>Simpan keluaran terminal</value>
+  </data>
+  <data name="TerminalOutputSaved" xml:space="preserve">
+    <value>Keluaran terminal disimpan</value>
+  </data>
+  <data name="TerminalOutputSaveFailed" xml:space="preserve">
+    <value>Tidak dapat menyimpan keluaran terminal: {0}</value>
+  </data>
+  
+  <!-- Sort Options -->
+  <data name="SortByNameAsc.Text" xml:space="preserve">
+    <value>Berdasarkan nama ↑</value>
+  </data>
+  <data name="SortByNameDesc.Text" xml:space="preserve">
+    <value>Dengan nama ↓</value>
+  </data>
+  <data name="SortBySizeAsc.Text" xml:space="preserve">
+    <value>Berdasarkan ukuran ↑</value>
+  </data>
+  <data name="SortBySizeDesc.Text" xml:space="preserve">
+    <value>Berdasarkan ukuran ↓</value>
+  </data>
+  <data name="SortByDateAsc.Text" xml:space="preserve">
+    <value>Berdasarkan tanggal ↑</value>
+  </data>
+  <data name="SortByDateDesc.Text" xml:space="preserve">
+    <value>Berdasarkan tanggal ↓</value>
+  </data>
+  
+  <!-- Dialogs -->
+  <data name="UploadPickerTitle" xml:space="preserve">
+    <value>Pilih file yang akan diunggah</value>
+  </data>
+  <data name="DownloadFolderPickerTitle" xml:space="preserve">
+    <value>Pilih folder unduhan</value>
+  </data>
+  <data name="CreateFolderTitle" xml:space="preserve">
+    <value>Buat folder baru</value>
+  </data>
+  <data name="CreateFileTitle" xml:space="preserve">
+    <value>Buat file baru</value>
+  </data>
+  <data name="RenameTitle" xml:space="preserve">
+    <value>Ganti nama</value>
+  </data>
+  <data name="DeleteTitle" xml:space="preserve">
+    <value>Hapus Konfirmasi</value>
+  </data>
+  <data name="DeleteConfirmation" xml:space="preserve">
+    <value>Apakah Anda yakin ingin menghapus item yang dipilih ({0})?</value>
+  </data>
+  <data name="CreateButtonDialog" xml:space="preserve">
+    <value>Buat</value>
+  </data>
+  <data name="RenameButtonDialog" xml:space="preserve">
+    <value>Ganti nama</value>
+  </data>
+  <data name="DeleteButtonDialog" xml:space="preserve">
+    <value>Hapus</value>
+  </data>
+  <data name="CancelButton" xml:space="preserve">
+    <value>Batalkan</value>
+  </data>
+  <data name="FileNamePlaceholder" xml:space="preserve">
+    <value>Nama berkas</value>
+  </data>
+  <data name="NewNamePlaceholder" xml:space="preserve">
+    <value>Nama baru</value>
+  </data>
+  <data name="DefaultFileName" xml:space="preserve">
+    <value>file_baru.txt</value>
+  </data>
+  <data name="NewFolder" xml:space="preserve">
+    <value>Folder Baru</value>
+  </data>
+  
+  <!-- Connection Dialog -->
+  <data name="ConnectDialog.Title" xml:space="preserve">
+    <value>Hubungkan ke Server SFTP</value>
+  </data>
+  <data name="ConnectDialog.PrimaryButtonText" xml:space="preserve">
+    <value>Simpan &amp; Hubungkan</value>
+  </data>
+  <data name="ConnectDialog.CloseButtonText" xml:space="preserve">
+    <value>Batalkan</value>
+  </data>
+  <data name="ConnectDialog.SecondaryButtonText" xml:space="preserve">
+    <value>Uji Koneksi</value>
+  </data>
+  <data name="TestingConnection" xml:space="preserve">
+    <value>Menguji koneksi...</value>
+  </data>
+  <data name="ConnectingStatusText.Text" xml:space="preserve">
+    <value>Menghubungkan...</value>
+  </data>
+  <data name="ConnectionTestSucceeded" xml:space="preserve">
+    <value>Koneksi berhasil</value>
+  </data>
+  <data name="ConnectionTestFailed" xml:space="preserve">
+    <value>Koneksi gagal</value>
+  </data>
+  <data name="ConnectionTestMissingFields" xml:space="preserve">
+    <value>Masukkan nama host dan nama pengguna terlebih dahulu</value>
+  </data>
+  <data name="ConnectionNameBox.Header" xml:space="preserve">
+    <value>Nama Koneksi</value>
+  </data>
+  <data name="ConnectionNameBox.PlaceholderText" xml:space="preserve">
+    <value>Server saya</value>
+  </data>
+  <data name="ConnectionGroupBox.Header" xml:space="preserve">
+    <value>Grup (opsional)</value>
+  </data>
+  <data name="ConnectionGroupBox.PlaceholderText" xml:space="preserve">
+    <value>Pilih atau buat grup</value>
+  </data>
+  <data name="ConnectionGroupLabel" xml:space="preserve">
+    <value>Grup (opsional)</value>
+  </data>
+  <data name="ConnectionGroupPlaceholder" xml:space="preserve">
+    <value>Pilih atau buat grup</value>
+  </data>
+  <data name="ConnectionAppearanceLabel" xml:space="preserve">
+    <value>Simbol dan warna koneksi</value>
+  </data>
+  <data name="GroupAppearanceLabel" xml:space="preserve">
+    <value>Simbol dan warna grup</value>
+  </data>
+  <data name="SymbolCodeLabel" xml:space="preserve">
+    <value>Simbol Ikon Lancar Segoe</value>
+  </data>
+  <data name="SymbolCodePlaceholder" xml:space="preserve">
+    <value>Unicode hex, misalnya E753</value>
+  </data>
+  <data name="EditConnectionTitle" xml:space="preserve">
+    <value>Sunting Koneksi</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Simpan</value>
+  </data>
+  <data name="EditPasswordLabel" xml:space="preserve">
+    <value>Kata sandi (biarkan kosong agar tetap terkini)</value>
+  </data>
+  <data name="EditPasswordPlaceholder" xml:space="preserve">
+    <value>Masukkan kata sandi baru atau biarkan kosong</value>
+  </data>
+  <data name="HostnameBox.Header" xml:space="preserve">
+    <value>Nama host atau IP</value>
+  </data>
+  <data name="HostnameBox.PlaceholderText" xml:space="preserve">
+    <value>contoh.com atau 192.168.1.1</value>
+  </data>
+  <data name="PortBox.Header" xml:space="preserve">
+    <value>Pelabuhan</value>
+  </data>
+  <data name="UsernameBox.Header" xml:space="preserve">
+    <value>Nama pengguna</value>
+  </data>
+  <data name="UsernameBox.PlaceholderText" xml:space="preserve">
+    <value>akar</value>
+  </data>
+  <data name="PasswordBox.Header" xml:space="preserve">
+    <value>Kata sandi</value>
+  </data>
+  <data name="PasswordBox.PlaceholderText" xml:space="preserve">
+    <value>Masukkan kata sandi</value>
+  </data>
+  <data name="ConnectionNotesBox.Header" xml:space="preserve">
+    <value>Catatan (opsional)</value>
+  </data>
+  <data name="ConnectionNotesBox.PlaceholderText" xml:space="preserve">
+    <value>Tambahkan detail tentang koneksi ini</value>
+  </data>
+  <data name="ConnectionNotesLabel" xml:space="preserve">
+    <value>Catatan (opsional)</value>
+  </data>
+  <data name="ConnectionNotesPlaceholder" xml:space="preserve">
+    <value>Tambahkan detail tentang koneksi ini</value>
+  </data>
+  <data name="SaveCredentialsCheckbox.Content" xml:space="preserve">
+    <value>Simpan kata sandi atau frasa sandi</value>
+  </data>
+  <data name="CredentialStorageInfoButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Cara kerja penyimpanan kata sandi</value>
+  </data>
+  <data name="CredentialStorageInfoButton.AutomationProperties.Name" xml:space="preserve">
+    <value>Cara kerja penyimpanan kata sandi</value>
+  </data>
+  <data name="CredentialStorageInfoText.Text" xml:space="preserve">
+    <value>Kata sandi dan frasa sandi kunci yang disimpan disimpan sebagai kredensial umum SFTP Explorer di Windows Credential Manager. Windows mengenkripsinya dan membuatnya hanya tersedia untuk pengguna Anda saat ini. File kunci pribadi tetap berada di jalur yang dipilih. Anda dapat melihat atau menghapus kredensial di Panel Kontrol &gt; Manajer Kredensial &gt; Kredensial Windows.</value>
+  </data>
+
+  <!-- Connections Panel -->
+  <data name="ConnectionsPanelTitle.Text" xml:space="preserve">
+    <value>Koneksi</value>
+  </data>
+  <data name="ConnectionsPanelSubtitle.Text" xml:space="preserve">
+    <value>Pilih koneksi yang disimpan atau buat yang baru</value>
+  </data>
+  <data name="NoConnectionsTitle.Text" xml:space="preserve">
+    <value>Tidak ada koneksi tersimpan</value>
+  </data>
+  <data name="NoConnectionsMessage.Text" xml:space="preserve">
+    <value>Buat koneksi SFTP pertama Anda untuk memulai</value>
+  </data>
+  <data name="EditMenuItem.Text" xml:space="preserve">
+    <value>Sunting</value>
+  </data>
+  <data name="DeleteMenuItem.Text" xml:space="preserve">
+    <value>Hapus</value>
+  </data>
+  <data name="RenameMenuItem" xml:space="preserve">
+    <value>Ganti nama</value>
+  </data>
+  <data name="OpenMenuItem" xml:space="preserve">
+    <value>Buka</value>
+  </data>
+  <data name="OpenWithMenuItem" xml:space="preserve">
+    <value>Buka dengan...</value>
+  </data>
+  <data name="RunMenuItem" xml:space="preserve">
+    <value>Jalankan</value>
+  </data>
+  <data name="RunWithSudoMenuItem" xml:space="preserve">
+    <value>Jalankan dengan sudo</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Unduh</value>
+  </data>
+  <data name="DownloadMultiple" xml:space="preserve">
+    <value>Unduh ({0} item)</value>
+  </data>
+  <data name="Cut" xml:space="preserve">
+    <value>Potong</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Salin</value>
+  </data>
+  <data name="Paste" xml:space="preserve">
+    <value>Tempel</value>
+  </data>
+  <data name="NewConnectionText.Text" xml:space="preserve">
+    <value>Koneksi Baru</value>
+  </data>
+  <data name="UngroupedConnections" xml:space="preserve">
+    <value>Tidak dikelompokkan</value>
+  </data>
+  <data name="CollapseConnectionGroup" xml:space="preserve">
+    <value>Ciutkan grup</value>
+  </data>
+  <data name="ExpandConnectionGroup" xml:space="preserve">
+    <value>Perluas grup</value>
+  </data>
+  
+  <!-- Status Messages -->
+  <data name="FileUploaded" xml:space="preserve">
+    <value>Berkas '{0}' diunggah</value>
+  </data>
+  <data name="FileDownloaded" xml:space="preserve">
+    <value>Berkas '{0}' diunduh</value>
+  </data>
+  <data name="FileCreated" xml:space="preserve">
+    <value>Berkas '{0}' dibuat</value>
+  </data>
+  <data name="SelectFilesToDownload" xml:space="preserve">
+    <value>Pilih file yang akan diunduh</value>
+  </data>
+  <data name="ErrorCreatingFile" xml:space="preserve">
+    <value>Kesalahan saat membuat berkas: {0}</value>
+  </data>
+  <data name="ReadyStatus.Text" xml:space="preserve">
+    <value>Siap</value>
+  </data>
+  <data name="Ready" xml:space="preserve">
+    <value>Siap</value>
+  </data>
+  <data name="PreparingDragDrop" xml:space="preserve">
+    <value>Mempersiapkan file untuk diseret...</value>
+  </data>
+  <data name="DragReady" xml:space="preserve">
+    <value>Siap! Seret lagi untuk menyalin</value>
+  </data>
+  <data name="DragDropComplete" xml:space="preserve">
+    <value>Pengunduhan selesai</value>
+  </data>
+  <data name="NoConnectionText.Text" xml:space="preserve">
+    <value>Tidak ada koneksi SFTP</value>
+  </data>
+  <data name="FolderCreated" xml:space="preserve">
+    <value>Folder '{0}' dibuat</value>
+  </data>
+  <data name="ErrorCreatingFolder" xml:space="preserve">
+    <value>Terjadi kesalahan saat membuat folder: {0}</value>
+  </data>
+  <data name="ErrorUploading" xml:space="preserve">
+    <value>Kesalahan saat mengunggah '{0}': {1}</value>
+  </data>
+  <data name="DownloadingFile" xml:space="preserve">
+    <value>Mengunduh '{0}'</value>
+  </data>
+  <data name="ErrorDownloading" xml:space="preserve">
+    <value>Kesalahan mengunduh '{0}': {1}</value>
+  </data>
+  <data name="ErrorDeleting" xml:space="preserve">
+    <value>Terjadi kesalahan saat menghapus '{0}': {1}</value>
+  </data>
+  <data name="ItemsDeleted" xml:space="preserve">
+    <value>Item dihapus: {0}</value>
+  </data>
+  <data name="ItemsCut" xml:space="preserve">
+    <value>Item dipotong: {0}</value>
+  </data>
+  <data name="ItemsCopied" xml:space="preserve">
+    <value>Item disalin: {0}</value>
+  </data>
+  <data name="Copying" xml:space="preserve">
+    <value>Menyalin</value>
+  </data>
+  <data name="ItemsMoved" xml:space="preserve">
+    <value>Barang dipindahkan</value>
+  </data>
+  <data name="ItemsPasted" xml:space="preserve">
+    <value>Item disalin</value>
+  </data>
+  <data name="ErrorPasting" xml:space="preserve">
+    <value>Kesalahan saat menempel: {0}</value>
+  </data>
+  <data name="RenamedTo" xml:space="preserve">
+    <value>Berganti nama menjadi '{0}'</value>
+  </data>
+  <data name="ErrorRenaming" xml:space="preserve">
+    <value>Kesalahan saat mengganti nama: {0}</value>
+  </data>
+  <data name="SortedByNameAsc" xml:space="preserve">
+    <value>Diurutkan berdasarkan nama (A-Z)</value>
+  </data>
+  <data name="SortedByNameDesc" xml:space="preserve">
+    <value>Diurutkan berdasarkan nama (Z-A)</value>
+  </data>
+  <data name="SortedBySizeAsc" xml:space="preserve">
+    <value>Diurutkan berdasarkan ukuran (↑)</value>
+  </data>
+  <data name="SortedBySizeDesc" xml:space="preserve">
+    <value>Diurutkan berdasarkan ukuran (↓)</value>
+  </data>
+  <data name="SortedByDateAsc" xml:space="preserve">
+    <value>Diurutkan berdasarkan tanggal (↑)</value>
+  </data>
+  <data name="SortedByDateDesc" xml:space="preserve">
+    <value>Diurutkan berdasarkan tanggal (↓)</value>
+  </data>
+  <data name="FileAlreadyOpen" xml:space="preserve">
+    <value>'{0}' sudah terbuka (bekerja dengan cache)</value>
+  </data>
+  <data name="LoadingFile" xml:space="preserve">
+    <value>Memuat '{0}'...</value>
+  </data>
+  <data name="FileLoadedAutoSync" xml:space="preserve">
+    <value>'{0}' dimuat (perubahan akan diunggah secara otomatis)</value>
+  </data>
+  <data name="ErrorOpeningFile" xml:space="preserve">
+    <value>Kesalahan saat membuka berkas: {0}</value>
+  </data>
+  <data name="FileSyncing" xml:space="preserve">
+    <value>⏳ Sinkronisasi berkas: '{0}'...</value>
+  </data>
+  <data name="ChangesSynced" xml:space="preserve">
+    <value>✓ Perubahan '{0}' diunggah</value>
+  </data>
+  <data name="ErrorUploadingChanges" xml:space="preserve">
+    <value>Kesalahan saat mengunggah: {0}</value>
+  </data>
+  <data name="OpenedDialogFor" xml:space="preserve">
+    <value>Dialog pilihan terbuka untuk '{0}'</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Kesalahan: {0}</value>
+  </data>
+  <data name="FilesDownloaded" xml:space="preserve">
+    <value>Berkas yang diunduh: {0}</value>
+  </data>
+  <data name="ErrorDownloadingMultiple" xml:space="preserve">
+    <value>Kesalahan saat mengunduh: {0}</value>
+  </data>
+  <data name="DownloadingProgress" xml:space="preserve">
+    <value>Mengunduh ({0}/{1}): '{2}'</value>
+  </data>
+  <data name="DownloadingFileNum" xml:space="preserve">
+    <value>Mengunduh berkas #{0}: '{1}'</value>
+  </data>
+  <data name="TotalDownloaded" xml:space="preserve">
+    <value>Jumlah: {0}</value>
+  </data>
+  <data name="FileProgress" xml:space="preserve">
+    <value>Berkas {0} dari {1}</value>
+  </data>
+  <data name="FilesDownloadedCount" xml:space="preserve">
+    <value>{0} file</value>
+  </data>
+  <data name="ErrorDialogTitle" xml:space="preserve">
+    <value>Kesalahan</value>
+  </data>
+  <data name="ErrorOpeningFileDialog" xml:space="preserve">
+    <value>Gagal membuka berkas '{0}':\n{1}</value>
+  </data>
+  <data name="ErrorOpeningDialogSelection" xml:space="preserve">
+    <value>Gagal membuka dialog pemilihan:\n{0}</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>Oke</value>
+  </data>
+  <data name="PropertiesTitle" xml:space="preserve">
+    <value>Properti</value>
+  </data>
+  <data name="PropertiesName" xml:space="preserve">
+    <value>Nama: {0}</value>
+  </data>
+  <data name="PropertiesPath" xml:space="preserve">
+    <value>Jalur: {0}</value>
+  </data>
+  <data name="PropertiesSize" xml:space="preserve">
+    <value>Ukuran: {0}</value>
+  </data>
+  <data name="PropertiesModified" xml:space="preserve">
+    <value>Dimodifikasi: {0}</value>
+  </data>
+  <data name="PropertiesPermissions" xml:space="preserve">
+    <value>Izin: {0}</value>
+  </data>
+  <data name="PropertiesType" xml:space="preserve">
+    <value>Jenis: {0}</value>
+  </data>
+  <data name="PropertiesTypeFolder" xml:space="preserve">
+    <value>Map</value>
+  </data>
+  <data name="PropertiesTypeFile" xml:space="preserve">
+    <value>Mengajukan</value>
+  </data>
+  <data name="PropertiesTypeFileSystem" xml:space="preserve">
+    <value>Sistem file</value>
+  </data>
+  <data name="PropertiesCapacity" xml:space="preserve">
+    <value>Kapasitas: {0}</value>
+  </data>
+  <data name="PropertiesUsedSpace" xml:space="preserve">
+    <value>Ruang yang terpakai: {0}</value>
+  </data>
+  <data name="PropertiesFreeSpace" xml:space="preserve">
+    <value>Ruang kosong: {0}</value>
+  </data>
+  <data name="FreeSpaceFormat" xml:space="preserve">
+    <value>{0} gratis {1}</value>
+  </data>
+  <data name="RefreshContextMenuItem" xml:space="preserve">
+    <value>Segarkan</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Tutup</value>
+  </data>
+  <data name="UploadingProgress" xml:space="preserve">
+    <value>Mengunggah ({0}/{1}): '{2}'</value>
+  </data>
+  <data name="FilesUploaded" xml:space="preserve">
+    <value>{0} file diunggah</value>
+  </data>
+  
+  <!-- Progress indicators -->
+  <data name="SpeedPerSecond" xml:space="preserve">
+    <value>{0}/dtk</value>
+  </data>
+  <data name="TimeRemaining" xml:space="preserve">
+    <value>Perkiraan waktu tiba: {0}</value>
+  </data>
+  <data name="LoadedItems" xml:space="preserve">
+    <value>Memuat {0} item</value>
+  </data>
+  <data name="ItemCount" xml:space="preserve">
+    <value>{0} item</value>
+  </data>
+  <data name="ItemCountSelected" xml:space="preserve">
+    <value>{0} dari {1} dipilih</value>
+  </data>
+  
+  <!-- Column Headers -->
+  <data name="ColumnName.Text" xml:space="preserve">
+    <value>Nama</value>
+  </data>
+  <data name="ColumnFreeSpace.Text" xml:space="preserve">
+    <value>Ruang kosong</value>
+  </data>
+  <data name="ColumnPermissions.Text" xml:space="preserve">
+    <value>Izin</value>
+  </data>
+  <data name="ColumnOwner.Text" xml:space="preserve">
+    <value>Pemilik</value>
+  </data>
+  <data name="ColumnGroup.Text" xml:space="preserve">
+    <value>Kelompok</value>
+  </data>
+  <data name="ColumnModified.Text" xml:space="preserve">
+    <value>Dimodifikasi</value>
+  </data>
+  <data name="ColumnSize.Text" xml:space="preserve">
+    <value>Ukuran</value>
+  </data>
+  
+  <!-- Toolbar tooltips -->
+  <data name="UploadToolbarButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Unggah file</value>
+  </data>
+  <data name="DownloadToolbarButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Unduh dipilih</value>
+  </data>
+  
+  <!-- Tab Context Menu -->
+  <data name="TabContextMenuCloseTab" xml:space="preserve">
+    <value>Tutup tab</value>
+  </data>
+  <data name="TabContextMenuCloseOtherTabs" xml:space="preserve">
+    <value>Tutup tab lainnya</value>
+  </data>
+  <data name="TabContextMenuCloseTabsToTheRight" xml:space="preserve">
+    <value>Tutup tab di sebelah kanan</value>
+  </data>
+  <data name="TabContextMenuDuplicateTab" xml:space="preserve">
+    <value>Tab duplikat</value>
+  </data>
+  <data name="CalculatingFiles" xml:space="preserve">
+    <value>Menghitung file...</value>
+  </data>
+  <data name="NoReadPermission" xml:space="preserve">
+    <value>Tidak ada izin membaca untuk "{0}"</value>
+  </data>
+  <data name="NoWritePermission" xml:space="preserve">
+    <value>Tidak ada izin menulis untuk folder "{0}"</value>
+  </data>
+  <data name="SomeFilesNoReadPermission" xml:space="preserve">
+    <value>Tidak dapat mengunduh {0} item karena izin tidak mencukupi</value>
+  </data>
+  <data name="PermissionDenied" xml:space="preserve">
+    <value>Izin ditolak</value>
+  </data>
+  <data name="InsufficientPermissions" xml:space="preserve">
+    <value>Izin tidak memadai</value>
+  </data>
+  <data name="OpenFolderWithSudoPrompt" xml:space="preserve">
+    <value>Anda tidak memiliki izin untuk membuka "{0}". Buka folder ini dengan sudo?</value>
+  </data>
+  <data name="OpenFileWithSudoPrompt" xml:space="preserve">
+    <value>Anda tidak memiliki izin untuk membaca "{0}". Buka file ini sebagai baca-saja dengan sudo?</value>
+  </data>
+  <data name="OpenWithSudoButton" xml:space="preserve">
+    <value>Buka dengan sudo</value>
+  </data>
+  <data name="OpenedFileWithSudoReadOnly" xml:space="preserve">
+    <value>Dibuka hanya-baca dengan sudo: {0}</value>
+  </data>
+  <data name="SudoFolderInvalidResponse" xml:space="preserve">
+    <value>Server mengembalikan respons yang tidak valid saat membuka folder dengan sudo.</value>
+  </data>
+  <data name="ContinueDownloadingRemaining" xml:space="preserve">
+    <value>Lanjutkan mengunduh file yang tersisa?</value>
+  </data>
+  <data name="ContinueButton" xml:space="preserve">
+    <value>Lanjutkan</value>
+  </data>
+  <data name="EnterPassword" xml:space="preserve">
+    <value>Masukkan kata sandi</value>
+  </data>
+  <data name="EnterPasswordLabel" xml:space="preserve">
+    <value>Masukkan kata sandi</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>Kata sandi diperlukan untuk terhubung</value>
+  </data>
+  <data name="PasswordFor" xml:space="preserve">
+    <value>Kata sandi untuk</value>
+  </data>
+  <data name="Connect" xml:space="preserve">
+    <value>Hubungkan</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Batalkan</value>
+  </data>
+  <data name="DeleteFailedTitle" xml:space="preserve">
+    <value>Penghapusan tidak lengkap</value>
+  </data>
+  <data name="DeleteFailedMessage" xml:space="preserve">
+    <value>Item berikut tidak dapat dihapus karena kesalahan atau izin tidak memadai:\n{0}</value>
+  </data>
+  <data name="UsernameLabel" xml:space="preserve">
+    <value>Nama pengguna</value>
+  </data>
+  <data name="PasswordLabel" xml:space="preserve">
+    <value>Kata sandi</value>
+  </data>
+  <data name="EnterUsernameLabel" xml:space="preserve">
+    <value>Masukkan nama pengguna</value>
+  </data>
+  <data name="ConnectionFailedTitle" xml:space="preserve">
+    <value>Koneksi Gagal</value>
+  </data>
+  <data name="ConnectionFailedMessage" xml:space="preserve">
+    <value>Gagal menyambung ke {0}:</value>
+  </data>
+  <data name="InvalidURLTitle" xml:space="preserve">
+    <value>URL tidak valid</value>
+  </data>
+  <data name="InvalidURLMessage" xml:space="preserve">
+    <value>Gagal mengurai URL:</value>
+  </data>
+  <data name="Deleting" xml:space="preserve">
+    <value>Menghapus...</value>
+  </data>
+  <data name="Canceling" xml:space="preserve">
+    <value>Membatalkan operasi...</value>
+  </data>
+  <data name="OperationCanceled" xml:space="preserve">
+    <value>Operasi dibatalkan</value>
+  </data>
+  <data name="DragTransferCanceled" xml:space="preserve">
+    <value>Transfer drag-and-drop dibatalkan</value>
+  </data>
+  <data name="DragTransferFailed" xml:space="preserve">
+    <value>Tidak ada file yang dapat diunduh</value>
+  </data>
+  <data name="DragTransferFailedWithError" xml:space="preserve">
+    <value>Transfer seret dan lepas gagal: {0}</value>
+  </data>
+  <data name="DragTransferCompleteWithSkipped" xml:space="preserve">
+    <value>Transfer disiapkan; melewatkan {0} item yang tidak dapat diakses</value>
+  </data>
+  <data name="DragPermissionErrorDescription" xml:space="preserve">
+    <value>Item ini tidak dapat diunduh karena pengguna yang terhubung tidak memiliki akses baca. Pilih cara untuk melanjutkan.</value>
+  </data>
+  <data name="DragTransferErrorTitle" xml:space="preserve">
+    <value>Kesalahan pengunduhan</value>
+  </data>
+  <data name="DragTransferErrorDescription" xml:space="preserve">
+    <value>Item ini tidak dapat diunduh. Pilih cara untuk melanjutkan.</value>
+  </data>
+  <data name="DragOptionSkipItem" xml:space="preserve">
+    <value>Lewati item ini</value>
+  </data>
+  <data name="DragOptionSkipAllPermissionErrors" xml:space="preserve">
+    <value>Lewati semua kesalahan izin dalam transfer ini</value>
+  </data>
+  <data name="DragOptionTrySudo" xml:space="preserve">
+    <value>Coba sudo: berikan akses baca kepada pengguna ini menggunakan ACL, lalu coba lagi</value>
+  </data>
+  <data name="DragOptionRetry" xml:space="preserve">
+    <value>Coba lagi item ini</value>
+  </data>
+  <data name="DragOptionSkipAllSimilarErrors" xml:space="preserve">
+    <value>Lewati semua kesalahan serupa dalam transfer ini</value>
+  </data>
+  <data name="DragOptionCancelTransfer" xml:space="preserve">
+    <value>Batalkan seluruh transfer</value>
+  </data>
+  <data name="DragSudoFixInProgress" xml:space="preserve">
+    <value>Mencoba memberikan akses baca dengan sudo: {0}</value>
+  </data>
+  <data name="DragSudoFixFailed" xml:space="preserve">
+    <value>sudo tidak dapat memberikan akses: {0}</value>
+  </data>
+  <data name="DragSudoNoConnection" xml:space="preserve">
+    <value>Informasi koneksi SSH tidak tersedia</value>
+  </data>
+  <data name="DragSudoInvalidUsername" xml:space="preserve">
+    <value>Nama pengguna SSH tidak dapat digunakan dengan aman dalam perintah ACL</value>
+  </data>
+  <data name="DragSudoExitCode" xml:space="preserve">
+    <value>sudo/setfacl keluar dengan kode {0}</value>
+  </data>
+  <data name="DragTransferIncompleteTitle" xml:space="preserve">
+    <value>Transfer selesai dengan item yang dilewati</value>
+  </data>
+  <data name="DragTransferIncompleteMessage" xml:space="preserve">
+    <value>{0} item dilewati. File yang dapat diakses telah disalin.
+
+{1}</value>
+  </data>
+  <data name="DragSkippedMoreItems" xml:space="preserve">
+    <value>... dan {0} item lainnya</value>
+  </data>
+  <data name="DragPreparedDataProvided" xml:space="preserve">
+    <value>Folder yang sudah disiapkan diserahkan ke Windows</value>
+  </data>
+  <data name="DragPreparationAlreadyRunning" xml:space="preserve">
+    <value>Persiapan folder masih dalam proses. Tunggu pesan siap.</value>
+  </data>
+  <data name="DragPreparationReady" xml:space="preserve">
+    <value>Foldernya sudah siap. Seret ke tujuan lagi.</value>
+  </data>
+  <data name="DragPreparationReadyWithSkipped" xml:space="preserve">
+    <value>Folder sudah siap dengan {0} item yang dilewati. Seret ke tujuan lagi.</value>
+  </data>
+  <data name="DragPreparationReadyTitle" xml:space="preserve">
+    <value>Folder siap untuk disalin</value>
+  </data>
+  <data name="DragPreparationReadyMessage" xml:space="preserve">
+    <value>Folder telah diunduh ke cache sementara. Seret lagi pilihan yang sama ke tujuan; pelepasan berikutnya akan langsung mulai menyalin.</value>
+  </data>
+  <data name="DragPreparationReadyWithSkippedMessage" xml:space="preserve">
+    <value>Folder telah diunduh ke cache sementara dan {0} item dilewati. Seret lagi pilihan yang sama ke tujuan; semua file yang dapat diakses akan disalin.
+
+{1}</value>
+  </data>
+  <data name="DragPreparationFailedTitle" xml:space="preserve">
+    <value>Persiapan folder gagal</value>
+  </data>
+  <data name="DragPreparationFailedMessage" xml:space="preserve">
+    <value>Tidak ada barang yang disiapkan. Tidak ada yang dikirim ke tujuan.</value>
+  </data>
+  <data name="DragPreparationFailedWithErrorMessage" xml:space="preserve">
+    <value>Folder tidak dapat disiapkan. Tidak ada yang dikirim ke tujuan.
+
+{0}</value>
+  </data>
+  <data name="DragLargeFolderPreparingTitle" xml:space="preserve">
+    <value>Persiapan folder besar dimulai</value>
+  </data>
+  <data name="DragLargeFolderPreparingMessage" xml:space="preserve">
+    <value>Gerakan pertama ini mempersiapkan folder secara lokal. Perhatikan kemajuan di bawah ini; saat pesan siap muncul, seret kembali folder ke tujuan.</value>
+  </data>
+  <data name="OpenSftpConnection" xml:space="preserve">
+    <value>Buka koneksi SFTP</value>
+  </data>
+  <data name="OpenSshTerminal" xml:space="preserve">
+    <value>Buka terminal SSH</value>
+  </data>
+  <data name="UnknownHostKeyTitle" xml:space="preserve">
+    <value>Kunci host SSH tidak dikenal</value>
+  </data>
+  <data name="TrustHostKeyButton" xml:space="preserve">
+    <value>Percaya dan terhubung</value>
+  </data>
+  <data name="HostKeyChangedTitle" xml:space="preserve">
+    <value>Kunci host SSH berubah — koneksi diblokir</value>
+  </data>
+  <data name="ForgetHostKeyButton" xml:space="preserve">
+    <value>Lupakan kunci host yang disimpan</value>
+  </data>
+  <data name="HostKeyRemovedTitle" xml:space="preserve">
+    <value>Kunci host yang disimpan dihapus</value>
+  </data>
+  <data name="HostKeyRemoveFailedTitle" xml:space="preserve">
+    <value>Tidak dapat menghapus kunci host yang disimpan</value>
+  </data>
+  <data name="ConnectionDataErrorTitle" xml:space="preserve">
+    <value>Kesalahan data koneksi yang disimpan</value>
+  </data>
+  <data name="SavedConnectionsUnavailableTitle" xml:space="preserve">
+    <value>Koneksi tersimpan tidak tersedia</value>
+  </data>
+  <data name="SavedConnectionsErrorTitle" xml:space="preserve">
+    <value>Kesalahan koneksi tersimpan</value>
+  </data>
+  <data name="SavedConnectionsUnavailableSubtitle" xml:space="preserve">
+    <value>Koneksi tersimpan tidak tersedia</value>
+  </data>
+  <data name="HostKeyFirstUseMessage" xml:space="preserve">
+    <value>Ini adalah koneksi pertama ke {0}:{1}. Verifikasi sidik jari ini dengan administrator server sebelum mempercayainya.
+{2}  {3}</value>
+  </data>
+  <data name="HostKeyChangedFollowUpMessage" xml:space="preserve">
+    <value>Melupakan kunci yang tersimpan tidak akan menghubungkan ke server atau memercayai kunci pengganti. Setelah memverifikasi sidik jari baru secara mandiri, mulai upaya koneksi baru.</value>
+  </data>
+  <data name="HostKeyChangedDetailsMessage" xml:space="preserve">
+    <value>PERINGATAN KEAMANAN: kunci host SSH untuk {0}:{1} telah berubah. Sambungan diblokir karena hal ini dapat mengindikasikan penggantian server atau serangan man-in-the-middle.
+
+Diharapkan: {2} SHA256:{3}
+Diterima: {4} SHA256:{5}</value>
+  </data>
+  <data name="HostKeyForgottenMessage" xml:space="preserve">
+    <value>Tidak ada koneksi yang dibuat. Verifikasi sidik jari baru, lalu sambungkan lagi untuk memercayainya secara eksplisit.</value>
+  </data>
+  <data name="SavedConnectionsLoadErrorMessage" xml:space="preserve">
+    <value>Koneksi yang disimpan tidak dapat dimuat. File-file yang ada dibiarkan tidak berubah.</value>
+  </data>
+  <data name="GroupStateSaveErrorMessage" xml:space="preserve">
+    <value>Status grup tidak dapat disimpan.</value>
+  </data>
+  <data name="ConnectionSaveErrorMessage" xml:space="preserve">
+    <value>Sambungan tidak dapat disimpan. Data sebelumnya dipertahankan.</value>
+  </data>
+  <data name="ConnectionDeleteErrorMessage" xml:space="preserve">
+    <value>Sambungan tidak dapat dihapus. Profil dan kredensialnya dipertahankan bila memungkinkan.</value>
+  </data>
+  <data name="ConnectionTestTimedOut" xml:space="preserve">
+    <value>Tes koneksi habis waktu setelah 30 detik.</value>
+  </data>
+  <data name="AuthenticationModeBox.Header" xml:space="preserve"><value>Otentikasi</value></data>
+  <data name="PasswordAuthenticationItem.Content" xml:space="preserve"><value>Kata sandi</value></data>
+  <data name="PrivateKeyAuthenticationItem.Content" xml:space="preserve"><value>Kunci pribadi</value></data>
+  <data name="PrivateKeyHelpText.Text" xml:space="preserve"><value>Pilih file kunci pribadi OpenSSH, PEM, atau yang didukung. File kunci tidak disalin atau disimpan oleh SFTP Explorer.</value></data>
+  <data name="PrivateKeyPathBox.Header" xml:space="preserve"><value>File kunci pribadi</value></data>
+  <data name="PrivateKeyPathBox.PlaceholderText" xml:space="preserve"><value>Pilih atau masukkan jalur ke kunci pribadi</value></data>
+  <data name="BrowsePrivateKeyButton.Content" xml:space="preserve"><value>Jelajahi...</value></data>
+  <data name="PrivateKeyPassphraseBox.Header" xml:space="preserve"><value>Frasa sandi kunci (opsional)</value></data>
+  <data name="PrivateKeyPassphraseBox.PlaceholderText" xml:space="preserve"><value>Biarkan kosong untuk kunci yang tidak terenkripsi</value></data>
+  <data name="EditPassphraseLabel" xml:space="preserve"><value>Frasa sandi kunci (biarkan kosong untuk mempertahankan yang saat ini digunakan)</value></data>
+  <data name="EditPassphrasePlaceholder" xml:space="preserve"><value>Masukkan frasa sandi baru hanya untuk menggantikan yang tersimpan</value></data>
+  <data name="PrivateKeyRequired" xml:space="preserve"><value>Pilih file kunci pribadi</value></data>
+  <data name="PrivateKeyNotFound" xml:space="preserve"><value>File kunci pribadi tidak ditemukan</value></data>
+  <data name="PrivateKeyPickerTitle" xml:space="preserve"><value>Pilih kunci pribadi</value></data>
+  <data name="ConnectToProfileTitle" xml:space="preserve"><value>Hubungkan ke {0}</value></data>
+  <data name="PassphrasePromptHelp" xml:space="preserve"><value>Masukkan frasa sandi kunci, atau biarkan kosong jika kunci tidak dienkripsi.</value></data>
+  <data name="PrivateKeyPassphraseLabel" xml:space="preserve"><value>Frasa sandi kunci</value></data>
+  <data name="NewConnectionButton.AutomationProperties.Name" xml:space="preserve"><value>Koneksi Baru</value></data>
+  <data name="ConnectionProfileSaveFailedTitle" xml:space="preserve"><value>Koneksi tidak disimpan</value></data>
+  <data name="ConnectionProfileSaveFailedMessage" xml:space="preserve"><value>Sambungan aktif, namun profil atau kata sandinya tidak dapat disimpan. Periksa akses ke AppData dan Windows Credential Manager.</value></data>
+  <data name="ConnectionProfileDeleteFailedTitle" xml:space="preserve"><value>Koneksi tidak dihapus</value></data>
+  <data name="ConnectionProfileDeleteFailedMessage" xml:space="preserve"><value>Sambungan dipertahankan karena profilnya tidak dapat disimpan dengan aman. Periksa akses ke AppData dan coba lagi.</value></data>
+  <data name="UploadCompletedWithErrors" xml:space="preserve"><value>{0} dari {1} item diunggah. Gagal: {2}</value></data>
+  <data name="DeleteCompletedWithErrors" xml:space="preserve"><value>Penghapusan selesai dengan {0} item yang gagal.</value></data>
+</root>

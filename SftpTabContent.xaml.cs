@@ -84,6 +84,7 @@ public sealed partial class SftpTabContent : UserControl
     private const int TerminalCommandMaxCharacters = 4_096;
     private const string UploadPickerSettingsIdentifier = "SftpExplorer.UploadFiles";
     private const string DownloadPickerSettingsIdentifier = "SftpExplorer.DownloadFolder";
+    private const int FolderUploadWorkerCount = 4;
 
     private SshClient? _terminalClient;
     private ShellStream? _terminalStream;
@@ -195,6 +196,12 @@ public sealed partial class SftpTabContent : UserControl
         public static TransferSummary operator +(TransferSummary left, TransferSummary right) =>
             new(left.Succeeded + right.Succeeded, left.Failed + right.Failed);
     }
+
+    private sealed record TransferFailure(string Path, string Message);
+    private sealed record FolderUploadFile(StorageFile File, string RemotePath, long Size, int Index, int TotalFiles);
+    private sealed record FolderUploadPlan(
+        IReadOnlyList<string> Directories,
+        IReadOnlyList<FolderUploadFile> Files);
 
     private static readonly TimeSpan AddressSuggestionCacheLifetime = TimeSpan.FromSeconds(15);
     private static readonly TimeSpan FileSystemStatsCacheLifetime = TimeSpan.FromSeconds(30);
@@ -2606,7 +2613,11 @@ public sealed partial class SftpTabContent : UserControl
         RefreshRemoteFiles();
         StatusText.Text = failed == 0
             ? string.Format(LocalizationHelper.GetString("FilesUploaded"), succeeded)
-            : $"Uploaded {succeeded} of {succeeded + failed} file(s); {failed} failed.";
+            : string.Format(
+                LocalizationHelper.GetString("UploadCompletedWithErrors"),
+                succeeded,
+                succeeded + failed,
+                failed);
     }
 
     private async Task UploadFileWithProgress(
@@ -2615,11 +2626,13 @@ public sealed partial class SftpTabContent : UserControl
         long fileSize,
         int currentIndex,
         int totalFiles,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        SftpClient? transferClient = null)
     {
         var startTime = DateTime.Now;
         using var stream = await file.OpenStreamForReadAsync();
-        var client = _sftpClient ?? throw new InvalidOperationException("SFTP client is unavailable.");
+        var client = transferClient ?? _sftpClient
+            ?? throw new InvalidOperationException("SFTP client is unavailable.");
         var temporaryRemotePath = CreateRemotePartialPath(remotePath);
         RegisterRemoteUploadStagingPath(temporaryRemotePath);
         long lastProgressTimestamp = 0;
@@ -2729,6 +2742,7 @@ public sealed partial class SftpTabContent : UserControl
         int totalFiles = items.Count;
         int currentFileIndex = 0;
         var summary = new TransferSummary();
+        var failures = new System.Collections.Concurrent.ConcurrentQueue<TransferFailure>();
 
         // SDK 1.7+: Show badge with transfer count
         BadgeNotificationService.IncrementTransfer();
@@ -2750,8 +2764,11 @@ public sealed partial class SftpTabContent : UserControl
                     }
                     else if (item is StorageFolder folder)
                     {
-                        // Загружаем папку рекурсивно
-                        summary += await UploadFolderRecursiveAsync(folder, targetPath, _lifetimeCts.Token);
+                        summary += await UploadFolderRecursiveAsync(
+                            folder,
+                            targetPath,
+                            _lifetimeCts.Token,
+                            failures);
                     }
                 }
                 catch (OperationCanceledException)
@@ -2761,6 +2778,7 @@ public sealed partial class SftpTabContent : UserControl
                 catch (Exception ex)
                 {
                     summary += new TransferSummary(0, 1);
+                    failures.Enqueue(new TransferFailure(item.Name, ex.Message));
                     DispatcherQueue.TryEnqueue(() =>
                     {
                         StatusText.Text = string.Format(LocalizationHelper.GetString("ErrorUploading"), item.Name, ex.Message);
@@ -2789,14 +2807,24 @@ public sealed partial class SftpTabContent : UserControl
             RefreshRemoteFiles();
             StatusText.Text = summary.Failed == 0
                 ? string.Format(LocalizationHelper.GetString("FilesUploaded"), summary.Succeeded)
-                : $"Uploaded {summary.Succeeded} item(s); {summary.Failed} failed.";
+                : string.Format(
+                    LocalizationHelper.GetString("UploadCompletedWithErrors"),
+                    summary.Succeeded,
+                    summary.Succeeded + summary.Failed,
+                    summary.Failed);
+
+            if (summary.Failed > 0)
+            {
+                TrackBackgroundTask(ShowUploadFailureSummaryAsync(summary, failures.ToArray()));
+            }
         });
     }
 
     private async Task<TransferSummary> UploadFolderRecursiveAsync(
         StorageFolder folder,
         string remoteBasePath,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        System.Collections.Concurrent.ConcurrentQueue<TransferFailure> failures)
     {
         var client = _sftpClient;
         if (client?.IsConnected != true) return new TransferSummary(0, 1);
@@ -2817,11 +2845,34 @@ public sealed partial class SftpTabContent : UserControl
                 client.CreateDirectory(stagingRemotePath);
             }, cancellationToken);
 
-            var summary = await UploadFolderContentsAsync(folder, stagingRemotePath, cancellationToken);
+            var plan = await BuildFolderUploadPlanAsync(folder, stagingRemotePath, cancellationToken);
+            foreach (var directory in plan.Directories)
+            {
+                await RunClientActionAsync(client, token =>
+                {
+                    token.ThrowIfCancellationRequested();
+                    if (client.Exists(directory))
+                    {
+                        throw new IOException($"Duplicate remote destination: {directory}");
+                    }
+
+                    client.CreateDirectory(directory);
+                }, cancellationToken);
+            }
+
+            var summary = new TransferSummary(plan.Directories.Count, 0);
+            summary += await UploadFolderFilesAsync(plan.Files, client, cancellationToken, failures);
             if (summary.Failed > 0)
             {
                 await RunClientActionAsync(client, _ =>
                     TryDeleteOwnedRemoteStagingTree(client, remoteBasePath, stagingRemotePath), CancellationToken.None);
+                failures.Enqueue(new TransferFailure(
+                    folder.Name,
+                    string.Format(
+                        LocalizationHelper.GetString("UploadCompletedWithErrors"),
+                        summary.Succeeded,
+                        summary.Succeeded + summary.Failed,
+                        summary.Failed)));
                 return new TransferSummary(0, Math.Max(1, summary.Failed));
             }
 
@@ -2847,39 +2898,53 @@ public sealed partial class SftpTabContent : UserControl
         catch (Exception ex)
         {
             Log.Error($"Error uploading folder '{finalRemotePath}': {ex.Message}", ex);
+            failures.Enqueue(new TransferFailure(folder.Name, ex.Message));
             await RunClientActionAsync(client, _ =>
                 TryDeleteOwnedRemoteStagingTree(client, remoteBasePath, stagingRemotePath), CancellationToken.None);
             return new TransferSummary(0, 1);
         }
     }
 
-    private async Task<TransferSummary> UploadFolderContentsAsync(
+    private async Task<FolderUploadPlan> BuildFolderUploadPlanAsync(
         StorageFolder folder,
         string remoteFolderPath,
         CancellationToken cancellationToken)
     {
-        var client = _sftpClient ?? throw new InvalidOperationException("SFTP client is unavailable.");
-        var summary = new TransferSummary();
-        var files = await folder.GetFilesAsync();
-        foreach (var file in files)
+        var directories = new List<string>();
+        var filesToUpload = new List<(StorageFile File, string RemotePath, long Size)>();
+        await CollectFolderUploadPlanAsync(
+            folder,
+            remoteFolderPath,
+            directories,
+            filesToUpload,
+            cancellationToken);
+
+        var totalFiles = filesToUpload.Count;
+        var files = filesToUpload
+            .Select((file, index) => new FolderUploadFile(
+                file.File,
+                file.RemotePath,
+                file.Size,
+                index + 1,
+                totalFiles))
+            .ToList();
+        return new FolderUploadPlan(directories, files);
+    }
+
+    private async Task CollectFolderUploadPlanAsync(
+        StorageFolder folder,
+        string remoteFolderPath,
+        List<string> directories,
+        List<(StorageFile File, string RemotePath, long Size)> filesToUpload,
+        CancellationToken cancellationToken)
+    {
+        var localFiles = await folder.GetFilesAsync();
+        foreach (var file in localFiles)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            try
-            {
-                var remotePath = CombineRemotePath(remoteFolderPath, file.Name);
-                var fileSize = (long)(await file.GetBasicPropertiesAsync()).Size;
-                await UploadFileWithProgress(file, remotePath, fileSize, 1, 1, cancellationToken);
-                summary += new TransferSummary(1, 0);
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                Log.Error($"Error uploading file '{file.Name}': {ex.Message}", ex);
-                summary += new TransferSummary(0, 1);
-            }
+            var remotePath = CombineRemotePath(remoteFolderPath, file.Name);
+            var fileSize = (long)(await file.GetBasicPropertiesAsync()).Size;
+            filesToUpload.Add((file, remotePath, fileSize));
         }
 
         var subfolders = await folder.GetFoldersAsync();
@@ -2887,19 +2952,57 @@ public sealed partial class SftpTabContent : UserControl
         {
             cancellationToken.ThrowIfCancellationRequested();
             var remoteSubfolderPath = CombineRemotePath(remoteFolderPath, subfolder.Name);
+            directories.Add(remoteSubfolderPath);
+            await CollectFolderUploadPlanAsync(
+                subfolder,
+                remoteSubfolderPath,
+                directories,
+                filesToUpload,
+                cancellationToken);
+        }
+    }
+
+    private async Task<TransferSummary> UploadFolderFilesAsync(
+        IReadOnlyList<FolderUploadFile> files,
+        SftpClient primaryClient,
+        CancellationToken cancellationToken,
+        System.Collections.Concurrent.ConcurrentQueue<TransferFailure> failures)
+    {
+        if (files.Count == 0)
+        {
+            return new TransferSummary();
+        }
+
+        var pendingFiles = new System.Collections.Concurrent.ConcurrentQueue<FolderUploadFile>(files);
+        var workerCount = Math.Min(FolderUploadWorkerCount, files.Count);
+        var workers = new List<Task<TransferSummary>>(workerCount)
+        {
+            UploadFolderWorkerAsync(pendingFiles, primaryClient, cancellationToken, failures)
+        };
+        for (var worker = 1; worker < workerCount; worker++)
+        {
+            workers.Add(UploadFolderWorkerAsync(pendingFiles, null, cancellationToken, failures));
+        }
+
+        var results = await Task.WhenAll(workers);
+
+        return results.Aggregate(new TransferSummary(), static (summary, result) => summary + result);
+    }
+
+    private async Task<TransferSummary> UploadFolderWorkerAsync(
+        System.Collections.Concurrent.ConcurrentQueue<FolderUploadFile> pendingFiles,
+        SftpClient? primaryClient,
+        CancellationToken cancellationToken,
+        System.Collections.Concurrent.ConcurrentQueue<TransferFailure> failures)
+    {
+        SftpClient? auxiliaryClient = null;
+        var client = primaryClient;
+        if (client == null)
+        {
             try
             {
-                await RunClientActionAsync(client, token =>
-                {
-                    token.ThrowIfCancellationRequested();
-                    if (client.Exists(remoteSubfolderPath))
-                    {
-                        throw new IOException($"Duplicate remote destination: {remoteSubfolderPath}");
-                    }
-                    client.CreateDirectory(remoteSubfolderPath);
-                }, cancellationToken);
-                summary += new TransferSummary(1, 0);
-                summary += await UploadFolderContentsAsync(subfolder, remoteSubfolderPath, cancellationToken);
+                auxiliaryClient = await ConnectAuxiliarySftpAsync(cancellationToken).ConfigureAwait(false);
+                client = auxiliaryClient;
             }
             catch (OperationCanceledException)
             {
@@ -2907,12 +3010,102 @@ public sealed partial class SftpTabContent : UserControl
             }
             catch (Exception ex)
             {
-                Log.Error($"Error uploading subfolder '{subfolder.Name}': {ex.Message}", ex);
-                summary += new TransferSummary(0, 1);
+                // A server may limit a user to one session. The primary worker
+                // remains available and drains the queue without sacrificing the
+                // all-or-nothing staging contract.
+                Log.Warning($"Folder upload parallel worker is unavailable; falling back to one SFTP session: {ex.Message}");
+                return new TransferSummary();
             }
         }
 
+        var summary = new TransferSummary();
+        try
+        {
+            while (pendingFiles.TryDequeue(out var file))
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                try
+                {
+                    await UploadFileWithProgress(
+                        file.File,
+                        file.RemotePath,
+                        file.Size,
+                        file.Index,
+                        file.TotalFiles,
+                        cancellationToken,
+                        client);
+                    summary += new TransferSummary(1, 0);
+                }
+                catch (OperationCanceledException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"Error uploading folder file '{file.RemotePath}': {ex.Message}", ex);
+                    failures.Enqueue(new TransferFailure(file.RemotePath, ex.Message));
+                    summary += new TransferSummary(0, 1);
+                }
+            }
+        }
+        finally
+        {
+            auxiliaryClient?.Dispose();
+        }
+
         return summary;
+    }
+
+    private async Task ShowUploadFailureSummaryAsync(
+        TransferSummary summary,
+        IReadOnlyCollection<TransferFailure> failures)
+    {
+        var dialogRoot = XamlRoot;
+        if (_isDisposed || dialogRoot == null)
+        {
+            Log.Warning("Upload finished with errors while its tab was detached");
+            return;
+        }
+
+        var distinctFailures = failures
+            .DistinctBy(failure => (failure.Path, failure.Message))
+            .ToList();
+        var totalItems = summary.Succeeded + summary.Failed;
+        var message = string.Format(
+            LocalizationHelper.GetString("UploadCompletedWithErrors"),
+            summary.Succeeded,
+            totalItems,
+            summary.Failed);
+
+        if (distinctFailures.Count > 0)
+        {
+            var details = string.Join(
+                Environment.NewLine,
+                distinctFailures.Take(15).Select(failure => $"• {failure.Path}: {failure.Message}"));
+            var remaining = distinctFailures.Count - 15;
+            if (remaining > 0)
+            {
+                details += Environment.NewLine + string.Format(
+                    LocalizationHelper.GetString("DragSkippedMoreItems"),
+                    remaining);
+            }
+
+            message += Environment.NewLine + Environment.NewLine + details;
+        }
+
+        var dialog = new ContentDialog
+        {
+            Title = LocalizationHelper.GetString("ErrorDialogTitle"),
+            Content = new TextBlock
+            {
+                Text = message,
+                TextWrapping = TextWrapping.Wrap,
+                IsTextSelectionEnabled = true
+            },
+            CloseButtonText = LocalizationHelper.GetString("OK"),
+            XamlRoot = dialogRoot
+        };
+        await dialog.ShowAsync();
     }
 
     private async void DeleteButton_Click(object sender, RoutedEventArgs e)

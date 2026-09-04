@@ -1,0 +1,981 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" msdata:Ordinal="5" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- Main Window -->
+  <data name="AppTitle.Text" xml:space="preserve">
+    <value>SFTP 瀏覽器</value>
+  </data>
+  <data name="WelcomeTitle.Text" xml:space="preserve">
+    <value>歡迎使用 SFTP 瀏覽器</value>
+  </data>
+  <data name="WelcomeMessage.Text" xml:space="preserve">
+    <value>從左側面板中選擇一個已儲存的連接或建立新連接以開始。</value>
+  </data>
+  <data name="ConnectionsTitle.Text" xml:space="preserve">
+    <value>連接</value>
+  </data>
+  <data name="ConnectionsSubtitle.Text" xml:space="preserve">
+    <value>伺服器之間切換</value>
+  </data>
+  <data name="SettingsText.Text" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  
+  <!-- Toolbar -->
+  <data name="BackButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>返回</value>
+  </data>
+  <data name="ForwardButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>前進</value>
+  </data>
+  <data name="UpButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>上升一級</value>
+  </data>
+  <data name="RefreshButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>重新整理</value>
+  </data>
+  <data name="HomeButton" xml:space="preserve">
+    <value>首頁</value>
+  </data>
+  
+  <!-- Action Buttons -->
+  <data name="CreateButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>創建</value>
+  </data>
+  <data name="NewFolderItem.Text" xml:space="preserve">
+    <value>新建資料夾</value>
+  </data>
+  <data name="NewFileItem.Text" xml:space="preserve">
+    <value>新文件</value>
+  </data>
+  <data name="UploadButton" xml:space="preserve">
+    <value>上傳</value>
+  </data>
+  <data name="DownloadButton" xml:space="preserve">
+    <value>下載</value>
+  </data>
+  <data name="CutButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>切</value>
+  </data>
+  <data name="CopyButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>複製</value>
+  </data>
+  <data name="PasteButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>貼上</value>
+  </data>
+  <data name="RenameButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>重新命名</value>
+  </data>
+  <data name="DeleteButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>刪除</value>
+  </data>
+  <data name="SortButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>排序</value>
+  </data>
+  <data name="TerminalToggleButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>打開 SSH 終端</value>
+  </data>
+  <data name="TerminalTitle.Text" xml:space="preserve">
+    <value>終端</value>
+  </data>
+  <data name="TerminalTitleLabel" xml:space="preserve">
+    <value>終端</value>
+  </data>
+  <data name="TerminalClearButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>清除終端</value>
+  </data>
+  <data name="TerminalSaveButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>保存終端輸出</value>
+  </data>
+  <data name="TerminalMaximizeButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>最大化終端</value>
+  </data>
+  <data name="TerminalCloseButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>關閉終端</value>
+  </data>
+  <data name="TerminalConnecting" xml:space="preserve">
+    <value>正在連接 SSH 終端...</value>
+  </data>
+  <data name="TerminalUnavailable" xml:space="preserve">
+    <value>SFTP 連線不可用。
+</value>
+  </data>
+  <data name="TerminalConnectionFailed" xml:space="preserve">
+    <value>SSH終端連線失敗</value>
+  </data>
+  <data name="TerminalOutputSavePickerTitle" xml:space="preserve">
+    <value>保存終端輸出</value>
+  </data>
+  <data name="TerminalOutputSaved" xml:space="preserve">
+    <value>終端輸出已儲存</value>
+  </data>
+  <data name="TerminalOutputSaveFailed" xml:space="preserve">
+    <value>無法儲存終端輸出：{0}</value>
+  </data>
+  
+  <!-- Sort Options -->
+  <data name="SortByNameAsc.Text" xml:space="preserve">
+    <value>按名字 ↑</value>
+  </data>
+  <data name="SortByNameDesc.Text" xml:space="preserve">
+    <value>按名字↓</value>
+  </data>
+  <data name="SortBySizeAsc.Text" xml:space="preserve">
+    <value>按尺寸 ↑</value>
+  </data>
+  <data name="SortBySizeDesc.Text" xml:space="preserve">
+    <value>按尺寸 ↓</value>
+  </data>
+  <data name="SortByDateAsc.Text" xml:space="preserve">
+    <value>按日期 ↑</value>
+  </data>
+  <data name="SortByDateDesc.Text" xml:space="preserve">
+    <value>按日期 ↓</value>
+  </data>
+  
+  <!-- Dialogs -->
+  <data name="UploadPickerTitle" xml:space="preserve">
+    <value>選擇要上傳的文件</value>
+  </data>
+  <data name="DownloadFolderPickerTitle" xml:space="preserve">
+    <value>選擇下載資料夾</value>
+  </data>
+  <data name="CreateFolderTitle" xml:space="preserve">
+    <value>建立新資料夾</value>
+  </data>
+  <data name="CreateFileTitle" xml:space="preserve">
+    <value>建立新文件</value>
+  </data>
+  <data name="RenameTitle" xml:space="preserve">
+    <value>重新命名</value>
+  </data>
+  <data name="DeleteTitle" xml:space="preserve">
+    <value>刪除確認</value>
+  </data>
+  <data name="DeleteConfirmation" xml:space="preserve">
+    <value>您確定要刪除所選項目 ({0}) 嗎？</value>
+  </data>
+  <data name="CreateButtonDialog" xml:space="preserve">
+    <value>創建</value>
+  </data>
+  <data name="RenameButtonDialog" xml:space="preserve">
+    <value>重新命名</value>
+  </data>
+  <data name="DeleteButtonDialog" xml:space="preserve">
+    <value>刪除</value>
+  </data>
+  <data name="CancelButton" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="FileNamePlaceholder" xml:space="preserve">
+    <value>檔案名稱</value>
+  </data>
+  <data name="NewNamePlaceholder" xml:space="preserve">
+    <value>新名稱</value>
+  </data>
+  <data name="DefaultFileName" xml:space="preserve">
+    <value>新文件.txt</value>
+  </data>
+  <data name="NewFolder" xml:space="preserve">
+    <value>新建資料夾</value>
+  </data>
+  
+  <!-- Connection Dialog -->
+  <data name="ConnectDialog.Title" xml:space="preserve">
+    <value>連接到 SFTP 伺服器</value>
+  </data>
+  <data name="ConnectDialog.PrimaryButtonText" xml:space="preserve">
+    <value>儲存並連接</value>
+  </data>
+  <data name="ConnectDialog.CloseButtonText" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="ConnectDialog.SecondaryButtonText" xml:space="preserve">
+    <value>測試連接</value>
+  </data>
+  <data name="TestingConnection" xml:space="preserve">
+    <value>測試連接...</value>
+  </data>
+  <data name="ConnectingStatusText.Text" xml:space="preserve">
+    <value>正在連接...</value>
+  </data>
+  <data name="ConnectionTestSucceeded" xml:space="preserve">
+    <value>連線成功</value>
+  </data>
+  <data name="ConnectionTestFailed" xml:space="preserve">
+    <value>連線失敗</value>
+  </data>
+  <data name="ConnectionTestMissingFields" xml:space="preserve">
+    <value>首先輸入主機名稱和使用者名稱</value>
+  </data>
+  <data name="ConnectionNameBox.Header" xml:space="preserve">
+    <value>連接名稱</value>
+  </data>
+  <data name="ConnectionNameBox.PlaceholderText" xml:space="preserve">
+    <value>我的伺服器</value>
+  </data>
+  <data name="ConnectionGroupBox.Header" xml:space="preserve">
+    <value>團體（可選）</value>
+  </data>
+  <data name="ConnectionGroupBox.PlaceholderText" xml:space="preserve">
+    <value>選擇或建立群組</value>
+  </data>
+  <data name="ConnectionGroupLabel" xml:space="preserve">
+    <value>團體（可選）</value>
+  </data>
+  <data name="ConnectionGroupPlaceholder" xml:space="preserve">
+    <value>選擇或建立群組</value>
+  </data>
+  <data name="ConnectionAppearanceLabel" xml:space="preserve">
+    <value>連接符號及顏色</value>
+  </data>
+  <data name="GroupAppearanceLabel" xml:space="preserve">
+    <value>組符號和顏色</value>
+  </data>
+  <data name="SymbolCodeLabel" xml:space="preserve">
+    <value>Segoe Fluent 圖示符號</value>
+  </data>
+  <data name="SymbolCodePlaceholder" xml:space="preserve">
+    <value>Unicode 十六進位，例如 E753</value>
+  </data>
+  <data name="EditConnectionTitle" xml:space="preserve">
+    <value>編輯連接</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>儲存</value>
+  </data>
+  <data name="EditPasswordLabel" xml:space="preserve">
+    <value>密碼（留空以保持最新）</value>
+  </data>
+  <data name="EditPasswordPlaceholder" xml:space="preserve">
+    <value>輸入新密碼或留空</value>
+  </data>
+  <data name="HostnameBox.Header" xml:space="preserve">
+    <value>主機名稱或IP</value>
+  </data>
+  <data name="HostnameBox.PlaceholderText" xml:space="preserve">
+    <value>example.com 或 192.168.1.1</value>
+  </data>
+  <data name="PortBox.Header" xml:space="preserve">
+    <value>港口</value>
+  </data>
+  <data name="UsernameBox.Header" xml:space="preserve">
+    <value>使用者名稱</value>
+  </data>
+  <data name="UsernameBox.PlaceholderText" xml:space="preserve">
+    <value>根</value>
+  </data>
+  <data name="PasswordBox.Header" xml:space="preserve">
+    <value>密碼</value>
+  </data>
+  <data name="PasswordBox.PlaceholderText" xml:space="preserve">
+    <value>輸入密碼</value>
+  </data>
+  <data name="ConnectionNotesBox.Header" xml:space="preserve">
+    <value>註釋（可選）</value>
+  </data>
+  <data name="ConnectionNotesBox.PlaceholderText" xml:space="preserve">
+    <value>添加有關此連接的詳細信息</value>
+  </data>
+  <data name="ConnectionNotesLabel" xml:space="preserve">
+    <value>註釋（可選）</value>
+  </data>
+  <data name="ConnectionNotesPlaceholder" xml:space="preserve">
+    <value>添加有關此連接的詳細信息</value>
+  </data>
+  <data name="SaveCredentialsCheckbox.Content" xml:space="preserve">
+    <value>儲存密碼或金鑰複雜密碼</value>
+  </data>
+  <data name="CredentialStorageInfoButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>密碼儲存的工作原理</value>
+  </data>
+  <data name="CredentialStorageInfoButton.AutomationProperties.Name" xml:space="preserve">
+    <value>密碼儲存的工作原理</value>
+  </data>
+  <data name="CredentialStorageInfoText.Text" xml:space="preserve">
+    <value>儲存的密碼和金鑰複雜密碼會以 SFTP Explorer 一般認證的形式儲存在 Windows 認證管理員中。Windows 會將其加密，且僅供目前使用者使用。私密金鑰檔案仍保留在所選路徑。您可在 控制台 &gt; 認證管理員 &gt; Windows 認證 中檢視或移除認證。</value>
+  </data>
+
+  <!-- Connections Panel -->
+  <data name="ConnectionsPanelTitle.Text" xml:space="preserve">
+    <value>連接</value>
+  </data>
+  <data name="ConnectionsPanelSubtitle.Text" xml:space="preserve">
+    <value>選擇已儲存的連接或建立新的連接</value>
+  </data>
+  <data name="NoConnectionsTitle.Text" xml:space="preserve">
+    <value>沒有儲存的連接</value>
+  </data>
+  <data name="NoConnectionsMessage.Text" xml:space="preserve">
+    <value>建立您的第一個 SFTP 連線以開始</value>
+  </data>
+  <data name="EditMenuItem.Text" xml:space="preserve">
+    <value>編輯</value>
+  </data>
+  <data name="DeleteMenuItem.Text" xml:space="preserve">
+    <value>刪除</value>
+  </data>
+  <data name="RenameMenuItem" xml:space="preserve">
+    <value>重新命名</value>
+  </data>
+  <data name="OpenMenuItem" xml:space="preserve">
+    <value>打開</value>
+  </data>
+  <data name="OpenWithMenuItem" xml:space="preserve">
+    <value>打開用...</value>
+  </data>
+  <data name="RunMenuItem" xml:space="preserve">
+    <value>運行</value>
+  </data>
+  <data name="RunWithSudoMenuItem" xml:space="preserve">
+    <value>使用 sudo 運行</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>下載</value>
+  </data>
+  <data name="DownloadMultiple" xml:space="preserve">
+    <value>下載（{0} 項）</value>
+  </data>
+  <data name="Cut" xml:space="preserve">
+    <value>切</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>複製</value>
+  </data>
+  <data name="Paste" xml:space="preserve">
+    <value>貼上</value>
+  </data>
+  <data name="NewConnectionText.Text" xml:space="preserve">
+    <value>新連接</value>
+  </data>
+  <data name="UngroupedConnections" xml:space="preserve">
+    <value>未分組</value>
+  </data>
+  <data name="CollapseConnectionGroup" xml:space="preserve">
+    <value>折疊組</value>
+  </data>
+  <data name="ExpandConnectionGroup" xml:space="preserve">
+    <value>展開組</value>
+  </data>
+  
+  <!-- Status Messages -->
+  <data name="FileUploaded" xml:space="preserve">
+    <value>文件“{0}”已上傳</value>
+  </data>
+  <data name="FileDownloaded" xml:space="preserve">
+    <value>檔案「{0}」已下載</value>
+  </data>
+  <data name="FileCreated" xml:space="preserve">
+    <value>檔案“{0}”已創建</value>
+  </data>
+  <data name="SelectFilesToDownload" xml:space="preserve">
+    <value>選擇要下載的文件</value>
+  </data>
+  <data name="ErrorCreatingFile" xml:space="preserve">
+    <value>建立檔案時發生錯誤：{0}</value>
+  </data>
+  <data name="ReadyStatus.Text" xml:space="preserve">
+    <value>準備好了</value>
+  </data>
+  <data name="Ready" xml:space="preserve">
+    <value>準備好了</value>
+  </data>
+  <data name="PreparingDragDrop" xml:space="preserve">
+    <value>正在準備拖曳文件...</value>
+  </data>
+  <data name="DragReady" xml:space="preserve">
+    <value>已就緒！請再次拖曳以複製</value>
+  </data>
+  <data name="DragDropComplete" xml:space="preserve">
+    <value>下載完成</value>
+  </data>
+  <data name="NoConnectionText.Text" xml:space="preserve">
+    <value>沒有 SFTP 連接</value>
+  </data>
+  <data name="FolderCreated" xml:space="preserve">
+    <value>已建立資料夾“{0}”</value>
+  </data>
+  <data name="ErrorCreatingFolder" xml:space="preserve">
+    <value>建立資料夾時發生錯誤：{0}</value>
+  </data>
+  <data name="ErrorUploading" xml:space="preserve">
+    <value>上傳「{0}」時發生錯誤：{1}</value>
+  </data>
+  <data name="DownloadingFile" xml:space="preserve">
+    <value>正在下載“{0}”</value>
+  </data>
+  <data name="ErrorDownloading" xml:space="preserve">
+    <value>下載「{0}」時發生錯誤：{1}</value>
+  </data>
+  <data name="ErrorDeleting" xml:space="preserve">
+    <value>刪除「{0}」時發生錯誤：{1}</value>
+  </data>
+  <data name="ItemsDeleted" xml:space="preserve">
+    <value>刪除的項目：{0}</value>
+  </data>
+  <data name="ItemsCut" xml:space="preserve">
+    <value>削減的項目：{0}</value>
+  </data>
+  <data name="ItemsCopied" xml:space="preserve">
+    <value>複製的項目：{0}</value>
+  </data>
+  <data name="Copying" xml:space="preserve">
+    <value>複印</value>
+  </data>
+  <data name="ItemsMoved" xml:space="preserve">
+    <value>物品已移動</value>
+  </data>
+  <data name="ItemsPasted" xml:space="preserve">
+    <value>複製的項目</value>
+  </data>
+  <data name="ErrorPasting" xml:space="preserve">
+    <value>貼上錯誤：{0}</value>
+  </data>
+  <data name="RenamedTo" xml:space="preserve">
+    <value>重新命名為“{0}”</value>
+  </data>
+  <data name="ErrorRenaming" xml:space="preserve">
+    <value>重新命名錯誤：{0}</value>
+  </data>
+  <data name="SortedByNameAsc" xml:space="preserve">
+    <value>按名稱排序 (A-Z)</value>
+  </data>
+  <data name="SortedByNameDesc" xml:space="preserve">
+    <value>按名稱排序 (Z-A)</value>
+  </data>
+  <data name="SortedBySizeAsc" xml:space="preserve">
+    <value>按大小排序 (↑)</value>
+  </data>
+  <data name="SortedBySizeDesc" xml:space="preserve">
+    <value>按大小排序 (↓)</value>
+  </data>
+  <data name="SortedByDateAsc" xml:space="preserve">
+    <value>按日期排序 (↑)</value>
+  </data>
+  <data name="SortedByDateDesc" xml:space="preserve">
+    <value>按日期排序 (↓)</value>
+  </data>
+  <data name="FileAlreadyOpen" xml:space="preserve">
+    <value>「{0}」已開啟（使用快取）</value>
+  </data>
+  <data name="LoadingFile" xml:space="preserve">
+    <value>正在載入“{0}”...</value>
+  </data>
+  <data name="FileLoadedAutoSync" xml:space="preserve">
+    <value>已載入“{0}”（變更將自動上傳）</value>
+  </data>
+  <data name="ErrorOpeningFile" xml:space="preserve">
+    <value>開啟檔案時發生錯誤：{0}</value>
+  </data>
+  <data name="FileSyncing" xml:space="preserve">
+    <value>⏳ 檔案同步：「{0}」...</value>
+  </data>
+  <data name="ChangesSynced" xml:space="preserve">
+    <value>✓ 已上傳更改“{0}”</value>
+  </data>
+  <data name="ErrorUploadingChanges" xml:space="preserve">
+    <value>上傳錯誤：{0}</value>
+  </data>
+  <data name="OpenedDialogFor" xml:space="preserve">
+    <value>開啟「{0}」的選擇對話框</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>錯誤：{0}</value>
+  </data>
+  <data name="FilesDownloaded" xml:space="preserve">
+    <value>下載的檔案：{0}</value>
+  </data>
+  <data name="ErrorDownloadingMultiple" xml:space="preserve">
+    <value>下載時發生錯誤：{0}</value>
+  </data>
+  <data name="DownloadingProgress" xml:space="preserve">
+    <value>正在下載（{0}/{1}）：“{2}”</value>
+  </data>
+  <data name="DownloadingFileNum" xml:space="preserve">
+    <value>正在下載檔案#{0}：“{1}”</value>
+  </data>
+  <data name="TotalDownloaded" xml:space="preserve">
+    <value>總計：{0}</value>
+  </data>
+  <data name="FileProgress" xml:space="preserve">
+    <value>文件第 {0} 個（共 {1} 個）</value>
+  </data>
+  <data name="FilesDownloadedCount" xml:space="preserve">
+    <value>{0} 個文件</value>
+  </data>
+  <data name="ErrorDialogTitle" xml:space="preserve">
+    <value>錯誤</value>
+  </data>
+  <data name="ErrorOpeningFileDialog" xml:space="preserve">
+    <value>無法開啟檔案「{0}」:\n{1}</value>
+  </data>
+  <data name="ErrorOpeningDialogSelection" xml:space="preserve">
+    <value>無法開啟選擇對話框:\n{0}</value>
+  </data>
+  <data name="OK" xml:space="preserve">
+    <value>好的</value>
+  </data>
+  <data name="PropertiesTitle" xml:space="preserve">
+    <value>屬性</value>
+  </data>
+  <data name="PropertiesName" xml:space="preserve">
+    <value>姓名：{0}</value>
+  </data>
+  <data name="PropertiesPath" xml:space="preserve">
+    <value>路徑：{0}</value>
+  </data>
+  <data name="PropertiesSize" xml:space="preserve">
+    <value>尺寸：{0}</value>
+  </data>
+  <data name="PropertiesModified" xml:space="preserve">
+    <value>修改：{0}</value>
+  </data>
+  <data name="PropertiesPermissions" xml:space="preserve">
+    <value>權限：{0}</value>
+  </data>
+  <data name="PropertiesType" xml:space="preserve">
+    <value>類型：{0}</value>
+  </data>
+  <data name="PropertiesTypeFolder" xml:space="preserve">
+    <value>資料夾</value>
+  </data>
+  <data name="PropertiesTypeFile" xml:space="preserve">
+    <value>文件</value>
+  </data>
+  <data name="PropertiesTypeFileSystem" xml:space="preserve">
+    <value>檔案系統</value>
+  </data>
+  <data name="PropertiesCapacity" xml:space="preserve">
+    <value>容量：{0}</value>
+  </data>
+  <data name="PropertiesUsedSpace" xml:space="preserve">
+    <value>已用空間：{0}</value>
+  </data>
+  <data name="PropertiesFreeSpace" xml:space="preserve">
+    <value>可用空間：{0}</value>
+  </data>
+  <data name="FreeSpaceFormat" xml:space="preserve">
+    <value>{0} 免於 {1}</value>
+  </data>
+  <data name="RefreshContextMenuItem" xml:space="preserve">
+    <value>重新整理</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>關閉</value>
+  </data>
+  <data name="UploadingProgress" xml:space="preserve">
+    <value>正在上傳（{0}/{1}）：“{2}”</value>
+  </data>
+  <data name="FilesUploaded" xml:space="preserve">
+    <value>已上傳 {0} 個文件</value>
+  </data>
+  
+  <!-- Progress indicators -->
+  <data name="SpeedPerSecond" xml:space="preserve">
+    <value>{0}/秒</value>
+  </data>
+  <data name="TimeRemaining" xml:space="preserve">
+    <value>預計到達時間：{0}</value>
+  </data>
+  <data name="LoadedItems" xml:space="preserve">
+    <value>已載入 {0} 項</value>
+  </data>
+  <data name="ItemCount" xml:space="preserve">
+    <value>{0} 項</value>
+  </data>
+  <data name="ItemCountSelected" xml:space="preserve">
+    <value>已選擇 {0} 個（共 {1} 個）</value>
+  </data>
+  
+  <!-- Column Headers -->
+  <data name="ColumnName.Text" xml:space="preserve">
+    <value>名稱</value>
+  </data>
+  <data name="ColumnFreeSpace.Text" xml:space="preserve">
+    <value>可用空間</value>
+  </data>
+  <data name="ColumnPermissions.Text" xml:space="preserve">
+    <value>權限</value>
+  </data>
+  <data name="ColumnOwner.Text" xml:space="preserve">
+    <value>業主</value>
+  </data>
+  <data name="ColumnGroup.Text" xml:space="preserve">
+    <value>集團</value>
+  </data>
+  <data name="ColumnModified.Text" xml:space="preserve">
+    <value>修改</value>
+  </data>
+  <data name="ColumnSize.Text" xml:space="preserve">
+    <value>尺寸</value>
+  </data>
+  
+  <!-- Toolbar tooltips -->
+  <data name="UploadToolbarButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>上傳文件</value>
+  </data>
+  <data name="DownloadToolbarButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>下載選定的</value>
+  </data>
+  
+  <!-- Tab Context Menu -->
+  <data name="TabContextMenuCloseTab" xml:space="preserve">
+    <value>關閉選項卡</value>
+  </data>
+  <data name="TabContextMenuCloseOtherTabs" xml:space="preserve">
+    <value>關閉其他選項卡</value>
+  </data>
+  <data name="TabContextMenuCloseTabsToTheRight" xml:space="preserve">
+    <value>關閉右側的選項卡</value>
+  </data>
+  <data name="TabContextMenuDuplicateTab" xml:space="preserve">
+    <value>重複標籤</value>
+  </data>
+  <data name="CalculatingFiles" xml:space="preserve">
+    <value>正在計算文件...</value>
+  </data>
+  <data name="NoReadPermission" xml:space="preserve">
+    <value>“{0}”沒有讀取權限</value>
+  </data>
+  <data name="NoWritePermission" xml:space="preserve">
+    <value>資料夾“{0}”沒有寫入權限</value>
+  </data>
+  <data name="SomeFilesNoReadPermission" xml:space="preserve">
+    <value>由於權限不足，無法下載 {0} 項</value>
+  </data>
+  <data name="PermissionDenied" xml:space="preserve">
+    <value>權限被拒絕</value>
+  </data>
+  <data name="InsufficientPermissions" xml:space="preserve">
+    <value>權限不足</value>
+  </data>
+  <data name="OpenFolderWithSudoPrompt" xml:space="preserve">
+    <value>您沒有開啟「{0}」的權限。用 sudo 打開這個資料夾？</value>
+  </data>
+  <data name="OpenFileWithSudoPrompt" xml:space="preserve">
+    <value>您無權讀取“{0}”。使用 sudo 以唯讀方式開啟此檔案？</value>
+  </data>
+  <data name="OpenWithSudoButton" xml:space="preserve">
+    <value>使用 sudo 打開</value>
+  </data>
+  <data name="OpenedFileWithSudoReadOnly" xml:space="preserve">
+    <value>使用 sudo 以唯讀方式開啟：{0}</value>
+  </data>
+  <data name="SudoFolderInvalidResponse" xml:space="preserve">
+    <value>使用 sudo 開啟資料夾時，伺服器傳回無效回應。</value>
+  </data>
+  <data name="ContinueDownloadingRemaining" xml:space="preserve">
+    <value>繼續下載剩餘檔案嗎？</value>
+  </data>
+  <data name="ContinueButton" xml:space="preserve">
+    <value>繼續</value>
+  </data>
+  <data name="EnterPassword" xml:space="preserve">
+    <value>輸入密碼</value>
+  </data>
+  <data name="EnterPasswordLabel" xml:space="preserve">
+    <value>輸入密碼</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>連線需要密碼</value>
+  </data>
+  <data name="PasswordFor" xml:space="preserve">
+    <value>密碼為</value>
+  </data>
+  <data name="Connect" xml:space="preserve">
+    <value>連接</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="DeleteFailedTitle" xml:space="preserve">
+    <value>刪除不完整</value>
+  </data>
+  <data name="DeleteFailedMessage" xml:space="preserve">
+    <value>由於錯誤或權限不足，無法刪除以下項目：\n{0}</value>
+  </data>
+  <data name="UsernameLabel" xml:space="preserve">
+    <value>使用者名稱</value>
+  </data>
+  <data name="PasswordLabel" xml:space="preserve">
+    <value>密碼</value>
+  </data>
+  <data name="EnterUsernameLabel" xml:space="preserve">
+    <value>輸入使用者名稱</value>
+  </data>
+  <data name="ConnectionFailedTitle" xml:space="preserve">
+    <value>連線失敗</value>
+  </data>
+  <data name="ConnectionFailedMessage" xml:space="preserve">
+    <value>無法連接到 {0}：</value>
+  </data>
+  <data name="InvalidURLTitle" xml:space="preserve">
+    <value>無效網址</value>
+  </data>
+  <data name="InvalidURLMessage" xml:space="preserve">
+    <value>無法解析 URL：</value>
+  </data>
+  <data name="Deleting" xml:space="preserve">
+    <value>正在刪除...</value>
+  </data>
+  <data name="Canceling" xml:space="preserve">
+    <value>正在取消操作...</value>
+  </data>
+  <data name="OperationCanceled" xml:space="preserve">
+    <value>操作已取消</value>
+  </data>
+  <data name="DragTransferCanceled" xml:space="preserve">
+    <value>拖放傳輸已取消</value>
+  </data>
+  <data name="DragTransferFailed" xml:space="preserve">
+    <value>無法下載任何文件</value>
+  </data>
+  <data name="DragTransferFailedWithError" xml:space="preserve">
+    <value>拖放傳輸失敗：{0}</value>
+  </data>
+  <data name="DragTransferCompleteWithSkipped" xml:space="preserve">
+    <value>轉移已準備好；跳過了 {0} 個無法存取的項目</value>
+  </data>
+  <data name="DragPermissionErrorDescription" xml:space="preserve">
+    <value>無法下載該項目，因為連接的使用者沒有讀取權限。選擇如何繼續。</value>
+  </data>
+  <data name="DragTransferErrorTitle" xml:space="preserve">
+    <value>下載錯誤</value>
+  </data>
+  <data name="DragTransferErrorDescription" xml:space="preserve">
+    <value>無法下載該項目。選擇如何繼續。</value>
+  </data>
+  <data name="DragOptionSkipItem" xml:space="preserve">
+    <value>跳過此項目</value>
+  </data>
+  <data name="DragOptionSkipAllPermissionErrors" xml:space="preserve">
+    <value>跳過本次傳輸中的所有權限錯誤</value>
+  </data>
+  <data name="DragOptionTrySudo" xml:space="preserve">
+    <value>嘗試 sudo：使用 ACL 授予此使用者讀取權限，然後重試</value>
+  </data>
+  <data name="DragOptionRetry" xml:space="preserve">
+    <value>重試此項目</value>
+  </data>
+  <data name="DragOptionSkipAllSimilarErrors" xml:space="preserve">
+    <value>跳過本次傳輸中的所有類似錯誤</value>
+  </data>
+  <data name="DragOptionCancelTransfer" xml:space="preserve">
+    <value>取消整個轉移</value>
+  </data>
+  <data name="DragSudoFixInProgress" xml:space="preserve">
+    <value>嘗試使用 sudo 授予讀取權限：{0}</value>
+  </data>
+  <data name="DragSudoFixFailed" xml:space="preserve">
+    <value>sudo 無法授予存取權限：{0}</value>
+  </data>
+  <data name="DragSudoNoConnection" xml:space="preserve">
+    <value>SSH 連線資訊不可用</value>
+  </data>
+  <data name="DragSudoInvalidUsername" xml:space="preserve">
+    <value>SSH 使用者名稱無法在 ACL 指令中安全使用</value>
+  </data>
+  <data name="DragSudoExitCode" xml:space="preserve">
+    <value>sudo/setfacl 退出，代碼為 {0}</value>
+  </data>
+  <data name="DragTransferIncompleteTitle" xml:space="preserve">
+    <value>傳輸已完成，但已跳過項目</value>
+  </data>
+  <data name="DragTransferIncompleteMessage" xml:space="preserve">
+    <value>已跳過 {0} 項。複製了可存取的文件。
+
+{1}</value>
+  </data>
+  <data name="DragSkippedMoreItems" xml:space="preserve">
+    <value>....以及另外 {0} 項</value>
+  </data>
+  <data name="DragPreparedDataProvided" xml:space="preserve">
+    <value>準備好的資料夾交給Windows</value>
+  </data>
+  <data name="DragPreparationAlreadyRunning" xml:space="preserve">
+    <value>資料夾仍在準備中。請等候就緒訊息。</value>
+  </data>
+  <data name="DragPreparationReady" xml:space="preserve">
+    <value>資料夾已準備就緒。請再次將其拖曳到目標位置。</value>
+  </data>
+  <data name="DragPreparationReadyWithSkipped" xml:space="preserve">
+    <value>資料夾已準備就緒，略過了 {0} 個項目。請再次將其拖曳到目標位置。</value>
+  </data>
+  <data name="DragPreparationReadyTitle" xml:space="preserve">
+    <value>資料夾已準備好複製</value>
+  </data>
+  <data name="DragPreparationReadyMessage" xml:space="preserve">
+    <value>資料夾已下載到暫存快取。請再次將相同選取範圍拖曳到目標位置；下一次拖放會立即開始複製。</value>
+  </data>
+  <data name="DragPreparationReadyWithSkippedMessage" xml:space="preserve">
+    <value>資料夾已下載到暫存快取，略過了 {0} 個項目。請再次將相同選取範圍拖曳到目標位置；下一次拖放會複製所有可存取的檔案。
+
+{1}</value>
+  </data>
+  <data name="DragPreparationFailedTitle" xml:space="preserve">
+    <value>資料夾準備失敗</value>
+  </data>
+  <data name="DragPreparationFailedMessage" xml:space="preserve">
+    <value>沒有準備任何物品。沒有任何東西被送到目的地。</value>
+  </data>
+  <data name="DragPreparationFailedWithErrorMessage" xml:space="preserve">
+    <value>無法準備該資料夾。沒有任何東西被送到目的地。
+
+{0}</value>
+  </data>
+  <data name="DragLargeFolderPreparingTitle" xml:space="preserve">
+    <value>大文件夾準備開始</value>
+  </data>
+  <data name="DragLargeFolderPreparingMessage" xml:space="preserve">
+    <value>第一次拖放會在本機準備資料夾。請留意下方進度；出現就緒訊息後，再次將資料夾拖曳到目標位置。</value>
+  </data>
+  <data name="OpenSftpConnection" xml:space="preserve">
+    <value>開啟 SFTP 連接</value>
+  </data>
+  <data name="OpenSshTerminal" xml:space="preserve">
+    <value>打開 SSH 終端</value>
+  </data>
+  <data name="UnknownHostKeyTitle" xml:space="preserve">
+    <value>未知 SSH 主機金鑰</value>
+  </data>
+  <data name="TrustHostKeyButton" xml:space="preserve">
+    <value>信任並聯繫</value>
+  </data>
+  <data name="HostKeyChangedTitle" xml:space="preserve">
+    <value>SSH 主機金鑰已變更 — 連線被阻止</value>
+  </data>
+  <data name="ForgetHostKeyButton" xml:space="preserve">
+    <value>忘記已儲存的主機密鑰</value>
+  </data>
+  <data name="HostKeyRemovedTitle" xml:space="preserve">
+    <value>已刪除已儲存的主機密鑰</value>
+  </data>
+  <data name="HostKeyRemoveFailedTitle" xml:space="preserve">
+    <value>無法刪除已儲存的主機金鑰</value>
+  </data>
+  <data name="ConnectionDataErrorTitle" xml:space="preserve">
+    <value>儲存的連接資料錯誤</value>
+  </data>
+  <data name="SavedConnectionsUnavailableTitle" xml:space="preserve">
+    <value>保存的連線不可用</value>
+  </data>
+  <data name="SavedConnectionsErrorTitle" xml:space="preserve">
+    <value>儲存的連線錯誤</value>
+  </data>
+  <data name="SavedConnectionsUnavailableSubtitle" xml:space="preserve">
+    <value>保存的連線不可用</value>
+  </data>
+  <data name="HostKeyFirstUseMessage" xml:space="preserve">
+    <value>這是首次連線到 {0}:{1}。請先與伺服器管理員核對此指紋，再決定是否信任。
+{2}  {3}</value>
+  </data>
+  <data name="HostKeyChangedFollowUpMessage" xml:space="preserve">
+    <value>忘記已儲存的主機金鑰不會連線到伺服器，也不會信任新的金鑰。請獨立驗證新指紋後重新發起連線。</value>
+  </data>
+  <data name="HostKeyChangedDetailsMessage" xml:space="preserve">
+    <value>安全性警告：{0}:{1} 的 SSH 主機金鑰已變更。連接被阻止，因為這可能表示伺服器更換或中間人攻擊。
+
+預期：{2} SHA256：{3}
+收到：{4} SHA256：{5}</value>
+  </data>
+  <data name="HostKeyForgottenMessage" xml:space="preserve">
+    <value>沒有建立任何連線。驗證新指紋，然後再次連接以明確信任它。</value>
+  </data>
+  <data name="SavedConnectionsLoadErrorMessage" xml:space="preserve">
+    <value>無法載入已儲存的連線。現有文件保持不變。</value>
+  </data>
+  <data name="GroupStateSaveErrorMessage" xml:space="preserve">
+    <value>無法保存群組狀態。</value>
+  </data>
+  <data name="ConnectionSaveErrorMessage" xml:space="preserve">
+    <value>無法保存連線。其先前的資料被保留。</value>
+  </data>
+  <data name="ConnectionDeleteErrorMessage" xml:space="preserve">
+    <value>無法刪除連線。如果可能的話，它的設定檔和憑證都會被保留。</value>
+  </data>
+  <data name="ConnectionTestTimedOut" xml:space="preserve">
+    <value>連線測試在 30 秒後逾時。</value>
+  </data>
+  <data name="AuthenticationModeBox.Header" xml:space="preserve"><value>認證</value></data>
+  <data name="PasswordAuthenticationItem.Content" xml:space="preserve"><value>密碼</value></data>
+  <data name="PrivateKeyAuthenticationItem.Content" xml:space="preserve"><value>私鑰</value></data>
+  <data name="PrivateKeyHelpText.Text" xml:space="preserve"><value>選擇 OpenSSH、PEM 或支援的私鑰檔案。 SFTP Explorer 不會複製或儲存金鑰檔案。</value></data>
+  <data name="PrivateKeyPathBox.Header" xml:space="preserve"><value>私鑰文件</value></data>
+  <data name="PrivateKeyPathBox.PlaceholderText" xml:space="preserve"><value>選擇或輸入私鑰的路徑</value></data>
+  <data name="BrowsePrivateKeyButton.Content" xml:space="preserve"><value>瀏覽...</value></data>
+  <data name="PrivateKeyPassphraseBox.Header" xml:space="preserve"><value>金鑰複雜密碼（選用）</value></data>
+  <data name="PrivateKeyPassphraseBox.PlaceholderText" xml:space="preserve"><value>未加密的金鑰請留空</value></data>
+  <data name="EditPassphraseLabel" xml:space="preserve"><value>金鑰複雜密碼（留空以保留目前值）</value></data>
+  <data name="EditPassphrasePlaceholder" xml:space="preserve"><value>僅在要取代已儲存的複雜密碼時輸入新的複雜密碼</value></data>
+  <data name="PrivateKeyRequired" xml:space="preserve"><value>選擇私鑰文件</value></data>
+  <data name="PrivateKeyNotFound" xml:space="preserve"><value>未找到私鑰文件</value></data>
+  <data name="PrivateKeyPickerTitle" xml:space="preserve"><value>選擇私鑰</value></data>
+  <data name="ConnectToProfileTitle" xml:space="preserve"><value>連接到{0}</value></data>
+  <data name="PassphrasePromptHelp" xml:space="preserve"><value>請輸入金鑰複雜密碼；若金鑰未加密，請留空。</value></data>
+  <data name="PrivateKeyPassphraseLabel" xml:space="preserve"><value>金鑰複雜密碼</value></data>
+  <data name="NewConnectionButton.AutomationProperties.Name" xml:space="preserve"><value>新連接</value></data>
+  <data name="ConnectionProfileSaveFailedTitle" xml:space="preserve"><value>連線未儲存</value></data>
+  <data name="ConnectionProfileSaveFailedMessage" xml:space="preserve"><value>連線處於活動狀態，但無法儲存其設定檔或密碼。檢查對 AppData 和 Windows 憑證管理員的存取。</value></data>
+  <data name="ConnectionProfileDeleteFailedTitle" xml:space="preserve"><value>連接未刪除</value></data>
+  <data name="ConnectionProfileDeleteFailedMessage" xml:space="preserve"><value>由於無法安全地保存其配置文件，因此保留了連接。檢查對 AppData 的存取並重試。</value></data>
+  <data name="UploadCompletedWithErrors" xml:space="preserve"><value>已上傳 {0} 項，共 {1} 項。失敗：{2}</value></data>
+  <data name="DeleteCompletedWithErrors" xml:space="preserve"><value>刪除已完成，有 {0} 個失敗項目。</value></data>
+</root>
