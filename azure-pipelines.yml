@@ -299,12 +299,46 @@ stages:
               buildPlatform: ARM64
         steps:
           - checkout: self
+            submodules: recursive
 
           - task: UseDotNet@2
             displayName: Install .NET 10 SDK
             inputs:
               packageType: sdk
               version: 10.0.x
+
+          - pwsh: |
+              $programFilesX86 = [Environment]::GetFolderPath('ProgramFilesX86')
+              $vsInstaller = Join-Path $programFilesX86 'Microsoft Visual Studio\Installer\setup.exe'
+              $vswhere = Join-Path $programFilesX86 'Microsoft Visual Studio\Installer\vswhere.exe'
+              if (!(Test-Path -LiteralPath $vsInstaller -PathType Leaf)) {
+                throw "Visual Studio installer is missing: $vsInstaller"
+              }
+              $vsInstallation = @(& $vswhere -latest -products * -requires Microsoft.Component.MSBuild -property installationPath) | Select-Object -First 1
+              if ([string]::IsNullOrWhiteSpace($vsInstallation)) {
+                throw 'The Visual Studio installation path could not be determined.'
+              }
+
+              if ('$(buildPlatform)' -eq 'ARM64') {
+                & $vsInstaller modify --installPath $vsInstallation --add Microsoft.VisualStudio.Component.VC.Tools.ARM64 --quiet --wait --norestart
+                if ($LASTEXITCODE -ne 0) {
+                  throw "Installing the MSVC ARM64 tools failed with exit code $LASTEXITCODE."
+                }
+              }
+
+              $vcpkgRoot = Join-Path '$(Agent.TempDirectory)' 'sftp-explorer-vcpkg'
+              git clone https://github.com/microsoft/vcpkg.git $vcpkgRoot
+              if ($LASTEXITCODE -ne 0) {
+                throw "Cloning vcpkg failed with exit code $LASTEXITCODE."
+              }
+
+              & (Join-Path $vcpkgRoot 'bootstrap-vcpkg.bat') -disableMetrics
+              if ($LASTEXITCODE -ne 0) {
+                throw "Bootstrapping vcpkg failed with exit code $LASTEXITCODE."
+              }
+
+              & '$(Build.SourcesDirectory)\Scripts\Build-TerminalControl.ps1' -Platform '$(buildPlatform)' -Configuration '$(buildConfiguration)' -VcpkgRoot $vcpkgRoot
+            displayName: Build native terminal renderer
 
           - pwsh: |
               $version = "$(packageMajor).$(packageMinor).$(packageBuild).$(packageRevision)"

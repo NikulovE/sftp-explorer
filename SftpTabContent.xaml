@@ -566,17 +566,28 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <Button x:Name="TerminalSaveButton"
-                                x:Uid="TerminalSaveButton"
-                                Grid.Column="0"
-                                Style="{StaticResource TerminalToolbarIconButtonStyle}"
-                                Foreground="#F2F2F2"
-                                Click="TerminalSaveButton_Click">
-                            <FontIcon Glyph="&#xE74E;"
-                                      FontFamily="Segoe Fluent Icons"
-                                      FontSize="13"
-                                      Foreground="#F2F2F2"/>
-                        </Button>
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="2">
+                            <Button x:Name="TerminalSaveButton"
+                                    x:Uid="TerminalSaveButton"
+                                    Style="{StaticResource TerminalToolbarIconButtonStyle}"
+                                    Foreground="#F2F2F2"
+                                    Click="TerminalSaveButton_Click">
+                                <FontIcon Glyph="&#xE74E;"
+                                          FontFamily="Segoe Fluent Icons"
+                                          FontSize="13"
+                                          Foreground="#F2F2F2"/>
+                            </Button>
+                            <Button x:Name="TerminalSearchButton"
+                                    x:Uid="TerminalSearchButton"
+                                    Style="{StaticResource TerminalToolbarIconButtonStyle}"
+                                    Foreground="#F2F2F2"
+                                    Click="TerminalSearchButton_Click">
+                                <FontIcon Glyph="&#xE721;"
+                                          FontFamily="Segoe Fluent Icons"
+                                          FontSize="13"
+                                          Foreground="#F2F2F2"/>
+                            </Button>
+                        </StackPanel>
                         <TextBlock Grid.Column="1"
                                    Text="&gt;_"
                                    FontFamily="Consolas"

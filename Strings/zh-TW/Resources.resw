@@ -978,4 +978,14 @@
   <data name="ConnectionProfileDeleteFailedMessage" xml:space="preserve"><value>由於無法安全地保存其配置文件，因此保留了連接。檢查對 AppData 的存取並重試。</value></data>
   <data name="UploadCompletedWithErrors" xml:space="preserve"><value>已上傳 {0} 項，共 {1} 項。失敗：{2}</value></data>
   <data name="DeleteCompletedWithErrors" xml:space="preserve"><value>刪除已完成，有 {0} 個失敗項目。</value></data>
+  <data name="TerminalSearchButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>搜尋終端機歷程記錄</value></data>
+  <data name="TerminalSearchTitle" xml:space="preserve"><value>搜尋終端機歷程記錄</value></data>
+  <data name="TerminalSearchQuery" xml:space="preserve"><value>搜尋文字</value></data>
+  <data name="TerminalSearchPlaceholder" xml:space="preserve"><value>輸入要搜尋的文字</value></data>
+  <data name="TerminalSearchAction" xml:space="preserve"><value>搜尋</value></data>
+  <data name="TerminalSearchNoHistory" xml:space="preserve"><value>終端機歷程記錄中尚無可供搜尋的輸出。</value></data>
+  <data name="TerminalSearchEmptyQuery" xml:space="preserve"><value>請輸入要搜尋的文字。</value></data>
+  <data name="TerminalSearchNoMatches" xml:space="preserve"><value>找不到相符項目。</value></data>
+  <data name="TerminalSearchResults" xml:space="preserve"><value>找到 {0} 個相符項目。</value></data>
+  <data name="TerminalSearchResultsTruncated" xml:space="preserve"><value>找到 {0} 個相符項目。僅顯示前 {1} 行相符結果。</value></data>
 </root>

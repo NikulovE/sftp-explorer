@@ -967,4 +967,14 @@
   <data name="ConnectionProfileDeleteFailedMessage" xml:space="preserve"><value>The connection was kept because its profile could not be saved safely. Check access to AppData and try again.</value></data>
   <data name="UploadCompletedWithErrors" xml:space="preserve"><value>{0} of {1} items uploaded. Failed: {2}</value></data>
   <data name="DeleteCompletedWithErrors" xml:space="preserve"><value>Delete completed with {0} failed item(s).</value></data>
+  <data name="TerminalSearchButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Search terminal history</value></data>
+  <data name="TerminalSearchTitle" xml:space="preserve"><value>Search terminal history</value></data>
+  <data name="TerminalSearchQuery" xml:space="preserve"><value>Text to find</value></data>
+  <data name="TerminalSearchPlaceholder" xml:space="preserve"><value>Enter text to search</value></data>
+  <data name="TerminalSearchAction" xml:space="preserve"><value>Search</value></data>
+  <data name="TerminalSearchNoHistory" xml:space="preserve"><value>There is no terminal output to search.</value></data>
+  <data name="TerminalSearchEmptyQuery" xml:space="preserve"><value>Enter text to search.</value></data>
+  <data name="TerminalSearchNoMatches" xml:space="preserve"><value>No matches found.</value></data>
+  <data name="TerminalSearchResults" xml:space="preserve"><value>{0} match(es) found.</value></data>
+  <data name="TerminalSearchResultsTruncated" xml:space="preserve"><value>{0} match(es) found. Showing the first {1} matching lines.</value></data>
 </root>

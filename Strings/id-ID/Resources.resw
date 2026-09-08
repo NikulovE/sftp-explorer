@@ -978,4 +978,14 @@ Diterima: {4} SHA256:{5}</value>
   <data name="ConnectionProfileDeleteFailedMessage" xml:space="preserve"><value>Sambungan dipertahankan karena profilnya tidak dapat disimpan dengan aman. Periksa akses ke AppData dan coba lagi.</value></data>
   <data name="UploadCompletedWithErrors" xml:space="preserve"><value>{0} dari {1} item diunggah. Gagal: {2}</value></data>
   <data name="DeleteCompletedWithErrors" xml:space="preserve"><value>Penghapusan selesai dengan {0} item yang gagal.</value></data>
+  <data name="TerminalSearchButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Cari riwayat terminal</value></data>
+  <data name="TerminalSearchTitle" xml:space="preserve"><value>Cari riwayat terminal</value></data>
+  <data name="TerminalSearchQuery" xml:space="preserve"><value>Teks pencarian</value></data>
+  <data name="TerminalSearchPlaceholder" xml:space="preserve"><value>Masukkan teks yang akan dicari</value></data>
+  <data name="TerminalSearchAction" xml:space="preserve"><value>Cari</value></data>
+  <data name="TerminalSearchNoHistory" xml:space="preserve"><value>Belum ada keluaran terminal yang dapat dicari.</value></data>
+  <data name="TerminalSearchEmptyQuery" xml:space="preserve"><value>Masukkan teks yang akan dicari.</value></data>
+  <data name="TerminalSearchNoMatches" xml:space="preserve"><value>Tidak ada hasil yang ditemukan.</value></data>
+  <data name="TerminalSearchResults" xml:space="preserve"><value>Ditemukan {0} hasil.</value></data>
+  <data name="TerminalSearchResultsTruncated" xml:space="preserve"><value>Ditemukan {0} hasil. Menampilkan {1} baris hasil pertama.</value></data>
 </root>

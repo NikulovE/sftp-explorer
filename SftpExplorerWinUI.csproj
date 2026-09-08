@@ -38,6 +38,7 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <AppxBundle>Never</AppxBundle>
+    <TerminalControlNativeOutput>$(MSBuildProjectDirectory)\Microsoft.Terminal.WinUI3\external\Terminal\bin\$(Platform)\$(Configuration)\Microsoft.Terminal.Control\Microsoft.Terminal.Control.dll</TerminalControlNativeOutput>
   </PropertyGroup>
 
   <ItemGroup>
@@ -49,7 +50,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.8249" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.3.1" />
-    <PackageReference Include="CI.Microsoft.Terminal.Wpf" Version="1.25.260303002" GeneratePathProperty="true" ExcludeAssets="all" />
     <PackageReference Include="SSH.NET" Version="2026.0.0" />
     <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.0" />
   </ItemGroup>
@@ -68,7 +68,7 @@
   
   <ItemGroup>
     <Content Include="Assets\**" />
-    <Content Include="$(PkgCI_Microsoft_Terminal_Wpf)\runtimes\$(RuntimeIdentifier)\native\Microsoft.Terminal.Control.dll">
+    <Content Include="$(TerminalControlNativeOutput)">
       <Link>Microsoft.Terminal.Control.dll</Link>
       <TargetPath>Microsoft.Terminal.Control.dll</TargetPath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -105,5 +105,10 @@
     </PropertyGroup>
     <MakeDir Directories="$(TargetDir)Microsoft.Terminal.WinUI3" />
     <Copy SourceFiles="$(TerminalXbfSource)" DestinationFolder="$(TargetDir)Microsoft.Terminal.WinUI3" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="RequireNativeTerminalControl" BeforeTargets="PrepareForBuild">
+    <Error Condition="!Exists('$(TerminalControlNativeOutput)')"
+           Text="Native TerminalControl is missing. Run Scripts\Build-TerminalControl.ps1 -Platform $(Platform) -Configuration $(Configuration) with a full, bootstrapped vcpkg checkout." />
   </Target>
 </Project>

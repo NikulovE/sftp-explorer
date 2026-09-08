@@ -967,4 +967,14 @@
   <data name="ConnectionProfileDeleteFailedMessage" xml:space="preserve"><value>Подключение сохранено, потому что безопасно записать изменения профиля не удалось. Проверьте доступ к AppData и повторите попытку.</value></data>
   <data name="UploadCompletedWithErrors" xml:space="preserve"><value>Загружено {0} из {1} элементов. Ошибки: {2}</value></data>
   <data name="DeleteCompletedWithErrors" xml:space="preserve"><value>Удаление завершено, не удалось удалить элементов: {0}.</value></data>
+  <data name="TerminalSearchButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Поиск по истории терминала</value></data>
+  <data name="TerminalSearchTitle" xml:space="preserve"><value>Поиск по истории терминала</value></data>
+  <data name="TerminalSearchQuery" xml:space="preserve"><value>Поисковый запрос</value></data>
+  <data name="TerminalSearchPlaceholder" xml:space="preserve"><value>Введите текст для поиска</value></data>
+  <data name="TerminalSearchAction" xml:space="preserve"><value>Найти</value></data>
+  <data name="TerminalSearchNoHistory" xml:space="preserve"><value>В истории терминала пока нет вывода.</value></data>
+  <data name="TerminalSearchEmptyQuery" xml:space="preserve"><value>Введите текст для поиска.</value></data>
+  <data name="TerminalSearchNoMatches" xml:space="preserve"><value>Совпадений не найдено.</value></data>
+  <data name="TerminalSearchResults" xml:space="preserve"><value>Найдено совпадений: {0}.</value></data>
+  <data name="TerminalSearchResultsTruncated" xml:space="preserve"><value>Найдено совпадений: {0}. Показаны первые {1} строк с совпадениями.</value></data>
 </root>

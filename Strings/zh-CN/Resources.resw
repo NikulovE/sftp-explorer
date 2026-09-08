@@ -978,4 +978,14 @@
   <data name="ConnectionProfileDeleteFailedMessage" xml:space="preserve"><value>由于无法安全保存其配置文件，因此保留了连接。检查对 AppData 的访问并重试。</value></data>
   <data name="UploadCompletedWithErrors" xml:space="preserve"><value>已上传 {0} 项，共 {1} 项。失败：{2}</value></data>
   <data name="DeleteCompletedWithErrors" xml:space="preserve"><value>删除已完成，有 {0} 个失败项目。</value></data>
+  <data name="TerminalSearchButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>搜索终端历史记录</value></data>
+  <data name="TerminalSearchTitle" xml:space="preserve"><value>搜索终端历史记录</value></data>
+  <data name="TerminalSearchQuery" xml:space="preserve"><value>搜索文本</value></data>
+  <data name="TerminalSearchPlaceholder" xml:space="preserve"><value>输入要搜索的文本</value></data>
+  <data name="TerminalSearchAction" xml:space="preserve"><value>搜索</value></data>
+  <data name="TerminalSearchNoHistory" xml:space="preserve"><value>终端历史记录中暂无可搜索的输出。</value></data>
+  <data name="TerminalSearchEmptyQuery" xml:space="preserve"><value>请输入要搜索的文本。</value></data>
+  <data name="TerminalSearchNoMatches" xml:space="preserve"><value>未找到匹配项。</value></data>
+  <data name="TerminalSearchResults" xml:space="preserve"><value>找到 {0} 个匹配项。</value></data>
+  <data name="TerminalSearchResultsTruncated" xml:space="preserve"><value>找到 {0} 个匹配项。仅显示前 {1} 个匹配行。</value></data>
 </root>

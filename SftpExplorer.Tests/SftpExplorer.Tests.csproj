@@ -31,6 +31,7 @@
     <Compile Include="..\Services\SshConnectionSecurity.cs" Link="Production\Services\SshConnectionSecurity.cs" />
     <Compile Include="..\Services\SshTerminalConnection.cs" Link="Production\Services\SshTerminalConnection.cs" />
     <Compile Include="..\Services\WindowsCredentialStore.cs" Link="Production\Services\WindowsCredentialStore.cs" />
+    <Compile Include="..\Helpers\TerminalHistorySearch.cs" Link="Production\Helpers\TerminalHistorySearch.cs" />
     <Compile Include="..\Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3\TerminalConnectionBinding.cs" Link="Production\Terminal\TerminalConnectionBinding.cs" />
     <Compile Include="..\Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3\TerminalConnectionLifecycle.cs" Link="Production\Terminal\TerminalConnectionLifecycle.cs" />
     <Compile Include="..\Microsoft.Terminal.WinUI3\Microsoft.Terminal.WinUI3\TerminalRenderBuffer.cs" Link="Production\Terminal\TerminalRenderBuffer.cs" />

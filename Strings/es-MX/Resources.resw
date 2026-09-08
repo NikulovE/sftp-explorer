@@ -978,4 +978,14 @@ Recibido: {4} SHA256:{5}</value>
   <data name="ConnectionProfileDeleteFailedMessage" xml:space="preserve"><value>La conexión se mantuvo porque su perfil no se pudo guardar de forma segura. Verifique el acceso a AppData e inténtelo nuevamente.</value></data>
   <data name="UploadCompletedWithErrors" xml:space="preserve"><value>{0} de {1} elementos subidos. Error: {2}</value></data>
   <data name="DeleteCompletedWithErrors" xml:space="preserve"><value>Eliminación completada con {0} elementos fallidos.</value></data>
+  <data name="TerminalSearchButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Buscar en el historial de la terminal</value></data>
+  <data name="TerminalSearchTitle" xml:space="preserve"><value>Buscar en el historial de la terminal</value></data>
+  <data name="TerminalSearchQuery" xml:space="preserve"><value>Texto de búsqueda</value></data>
+  <data name="TerminalSearchPlaceholder" xml:space="preserve"><value>Escribe el texto que deseas buscar</value></data>
+  <data name="TerminalSearchAction" xml:space="preserve"><value>Buscar</value></data>
+  <data name="TerminalSearchNoHistory" xml:space="preserve"><value>Aún no hay salida en el historial de la terminal para buscar.</value></data>
+  <data name="TerminalSearchEmptyQuery" xml:space="preserve"><value>Escribe el texto que deseas buscar.</value></data>
+  <data name="TerminalSearchNoMatches" xml:space="preserve"><value>No se encontraron coincidencias.</value></data>
+  <data name="TerminalSearchResults" xml:space="preserve"><value>Se encontraron {0} coincidencias.</value></data>
+  <data name="TerminalSearchResultsTruncated" xml:space="preserve"><value>Se encontraron {0} coincidencias. Se muestran las primeras {1} líneas coincidentes.</value></data>
 </root>

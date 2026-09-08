@@ -73,11 +73,11 @@ public sealed partial class SftpTabContent : UserControl
 
     private const double TerminalDefaultHeight = 280;
     private const double TerminalMinHeight = 140;
-    private const int TerminalOutputHistoryMaxLines = 9_001;
+    private const int TerminalOutputHistoryMaxLines = 30_000;
     private const int TerminalOutputHistoryMaxCharacters = 2_000_000;
     private const int TerminalMaxPendingCharacters = 1_000_000;
     private const int TerminalOutputDrainChunkCharacters = 64 * 1024;
-    private const int TerminalOutputHistoryTrimSlackLines = 1_000;
+    private const int TerminalOutputHistoryTrimSlackLines = 3_000;
     private const int TerminalOutputHistoryTrimSlackCharacters = 1_000_000;
     private const int TerminalCommandHistoryMaxEntries = 2_000;
     private const int TerminalCommandHistoryMaxCharacters = 1_000_000;
@@ -202,6 +202,135 @@ public sealed partial class SftpTabContent : UserControl
     private sealed record FolderUploadPlan(
         IReadOnlyList<string> Directories,
         IReadOnlyList<FolderUploadFile> Files);
+
+    private sealed class FolderUploadProgress
+    {
+        private readonly SftpTabContent _owner;
+        private readonly string _folderName;
+        private readonly int _totalFiles;
+        private readonly long _totalBytes;
+        private readonly DateTime _startedAt = DateTime.UtcNow;
+        private readonly object _sync = new();
+        private readonly Dictionary<int, long> _uploadedBytesByFile = new();
+        private readonly HashSet<int> _completedFileIndexes = new();
+        private long _uploadedBytes;
+        private long _lastPublishTimestamp;
+        private long _lastRenderedBytes = -1;
+        private int _lastRenderedCompletedFiles = -1;
+        private int _isStopped;
+
+        public FolderUploadProgress(SftpTabContent owner, string folderName, IReadOnlyList<FolderUploadFile> files)
+        {
+            _owner = owner;
+            _folderName = folderName;
+            _totalFiles = files.Count;
+
+            foreach (var file in files)
+            {
+                // The total is only used for display; avoid an overflow from a malformed file size.
+                _totalBytes = file.Size > long.MaxValue - _totalBytes
+                    ? long.MaxValue
+                    : _totalBytes + Math.Max(0, file.Size);
+            }
+        }
+
+        public void Start() => Publish(new FolderUploadProgressSnapshot(0, 0), force: true);
+
+        public void ReportFileProgress(FolderUploadFile file, ulong uploaded)
+        {
+            FolderUploadProgressSnapshot snapshot;
+            lock (_sync)
+            {
+                var fileSize = Math.Max(0, file.Size);
+                var currentBytes = uploaded > (ulong)fileSize ? fileSize : (long)uploaded;
+                var previousBytes = _uploadedBytesByFile.GetValueOrDefault(file.Index);
+                if (currentBytes <= previousBytes)
+                {
+                    return;
+                }
+
+                _uploadedBytesByFile[file.Index] = currentBytes;
+                _uploadedBytes += currentBytes - previousBytes;
+                snapshot = new FolderUploadProgressSnapshot(_completedFileIndexes.Count, _uploadedBytes);
+            }
+
+            Publish(snapshot);
+        }
+
+        public void MarkFileCompleted(FolderUploadFile file)
+        {
+            FolderUploadProgressSnapshot snapshot;
+            lock (_sync)
+            {
+                if (!_completedFileIndexes.Add(file.Index))
+                {
+                    return;
+                }
+
+                var fileSize = Math.Max(0, file.Size);
+                var previousBytes = _uploadedBytesByFile.GetValueOrDefault(file.Index);
+                if (fileSize > previousBytes)
+                {
+                    _uploadedBytesByFile[file.Index] = fileSize;
+                    _uploadedBytes += fileSize - previousBytes;
+                }
+
+                snapshot = new FolderUploadProgressSnapshot(_completedFileIndexes.Count, _uploadedBytes);
+            }
+
+            Publish(snapshot, force: true);
+        }
+
+        public void Stop() => Interlocked.Exchange(ref _isStopped, 1);
+
+        private void Publish(FolderUploadProgressSnapshot snapshot, bool force = false)
+        {
+            if (Volatile.Read(ref _isStopped) != 0 ||
+                !ShouldPublishProgress(ref _lastPublishTimestamp, force))
+            {
+                return;
+            }
+
+            _owner.DispatcherQueue.TryEnqueue(() =>
+            {
+                if (_owner._isDisposed || Volatile.Read(ref _isStopped) != 0 ||
+                    snapshot.UploadedBytes < _lastRenderedBytes ||
+                    (snapshot.UploadedBytes == _lastRenderedBytes &&
+                     snapshot.CompletedFiles < _lastRenderedCompletedFiles))
+                {
+                    return;
+                }
+
+                _lastRenderedBytes = snapshot.UploadedBytes;
+                _lastRenderedCompletedFiles = snapshot.CompletedFiles;
+
+                var percent = _totalBytes > 0
+                    ? (int)Math.Min(100, (snapshot.UploadedBytes * 100d) / _totalBytes)
+                    : snapshot.CompletedFiles >= _totalFiles ? 100 : 0;
+                var elapsed = (DateTime.UtcNow - _startedAt).TotalSeconds;
+                var speed = elapsed > 0 ? snapshot.UploadedBytes / elapsed : 0;
+                var remaining = Math.Max(0, _totalBytes - snapshot.UploadedBytes);
+                var eta = speed > 0 ? TimeSpan.FromSeconds(remaining / speed) : TimeSpan.Zero;
+
+                // A folder can have several active files. Display its stable, completed count
+                // instead of the arbitrary plan index reported by whichever worker updated last.
+                _owner.StatusText.Text = string.Format(
+                    LocalizationHelper.GetString("UploadingProgress"),
+                    snapshot.CompletedFiles,
+                    _totalFiles,
+                    _folderName);
+                _owner.ProgressPercent.Text = $"{percent}% ({_owner.FormatFileSize(snapshot.UploadedBytes)}/{_owner.FormatFileSize(_totalBytes)})";
+                _owner.ProgressSpeed.Text = string.Format(
+                    LocalizationHelper.GetString("SpeedPerSecond"),
+                    _owner.FormatFileSize((long)speed));
+                _owner.ProgressETA.Text = string.Format(
+                    LocalizationHelper.GetString("TimeRemaining"), _owner.FormatTimeSpan(eta));
+                _owner.ShowProgressBar(percent);
+            });
+        }
+    }
+
+    private readonly record struct FolderUploadProgressSnapshot(int CompletedFiles, long UploadedBytes);
 
     private static readonly TimeSpan AddressSuggestionCacheLifetime = TimeSpan.FromSeconds(15);
     private static readonly TimeSpan FileSystemStatsCacheLifetime = TimeSpan.FromSeconds(30);
@@ -836,6 +965,96 @@ public sealed partial class SftpTabContent : UserControl
                 LocalizationHelper.GetString("TerminalOutputSaveFailed") ?? "Unable to save terminal output: {0}",
                 ex.Message);
         }
+    }
+
+    private async void TerminalSearchButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_isDisposed || XamlRoot == null)
+        {
+            return;
+        }
+
+        var searchBox = new TextBox
+        {
+            Header = LocalizationHelper.GetString("TerminalSearchQuery"),
+            PlaceholderText = LocalizationHelper.GetString("TerminalSearchPlaceholder"),
+            MinWidth = 420
+        };
+        var resultSummary = new TextBlock
+        {
+            TextWrapping = TextWrapping.Wrap,
+            Visibility = Visibility.Collapsed
+        };
+        var resultLines = new TextBox
+        {
+            IsReadOnly = true,
+            AcceptsReturn = true,
+            TextWrapping = TextWrapping.NoWrap,
+            FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas"),
+            MaxHeight = 280,
+            Visibility = Visibility.Collapsed
+        };
+        ScrollViewer.SetHorizontalScrollBarVisibility(resultLines, ScrollBarVisibility.Auto);
+        ScrollViewer.SetVerticalScrollBarVisibility(resultLines, ScrollBarVisibility.Auto);
+        var dialog = new ContentDialog
+        {
+            XamlRoot = XamlRoot,
+            Title = LocalizationHelper.GetString("TerminalSearchTitle"),
+            PrimaryButtonText = LocalizationHelper.GetString("TerminalSearchAction"),
+            CloseButtonText = LocalizationHelper.GetString("Close"),
+            DefaultButton = ContentDialogButton.Primary,
+            Content = new StackPanel
+            {
+                Spacing = 12,
+                Children = { searchBox, resultSummary, resultLines }
+            }
+        };
+
+        dialog.Opened += (_, _) => searchBox.Focus(FocusState.Programmatic);
+        dialog.PrimaryButtonClick += (_, args) =>
+        {
+            args.Cancel = true;
+            var query = searchBox.Text.Trim();
+            if (query.Length == 0)
+            {
+                resultSummary.Text = LocalizationHelper.GetString("TerminalSearchEmptyQuery");
+                resultSummary.Visibility = Visibility.Visible;
+                resultLines.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            var history = _terminalOutputHistory.ToString();
+            if (history.Length == 0)
+            {
+                resultSummary.Text = LocalizationHelper.GetString("TerminalSearchNoHistory");
+                resultSummary.Visibility = Visibility.Visible;
+                resultLines.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            var result = TerminalHistorySearch.Find(history, query);
+            if (result.MatchCount == 0)
+            {
+                resultSummary.Text = LocalizationHelper.GetString("TerminalSearchNoMatches");
+                resultSummary.Visibility = Visibility.Visible;
+                resultLines.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            resultSummary.Text = result.MatchingLineCount > result.Matches.Count
+                ? string.Format(
+                    LocalizationHelper.GetString("TerminalSearchResultsTruncated"),
+                    result.MatchCount,
+                    result.Matches.Count)
+                : string.Format(LocalizationHelper.GetString("TerminalSearchResults"), result.MatchCount);
+            resultLines.Text = string.Join(
+                Environment.NewLine,
+                result.Matches.Select(match => $"{match.LineNumber}: {match.Text}"));
+            resultSummary.Visibility = Visibility.Visible;
+            resultLines.Visibility = Visibility.Visible;
+        };
+
+        await dialog.ShowAsync();
     }
 
     private void TerminalMaximizeButton_Click(object sender, RoutedEventArgs e)
@@ -2627,7 +2846,9 @@ public sealed partial class SftpTabContent : UserControl
         int currentIndex,
         int totalFiles,
         CancellationToken cancellationToken,
-        SftpClient? transferClient = null)
+        SftpClient? transferClient = null,
+        FolderUploadProgress? folderProgress = null,
+        FolderUploadFile? folderFile = null)
     {
         var startTime = DateTime.Now;
         using var stream = await file.OpenStreamForReadAsync();
@@ -2650,6 +2871,12 @@ public sealed partial class SftpTabContent : UserControl
                 var uploadProgress = new InlineProgress<UploadFileProgressReport>(report =>
                 {
                     var uploaded = report.TotalBytesUploaded;
+                    if (folderProgress != null && folderFile != null)
+                    {
+                        folderProgress.ReportFileProgress(folderFile, uploaded);
+                        return;
+                    }
+
                     if (!ShouldPublishProgress(
                             ref lastProgressTimestamp,
                             force: fileSize >= 0 && uploaded >= (ulong)fileSize))
@@ -2861,7 +3088,7 @@ public sealed partial class SftpTabContent : UserControl
             }
 
             var summary = new TransferSummary(plan.Directories.Count, 0);
-            summary += await UploadFolderFilesAsync(plan.Files, client, cancellationToken, failures);
+            summary += await UploadFolderFilesAsync(plan.Files, folder.Name, client, cancellationToken, failures);
             if (summary.Failed > 0)
             {
                 await RunClientActionAsync(client, _ =>
@@ -2964,6 +3191,7 @@ public sealed partial class SftpTabContent : UserControl
 
     private async Task<TransferSummary> UploadFolderFilesAsync(
         IReadOnlyList<FolderUploadFile> files,
+        string folderName,
         SftpClient primaryClient,
         CancellationToken cancellationToken,
         System.Collections.Concurrent.ConcurrentQueue<TransferFailure> failures)
@@ -2974,26 +3202,35 @@ public sealed partial class SftpTabContent : UserControl
         }
 
         var pendingFiles = new System.Collections.Concurrent.ConcurrentQueue<FolderUploadFile>(files);
+        var progress = new FolderUploadProgress(this, folderName, files);
+        progress.Start();
         var workerCount = Math.Min(FolderUploadWorkerCount, files.Count);
         var workers = new List<Task<TransferSummary>>(workerCount)
         {
-            UploadFolderWorkerAsync(pendingFiles, primaryClient, cancellationToken, failures)
+            UploadFolderWorkerAsync(pendingFiles, primaryClient, cancellationToken, failures, progress)
         };
         for (var worker = 1; worker < workerCount; worker++)
         {
-            workers.Add(UploadFolderWorkerAsync(pendingFiles, null, cancellationToken, failures));
+            workers.Add(UploadFolderWorkerAsync(pendingFiles, null, cancellationToken, failures, progress));
         }
 
-        var results = await Task.WhenAll(workers);
-
-        return results.Aggregate(new TransferSummary(), static (summary, result) => summary + result);
+        try
+        {
+            var results = await Task.WhenAll(workers);
+            return results.Aggregate(new TransferSummary(), static (summary, result) => summary + result);
+        }
+        finally
+        {
+            progress.Stop();
+        }
     }
 
     private async Task<TransferSummary> UploadFolderWorkerAsync(
         System.Collections.Concurrent.ConcurrentQueue<FolderUploadFile> pendingFiles,
         SftpClient? primaryClient,
         CancellationToken cancellationToken,
-        System.Collections.Concurrent.ConcurrentQueue<TransferFailure> failures)
+        System.Collections.Concurrent.ConcurrentQueue<TransferFailure> failures,
+        FolderUploadProgress progress)
     {
         SftpClient? auxiliaryClient = null;
         var client = primaryClient;
@@ -3033,7 +3270,10 @@ public sealed partial class SftpTabContent : UserControl
                         file.Index,
                         file.TotalFiles,
                         cancellationToken,
-                        client);
+                        client,
+                        progress,
+                        file);
+                    progress.MarkFileCompleted(file);
                     summary += new TransferSummary(1, 0);
                 }
                 catch (OperationCanceledException)
