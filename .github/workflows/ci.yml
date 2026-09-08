@@ -173,9 +173,16 @@ jobs:
         if: ${{ !cancelled() }}
         shell: pwsh
         run: |
-          $reports = @(Get-ChildItem -LiteralPath (Join-Path $env:RUNNER_TEMP 'TestResults') -Recurse -Filter *.cobertura.xml -File)
+          $resultsDirectory = Join-Path $env:RUNNER_TEMP 'TestResults'
+          if (!(Test-Path -LiteralPath $resultsDirectory -PathType Container)) {
+            Write-Warning "Linux test results are unavailable because an earlier step did not complete; skipping coverage staging."
+            exit 0
+          }
+
+          $reports = @(Get-ChildItem -LiteralPath $resultsDirectory -Recurse -Filter *.cobertura.xml -File)
           if ($reports.Count -lt 1) {
-            throw "The Linux test run did not produce a Cobertura report."
+            Write-Warning "The Linux test run did not produce a Cobertura report; skipping coverage staging."
+            exit 0
           }
           $artifactDirectory = Join-Path $env:RUNNER_TEMP 'CoverageLinux'
           New-Item -ItemType Directory -Path $artifactDirectory -Force | Out-Null
@@ -189,6 +196,7 @@ jobs:
           path: |
             ${{ runner.temp }}/TestResults
             ${{ runner.temp }}/CoverageLinux
+          if-no-files-found: ignore
 
       - name: Stop disposable SFTP server
         if: always()
@@ -247,9 +255,16 @@ jobs:
         if: ${{ !cancelled() }}
         shell: pwsh
         run: |
-          $reports = @(Get-ChildItem -LiteralPath (Join-Path $env:RUNNER_TEMP 'WindowsTestResults') -Recurse -Filter *.cobertura.xml -File)
+          $resultsDirectory = Join-Path $env:RUNNER_TEMP 'WindowsTestResults'
+          if (!(Test-Path -LiteralPath $resultsDirectory -PathType Container)) {
+            Write-Warning "Windows test results are unavailable because an earlier step did not complete; skipping coverage staging."
+            exit 0
+          }
+
+          $reports = @(Get-ChildItem -LiteralPath $resultsDirectory -Recurse -Filter *.cobertura.xml -File)
           if ($reports.Count -lt 1) {
-            throw "The Windows test run did not produce a Cobertura report."
+            Write-Warning "The Windows test run did not produce a Cobertura report; skipping coverage staging."
+            exit 0
           }
           $artifactDirectory = Join-Path $env:RUNNER_TEMP 'CoverageWindows'
           New-Item -ItemType Directory -Path $artifactDirectory -Force | Out-Null
@@ -263,6 +278,7 @@ jobs:
           path: |
             ${{ runner.temp }}/WindowsTestResults
             ${{ runner.temp }}/CoverageWindows
+          if-no-files-found: ignore
 
   coverage:
     name: Publish combined code coverage
