@@ -230,7 +230,27 @@ public sealed partial class MainWindow : Window
         
         if (result == ContentDialogResult.Primary)
         {
-            await ConnectToServer(connection, passwordBox.Password, openTerminalMaximized);
+            var password = passwordBox.Password;
+            var connected = await ConnectToServer(connection, password, openTerminalMaximized);
+            if (connected && connection.AuthenticationMode == SftpAuthenticationMode.Password)
+            {
+                try
+                {
+                    // A profile that has prompted for its password has no usable
+                    // saved credential. Store it only after the SSH handshake
+                    // succeeds, so the next open does not prompt again.
+                    _connectionManager.SavePasswordAfterSuccessfulConnection(
+                        connection.Id,
+                        password);
+                    LoadConnectionsList();
+                }
+                catch (Exception persistenceError)
+                {
+                    // The connected tab remains usable even if Credential
+                    // Manager cannot accept the recovered password.
+                    await ShowPersistenceWarningAsync(persistenceError);
+                }
+            }
         }
         else
         {
@@ -239,7 +259,7 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private async Task ConnectToServer(
+    private async Task<bool> ConnectToServer(
         SavedConnection connection,
         string password,
         bool openTerminalMaximized = false)
@@ -277,6 +297,8 @@ public sealed partial class MainWindow : Window
             // Connection failed, return to startup mode
             ShowStartupMode();
         }
+
+        return connected;
     }
 
     private async Task ShowConnectionDialog()

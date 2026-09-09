@@ -44,6 +44,21 @@ public sealed class ConnectionManagerTests
     }
 
     [Fact]
+    public void SuccessfulPasswordPromptStoresCredentialForExistingProfile()
+    {
+        using var temp = new TemporaryDirectory();
+        var credentials = new MemoryCredentialStore();
+        var manager = new ConnectionManager(temp.Path, credentials);
+        manager.AddOrUpdateConnection(CreateConnection("connection-1", "prompted"));
+
+        manager.SavePasswordAfterSuccessfulConnection("connection-1", "entered-secret");
+
+        var saved = Assert.Single(manager.LoadConnections());
+        Assert.Equal("entered-secret", manager.GetPassword(saved.Id));
+        Assert.Equal(1, saved.AuthenticationRevision);
+    }
+
+    [Fact]
     public void JsonWriteFailureRestoresPreviousCredential()
     {
         using var temp = new TemporaryDirectory();

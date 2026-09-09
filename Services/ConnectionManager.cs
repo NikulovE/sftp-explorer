@@ -251,6 +251,38 @@ public class ConnectionManager
         }
     }
 
+    /// <summary>
+    /// Restores a saved password only after an interactive connection attempt
+    /// succeeded. This restores profiles whose protected credential is absent
+    /// without persisting a typo or a failed authentication attempt.
+    /// </summary>
+    public void SavePasswordAfterSuccessfulConnection(string connectionId, string password)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(connectionId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(password);
+
+        lock (_persistenceLock)
+        {
+            using var persistenceLease = EnterInterprocessLock();
+            var connection = LoadConnections().FirstOrDefault(existing =>
+                string.Equals(existing.Id, connectionId, StringComparison.Ordinal));
+            if (connection == null)
+            {
+                return;
+            }
+
+            if (connection.AuthenticationMode != SftpAuthenticationMode.Password)
+            {
+                throw new InvalidOperationException(
+                    "A password cannot be stored for a private-key connection.");
+            }
+
+            // Reuse the transactional credential/profile update path so a
+            // failed JSON write restores the prior Credential Manager value.
+            AddOrUpdateConnection(connection, password);
+        }
+    }
+
     private void EnsureInitialized()
     {
         if (_initialized)
