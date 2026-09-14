@@ -400,6 +400,9 @@
   <data name="Copy" xml:space="preserve">
     <value>Salin</value>
   </data>
+  <data name="CopyAsPath" xml:space="preserve">
+    <value>Salin sebagai jalur</value>
+  </data>
   <data name="Paste" xml:space="preserve">
     <value>Tempel</value>
   </data>

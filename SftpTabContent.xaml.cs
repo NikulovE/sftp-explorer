@@ -3720,6 +3720,28 @@ public sealed partial class SftpTabContent : UserControl
         StatusText.Text = string.Format(LocalizationHelper.GetString("ItemsCopied"), _clipboard.Count);
     }
 
+    private void CopyAsPathButton_Click(object sender, RoutedEventArgs e)
+    {
+        var selectedItems = GetSelectedRealItems();
+        if (selectedItems.Count != 1) return;
+
+        var path = selectedItems[0].FullPath;
+        try
+        {
+            var dataPackage = new DataPackage
+            {
+                RequestedOperation = DataPackageOperation.Copy
+            };
+            dataPackage.SetText(path);
+            Clipboard.SetContent(dataPackage);
+            Clipboard.Flush();
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Failed to copy path '{path}' to clipboard: {ex.Message}", ex);
+        }
+    }
+
     private async void PasteButton_Click(object sender, RoutedEventArgs e)
     {
         var client = _sftpClient;
@@ -3991,7 +4013,17 @@ public sealed partial class SftpTabContent : UserControl
         };
         dialog.Content = textBox;
 
-        var result = await dialog.ShowAsync();
+        var restoreNativeTerminal = SuspendNativeTerminalForXamlOverlay();
+        ContentDialogResult result;
+        try
+        {
+            result = await dialog.ShowAsync();
+        }
+        finally
+        {
+            RestoreNativeTerminalAfterXamlOverlay(restoreNativeTerminal);
+        }
+
         if (result == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(textBox.Text))
         {
             try
@@ -8116,6 +8148,14 @@ public sealed partial class SftpTabContent : UserControl
             copyItem.Icon = new FontIcon { Glyph = "\uE8C8" };
             copyItem.Click += (s, args) => CopyButton_Click(s, new RoutedEventArgs());
             menu.Items.Add(copyItem);
+
+            if (isSingleFile)
+            {
+                var copyAsPathItem = new MenuFlyoutItem { Text = LocalizationHelper.GetString("CopyAsPath") };
+                copyAsPathItem.Icon = new FontIcon { Glyph = "\uE8C8" };
+                copyAsPathItem.Click += (s, args) => CopyAsPathButton_Click(s, new RoutedEventArgs());
+                menu.Items.Add(copyAsPathItem);
+            }
 
             var pasteItem = new MenuFlyoutItem { Text = LocalizationHelper.GetString("Paste") };
             pasteItem.Icon = new FontIcon { Glyph = "\uE77F" };

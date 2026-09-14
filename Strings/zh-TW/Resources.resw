@@ -400,6 +400,9 @@
   <data name="Copy" xml:space="preserve">
     <value>複製</value>
   </data>
+  <data name="CopyAsPath" xml:space="preserve">
+    <value>複製為路徑</value>
+  </data>
   <data name="Paste" xml:space="preserve">
     <value>貼上</value>
   </data>
