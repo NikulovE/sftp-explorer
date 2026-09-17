@@ -8152,7 +8152,11 @@ public sealed partial class SftpTabContent : UserControl
             if (isSingleFile)
             {
                 var copyAsPathItem = new MenuFlyoutItem { Text = LocalizationHelper.GetString("CopyAsPath") };
-                copyAsPathItem.Icon = new FontIcon { Glyph = "\uE8C8" };
+                copyAsPathItem.Icon = new FontIcon
+                {
+                    Glyph = "\uE976",
+                    FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Segoe Fluent Icons")
+                };
                 copyAsPathItem.Click += (s, args) => CopyAsPathButton_Click(s, new RoutedEventArgs());
                 menu.Items.Add(copyAsPathItem);
             }
