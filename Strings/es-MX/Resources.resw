@@ -980,6 +980,15 @@ Recibido: {4} SHA256:{5}</value>
   <data name="ConnectionProfileDeleteFailedTitle" xml:space="preserve"><value>Conexión no eliminada</value></data>
   <data name="ConnectionProfileDeleteFailedMessage" xml:space="preserve"><value>La conexión se mantuvo porque su perfil no se pudo guardar de forma segura. Verifique el acceso a AppData e inténtelo nuevamente.</value></data>
   <data name="UploadCompletedWithErrors" xml:space="preserve"><value>{0} de {1} elementos subidos. Error: {2}</value></data>
+  <data name="UploadCompletedSummary" xml:space="preserve"><value>Subidos: {0}, omitidos: {1}, errores: {2}.</value></data>
+  <data name="UploadConflictTitle" xml:space="preserve"><value>El destino ya existe</value></data>
+  <data name="UploadFileConflictMessage" xml:space="preserve"><value>Ya existe un archivo en el servidor: {0}. Elige qué hacer con él.</value></data>
+  <data name="UploadFolderConflictMessage" xml:space="preserve"><value>Ya existe una carpeta en el servidor: {0}. Reemplazar combina su contenido; los archivos coincidentes se tratarán por separado.</value></data>
+  <data name="UploadIncompatibleConflictMessage" xml:space="preserve"><value>Ya existe un elemento de otro tipo en el servidor: {0}. Esta carga no puede reemplazarlo.</value></data>
+  <data name="UploadConflictSkip" xml:space="preserve"><value>Omitir</value></data>
+  <data name="UploadConflictReplace" xml:space="preserve"><value>Reemplazar</value></data>
+  <data name="UploadConflictSkipAll" xml:space="preserve"><value>Omitir todo</value></data>
+  <data name="UploadConflictReplaceAll" xml:space="preserve"><value>Reemplazar todo</value></data>
   <data name="DeleteCompletedWithErrors" xml:space="preserve"><value>Eliminación completada con {0} elementos fallidos.</value></data>
   <data name="TerminalSearchButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Buscar en el historial de la terminal</value></data>
   <data name="TerminalSearchTitle" xml:space="preserve"><value>Buscar en el historial de la terminal</value></data>

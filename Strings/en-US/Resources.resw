@@ -969,6 +969,15 @@
   <data name="ConnectionProfileDeleteFailedTitle" xml:space="preserve"><value>Connection not deleted</value></data>
   <data name="ConnectionProfileDeleteFailedMessage" xml:space="preserve"><value>The connection was kept because its profile could not be saved safely. Check access to AppData and try again.</value></data>
   <data name="UploadCompletedWithErrors" xml:space="preserve"><value>{0} of {1} items uploaded. Failed: {2}</value></data>
+  <data name="UploadCompletedSummary" xml:space="preserve"><value>{0} uploaded, {1} skipped, {2} failed.</value></data>
+  <data name="UploadConflictTitle" xml:space="preserve"><value>Destination already exists</value></data>
+  <data name="UploadFileConflictMessage" xml:space="preserve"><value>A file already exists on the server: {0}. Choose what to do with this file.</value></data>
+  <data name="UploadFolderConflictMessage" xml:space="preserve"><value>A folder already exists on the server: {0}. Replace merges its contents. Matching files will be handled separately.</value></data>
+  <data name="UploadIncompatibleConflictMessage" xml:space="preserve"><value>An item of a different type already exists on the server: {0}. It cannot be replaced by this upload.</value></data>
+  <data name="UploadConflictSkip" xml:space="preserve"><value>Skip</value></data>
+  <data name="UploadConflictReplace" xml:space="preserve"><value>Replace</value></data>
+  <data name="UploadConflictSkipAll" xml:space="preserve"><value>Skip all</value></data>
+  <data name="UploadConflictReplaceAll" xml:space="preserve"><value>Replace all</value></data>
   <data name="DeleteCompletedWithErrors" xml:space="preserve"><value>Delete completed with {0} failed item(s).</value></data>
   <data name="TerminalSearchButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Search terminal history</value></data>
   <data name="TerminalSearchTitle" xml:space="preserve"><value>Search terminal history</value></data>

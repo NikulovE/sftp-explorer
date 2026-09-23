@@ -980,6 +980,15 @@ Diterima: {4} SHA256:{5}</value>
   <data name="ConnectionProfileDeleteFailedTitle" xml:space="preserve"><value>Koneksi tidak dihapus</value></data>
   <data name="ConnectionProfileDeleteFailedMessage" xml:space="preserve"><value>Sambungan dipertahankan karena profilnya tidak dapat disimpan dengan aman. Periksa akses ke AppData dan coba lagi.</value></data>
   <data name="UploadCompletedWithErrors" xml:space="preserve"><value>{0} dari {1} item diunggah. Gagal: {2}</value></data>
+  <data name="UploadCompletedSummary" xml:space="preserve"><value>Diunggah: {0}, dilewati: {1}, gagal: {2}.</value></data>
+  <data name="UploadConflictTitle" xml:space="preserve"><value>Tujuan sudah ada</value></data>
+  <data name="UploadFileConflictMessage" xml:space="preserve"><value>File sudah ada di server: {0}. Pilih tindakan untuk file ini.</value></data>
+  <data name="UploadFolderConflictMessage" xml:space="preserve"><value>Folder sudah ada di server: {0}. Ganti akan menggabungkan isinya; file bernama sama ditangani secara terpisah.</value></data>
+  <data name="UploadIncompatibleConflictMessage" xml:space="preserve"><value>Item dengan jenis berbeda sudah ada di server: {0}. Unggahan ini tidak dapat menggantinya.</value></data>
+  <data name="UploadConflictSkip" xml:space="preserve"><value>Lewati</value></data>
+  <data name="UploadConflictReplace" xml:space="preserve"><value>Ganti</value></data>
+  <data name="UploadConflictSkipAll" xml:space="preserve"><value>Lewati semua</value></data>
+  <data name="UploadConflictReplaceAll" xml:space="preserve"><value>Ganti semua</value></data>
   <data name="DeleteCompletedWithErrors" xml:space="preserve"><value>Penghapusan selesai dengan {0} item yang gagal.</value></data>
   <data name="TerminalSearchButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Cari riwayat terminal</value></data>
   <data name="TerminalSearchTitle" xml:space="preserve"><value>Cari riwayat terminal</value></data>

@@ -12,6 +12,29 @@
 
     <UserControl.Resources>
         <ResourceDictionary>
+        <ResourceDictionary.ThemeDictionaries>
+            <ResourceDictionary x:Key="Light">
+                <SolidColorBrush x:Key="ListViewItemBackgroundSelected" Color="#B9DDFF"/>
+                <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPointerOver" Color="#A6D3FF"/>
+                <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPressed" Color="#90C5F9"/>
+                <SolidColorBrush x:Key="FileSelectionMarqueeFillBrush" Color="#400078D4"/>
+                <SolidColorBrush x:Key="FileSelectionMarqueeBorderBrush" Color="#0078D4"/>
+            </ResourceDictionary>
+            <ResourceDictionary x:Key="Dark">
+                <SolidColorBrush x:Key="ListViewItemBackgroundSelected" Color="#245E94"/>
+                <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPointerOver" Color="#2F70AB"/>
+                <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPressed" Color="#1D4F7C"/>
+                <SolidColorBrush x:Key="FileSelectionMarqueeFillBrush" Color="#505EA9E9"/>
+                <SolidColorBrush x:Key="FileSelectionMarqueeBorderBrush" Color="#74B9F6"/>
+            </ResourceDictionary>
+            <ResourceDictionary x:Key="HighContrast">
+                <StaticResource x:Key="ListViewItemBackgroundSelected" ResourceKey="SystemColorHighlightColorBrush"/>
+                <StaticResource x:Key="ListViewItemBackgroundSelectedPointerOver" ResourceKey="SystemColorHighlightColorBrush"/>
+                <StaticResource x:Key="ListViewItemBackgroundSelectedPressed" ResourceKey="SystemColorHighlightColorBrush"/>
+                <SolidColorBrush x:Key="FileSelectionMarqueeFillBrush" Color="Transparent"/>
+                <StaticResource x:Key="FileSelectionMarqueeBorderBrush" ResourceKey="SystemColorHighlightColorBrush"/>
+            </ResourceDictionary>
+        </ResourceDictionary.ThemeDictionaries>
         <Style x:Key="ToolbarIconButtonStyle"
                TargetType="Button"
                BasedOn="{StaticResource DefaultButtonStyle}">
@@ -418,6 +441,7 @@
                     <!-- SFTP Files List -->
                     <ListView x:Name="RemoteFilesListView"
                              Grid.Row="1"
+                             Background="Transparent"
                              SelectionMode="Extended"
                              AllowDrop="True"
                              CanDragItems="True"
@@ -450,6 +474,14 @@
                                         <ColumnDefinition Width="155"/>
                                         <ColumnDefinition Width="120"/>
                                     </Grid.ColumnDefinitions>
+
+                                    <Border Grid.ColumnSpan="8"
+                                            Margin="-10,1,-2,1"
+                                            BorderBrush="{ThemeResource FileSelectionMarqueeBorderBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="2"
+                                            Visibility="{Binding SelectionOutlineVisibility}"
+                                            IsHitTestVisible="False"/>
                                     
                                     <Grid Grid.Column="0" Width="24" Height="24" Margin="0,0,12,0" IsHitTestVisible="False">
                                         <!-- Yellow filled folder background -->
@@ -509,6 +541,14 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
+
+                    <Canvas Grid.Row="1" IsHitTestVisible="False">
+                        <Border x:Name="FileSelectionMarquee"
+                                Visibility="Collapsed"
+                                Background="{ThemeResource FileSelectionMarqueeFillBrush}"
+                                BorderBrush="{ThemeResource FileSelectionMarqueeBorderBrush}"
+                                BorderThickness="1"/>
+                    </Canvas>
 
                     <!-- Loading Overlay -->
                     <Border x:Name="LoadingOverlay" 

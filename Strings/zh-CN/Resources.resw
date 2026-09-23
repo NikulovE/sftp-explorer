@@ -980,6 +980,15 @@
   <data name="ConnectionProfileDeleteFailedTitle" xml:space="preserve"><value>连接未删除</value></data>
   <data name="ConnectionProfileDeleteFailedMessage" xml:space="preserve"><value>由于无法安全保存其配置文件，因此保留了连接。检查对 AppData 的访问并重试。</value></data>
   <data name="UploadCompletedWithErrors" xml:space="preserve"><value>已上传 {0} 项，共 {1} 项。失败：{2}</value></data>
+  <data name="UploadCompletedSummary" xml:space="preserve"><value>已上传：{0}，已跳过：{1}，失败：{2}。</value></data>
+  <data name="UploadConflictTitle" xml:space="preserve"><value>目标已存在</value></data>
+  <data name="UploadFileConflictMessage" xml:space="preserve"><value>服务器上已存在文件：{0}。请选择处理方式。</value></data>
+  <data name="UploadFolderConflictMessage" xml:space="preserve"><value>服务器上已存在文件夹：{0}。替换将合并内容；重名文件将分别处理。</value></data>
+  <data name="UploadIncompatibleConflictMessage" xml:space="preserve"><value>服务器上已有不同类型的项目：{0}。无法通过此次上传替换。</value></data>
+  <data name="UploadConflictSkip" xml:space="preserve"><value>跳过</value></data>
+  <data name="UploadConflictReplace" xml:space="preserve"><value>替换</value></data>
+  <data name="UploadConflictSkipAll" xml:space="preserve"><value>全部跳过</value></data>
+  <data name="UploadConflictReplaceAll" xml:space="preserve"><value>全部替换</value></data>
   <data name="DeleteCompletedWithErrors" xml:space="preserve"><value>删除已完成，有 {0} 个失败项目。</value></data>
   <data name="TerminalSearchButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>搜索终端历史记录</value></data>
   <data name="TerminalSearchTitle" xml:space="preserve"><value>搜索终端历史记录</value></data>

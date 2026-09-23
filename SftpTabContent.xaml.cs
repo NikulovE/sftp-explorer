@@ -50,6 +50,10 @@ public sealed partial class SftpTabContent : UserControl
     private Dictionary<int, string> _gidToNameCache = new();
     private bool _nameResolutionSupported = true;
     private bool _isRightClickInProgress = false;
+    private uint? _fileSelectionPointerId;
+    private Windows.Foundation.Point _fileSelectionStart;
+    private HashSet<FileItem>? _fileSelectionOriginalItems;
+    private bool _fileSelectionMarqueeActive;
     private bool _isDownloadInProgress = false;
     private CancellationTokenSource? _operationCts;
     private CancellationTokenSource? _pathSuggestionCts;
@@ -191,10 +195,25 @@ public sealed partial class SftpTabContent : UserControl
         DateTimeOffset CreatedAt,
         IReadOnlyList<AddressSuggestion> Items);
     private sealed record FileSystemStats(long TotalBytes, long UsedBytes, long AvailableBytes);
-    private readonly record struct TransferSummary(int Succeeded, int Failed)
+    private enum UploadConflictAction { Skip, Replace, SkipAll, ReplaceAll, Cancel }
+
+    private sealed class UploadConflictContext : IDisposable
+    {
+        public SemaphoreSlim DialogGate { get; } = new(1, 1);
+        public UploadConflictAction? ApplyToAll { get; set; }
+        public CancellationTokenSource Cancellation { get; } = new();
+
+        public void Dispose()
+        {
+            DialogGate.Dispose();
+            Cancellation.Dispose();
+        }
+    }
+
+    private readonly record struct TransferSummary(int Succeeded, int Failed, int Skipped = 0)
     {
         public static TransferSummary operator +(TransferSummary left, TransferSummary right) =>
-            new(left.Succeeded + right.Succeeded, left.Failed + right.Failed);
+            new(left.Succeeded + right.Succeeded, left.Failed + right.Failed, left.Skipped + right.Skipped);
     }
 
     private sealed record TransferFailure(string Path, string Message);
@@ -278,6 +297,17 @@ public sealed partial class SftpTabContent : UserControl
                 snapshot = new FolderUploadProgressSnapshot(_completedFileIndexes.Count, _uploadedBytes);
             }
 
+            Publish(snapshot, force: true);
+        }
+
+        public void MarkFileSkipped(FolderUploadFile file)
+        {
+            FolderUploadProgressSnapshot snapshot;
+            lock (_sync)
+            {
+                if (!_completedFileIndexes.Add(file.Index)) return;
+                snapshot = new FolderUploadProgressSnapshot(_completedFileIndexes.Count, _uploadedBytes);
+            }
             Publish(snapshot, force: true);
         }
 
@@ -868,6 +898,12 @@ public sealed partial class SftpTabContent : UserControl
         // Перехватываем правый клик до drag-and-drop системы
         RemoteFilesListView.AddHandler(UIElement.PointerPressedEvent,
             new PointerEventHandler(RemoteFilesListView_PointerPressed), true);
+        RemoteFilesListView.AddHandler(UIElement.PointerMovedEvent,
+            new PointerEventHandler(RemoteFilesListView_PointerMoved), true);
+        RemoteFilesListView.AddHandler(UIElement.PointerReleasedEvent,
+            new PointerEventHandler(RemoteFilesListView_PointerReleased), true);
+        RemoteFilesListView.PointerCanceled += RemoteFilesListView_PointerCanceled;
+        RemoteFilesListView.PointerCaptureLost += RemoteFilesListView_PointerCaptureLost;
 
         // Регистрируем обработчик закрытия
         this.Unloaded += OnUnloaded;
@@ -910,6 +946,7 @@ public sealed partial class SftpTabContent : UserControl
     {
         // Unloaded is transient when switching or reparenting tabs. It is not a
         // disposal signal and must not cancel a folder being prepared.
+        EndFileSelectionMarquee();
         Log.Debug("SFTP tab content temporarily unloaded");
     }
 
@@ -2516,7 +2553,8 @@ public sealed partial class SftpTabContent : UserControl
         await CleanupRemoteUploadStagingFilesAfterCloseAsync().ConfigureAwait(false);
     }
 
-    // Перехватываем правый клик и блокируем drag-and-drop
+    // Right-click keeps the existing context menu behavior. A left drag from empty
+    // list space starts a selection rectangle without taking over file drag-out.
     private void RemoteFilesListView_PointerPressed(object sender, PointerRoutedEventArgs e)
     {
         var props = e.GetCurrentPoint(null).Properties;
@@ -2527,10 +2565,130 @@ public sealed partial class SftpTabContent : UserControl
 
             // Показываем контекстное меню напрямую
             DispatcherQueue.TryEnqueue(() => ShowContextMenu(e));
+            return;
         }
-        else
+
+        _isRightClickInProgress = false;
+        if (!props.IsLeftButtonPressed ||
+            e.Pointer.PointerDeviceType != Microsoft.UI.Input.PointerDeviceType.Mouse ||
+            IsInsideVisual<ListViewItem>(e.OriginalSource as DependencyObject) ||
+            IsInsideVisual<ScrollBar>(e.OriginalSource as DependencyObject) ||
+            !RemoteFilesListView.CapturePointer(e.Pointer))
         {
-            _isRightClickInProgress = false;
+            return;
+        }
+
+        _fileSelectionPointerId = e.Pointer.PointerId;
+        _fileSelectionStart = e.GetCurrentPoint(RemoteFilesListView).Position;
+        _fileSelectionOriginalItems = e.KeyModifiers.HasFlag(Windows.System.VirtualKeyModifiers.Control)
+            ? RemoteFilesListView.SelectedItems.Cast<FileItem>().ToHashSet()
+            : new HashSet<FileItem>();
+        RemoteFilesListView.Focus(FocusState.Pointer);
+        e.Handled = true;
+    }
+
+    private static bool IsInsideVisual<T>(DependencyObject? source) where T : DependencyObject
+    {
+        for (var current = source; current != null; current = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetParent(current))
+        {
+            if (current is T) return true;
+        }
+        return false;
+    }
+
+    private void RemoteFilesListView_PointerMoved(object sender, PointerRoutedEventArgs e)
+    {
+        if (_fileSelectionPointerId != e.Pointer.PointerId) return;
+        if (!e.GetCurrentPoint(RemoteFilesListView).Properties.IsLeftButtonPressed)
+        {
+            EndFileSelectionMarquee();
+            RemoteFilesListView.ReleasePointerCapture(e.Pointer);
+            return;
+        }
+
+        var point = e.GetCurrentPoint(RemoteFilesListView).Position;
+        if (!_fileSelectionMarqueeActive &&
+            Math.Abs(point.X - _fileSelectionStart.X) < 4 &&
+            Math.Abs(point.Y - _fileSelectionStart.Y) < 4)
+        {
+            return;
+        }
+
+        _fileSelectionMarqueeActive = true;
+        UpdateFileSelectionMarquee(point);
+        e.Handled = true;
+    }
+
+    private void RemoteFilesListView_PointerReleased(object sender, PointerRoutedEventArgs e)
+    {
+        if (_fileSelectionPointerId != e.Pointer.PointerId) return;
+        if (_fileSelectionMarqueeActive)
+            UpdateFileSelectionMarquee(e.GetCurrentPoint(RemoteFilesListView).Position);
+        else if (_fileSelectionOriginalItems?.Count == 0)
+            RemoteFilesListView.SelectedItems.Clear();
+
+        EndFileSelectionMarquee();
+        RemoteFilesListView.ReleasePointerCapture(e.Pointer);
+        e.Handled = true;
+    }
+
+    private void RemoteFilesListView_PointerCanceled(object sender, PointerRoutedEventArgs e)
+    {
+        if (_fileSelectionPointerId == e.Pointer.PointerId) EndFileSelectionMarquee();
+    }
+
+    private void RemoteFilesListView_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
+    {
+        if (_fileSelectionPointerId == e.Pointer.PointerId) EndFileSelectionMarquee();
+    }
+
+    private void EndFileSelectionMarquee()
+    {
+        _fileSelectionPointerId = null;
+        _fileSelectionOriginalItems = null;
+        _fileSelectionMarqueeActive = false;
+        FileSelectionMarquee.Visibility = Visibility.Collapsed;
+    }
+
+    private void UpdateFileSelectionMarquee(Windows.Foundation.Point point)
+    {
+        var maxX = RemoteFilesListView.ActualWidth;
+        var maxY = RemoteFilesListView.ActualHeight;
+        var left = Math.Clamp(Math.Min(_fileSelectionStart.X, point.X), 0, maxX);
+        var top = Math.Clamp(Math.Min(_fileSelectionStart.Y, point.Y), 0, maxY);
+        var right = Math.Clamp(Math.Max(_fileSelectionStart.X, point.X), 0, maxX);
+        var bottom = Math.Clamp(Math.Max(_fileSelectionStart.Y, point.Y), 0, maxY);
+
+        Canvas.SetLeft(FileSelectionMarquee, left);
+        Canvas.SetTop(FileSelectionMarquee, top);
+        FileSelectionMarquee.Width = Math.Max(1, right - left);
+        FileSelectionMarquee.Height = Math.Max(1, bottom - top);
+        FileSelectionMarquee.Visibility = Visibility.Visible;
+
+        var selected = new HashSet<FileItem>((_fileSelectionOriginalItems ?? [])
+            .Where(RemoteFiles.Contains));
+        foreach (var item in RemoteFiles)
+        {
+            if (item.IsVirtualRoot || RemoteFilesListView.ContainerFromItem(item) is not ListViewItem container)
+                continue;
+
+            var origin = container.TransformToVisual(RemoteFilesListView)
+                .TransformPoint(new Windows.Foundation.Point());
+            if (origin.X < right && origin.X + container.ActualWidth > left &&
+                origin.Y < bottom && origin.Y + container.ActualHeight > top)
+            {
+                selected.Add(item);
+            }
+        }
+
+        foreach (var item in RemoteFilesListView.SelectedItems.Cast<FileItem>().ToList())
+        {
+            if (!selected.Contains(item)) RemoteFilesListView.SelectedItems.Remove(item);
+        }
+        foreach (var item in selected)
+        {
+            if (!RemoteFilesListView.SelectedItems.Contains(item))
+                RemoteFilesListView.SelectedItems.Add(item);
         }
     }
 
@@ -2767,6 +2925,11 @@ public sealed partial class SftpTabContent : UserControl
         int currentFileIndex = 0;
         int succeeded = 0;
         int failed = 0;
+        int skipped = 0;
+        using var conflictContext = new UploadConflictContext();
+        using var uploadCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+            _lifetimeCts.Token, conflictContext.Cancellation.Token);
+        var uploadToken = uploadCancellation.Token;
 
         // SDK 1.7+: Show badge with transfer count
         BadgeNotificationService.IncrementTransfer();
@@ -2784,8 +2947,16 @@ public sealed partial class SftpTabContent : UserControl
                     var remotePath = targetPath.TrimEnd('/') + "/" + file.Name;
                     var fileSize = (long)(await file.GetBasicPropertiesAsync()).Size;
 
-                    await UploadFileWithProgress(file, remotePath, fileSize, currentFileIndex, totalFiles, _lifetimeCts.Token);
-                    succeeded++;
+                    if (await UploadFileWithProgress(
+                            file, remotePath, fileSize, currentFileIndex, totalFiles,
+                            uploadToken, conflictContext))
+                    {
+                        succeeded++;
+                    }
+                    else
+                    {
+                        skipped++;
+                    }
                 }
                 catch (OperationCanceledException)
                 {
@@ -2810,36 +2981,151 @@ public sealed partial class SftpTabContent : UserControl
         {
             // SDK 1.7+: Clear badge when done
             BadgeNotificationService.DecrementTransfer();
+            HideProgressBars();
+            RefreshRemoteFiles();
         }
 
-        HideProgressBars();
-        RefreshRemoteFiles();
-        StatusText.Text = failed == 0
-            ? string.Format(LocalizationHelper.GetString("FilesUploaded"), succeeded)
-            : string.Format(
-                LocalizationHelper.GetString("UploadCompletedWithErrors"),
-                succeeded,
-                succeeded + failed,
-                failed);
+        StatusText.Text = FormatUploadSummary(new TransferSummary(succeeded, failed, skipped));
     }
 
-    private async Task UploadFileWithProgress(
+    private static string FormatUploadSummary(TransferSummary summary) =>
+        summary.Failed == 0 && summary.Skipped == 0
+            ? string.Format(LocalizationHelper.GetString("FilesUploaded"), summary.Succeeded)
+            : string.Format(
+                LocalizationHelper.GetString("UploadCompletedSummary"),
+                summary.Succeeded,
+                summary.Skipped,
+                summary.Failed);
+
+    private async Task<UploadConflictAction> ResolveUploadConflictAsync(
+        string remotePath,
+        bool isFolder,
+        UploadConflictContext context,
+        CancellationToken cancellationToken,
+        bool canReplace)
+    {
+        await context.DialogGate.WaitAsync(cancellationToken);
+        try
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (context.ApplyToAll == UploadConflictAction.SkipAll)
+                return UploadConflictAction.Skip;
+            if (canReplace && context.ApplyToAll == UploadConflictAction.ReplaceAll)
+                return UploadConflictAction.Replace;
+
+            var action = UploadConflictAction.Cancel;
+            await RunOnUiThreadAsync(async () =>
+            {
+                if (_isDisposed || XamlRoot == null)
+                    throw new OperationCanceledException(cancellationToken);
+
+                var dialog = new ContentDialog
+                {
+                    Title = LocalizationHelper.GetString("UploadConflictTitle"),
+                    CloseButtonText = LocalizationHelper.GetString("CancelButton"),
+                    XamlRoot = XamlRoot
+                };
+                var content = new StackPanel { Spacing = 8 };
+                content.Children.Add(new TextBlock
+                {
+                    Text = string.Format(
+                        LocalizationHelper.GetString(!canReplace
+                            ? "UploadIncompatibleConflictMessage"
+                            : isFolder ? "UploadFolderConflictMessage" : "UploadFileConflictMessage"),
+                        remotePath),
+                    TextWrapping = TextWrapping.Wrap,
+                    IsTextSelectionEnabled = true
+                });
+
+                void AddChoice(string resourceKey, UploadConflictAction choice)
+                {
+                    var button = new Button
+                    {
+                        Content = LocalizationHelper.GetString(resourceKey),
+                        HorizontalAlignment = HorizontalAlignment.Stretch
+                    };
+                    button.Click += (_, _) =>
+                    {
+                        action = choice;
+                        dialog.Hide();
+                    };
+                    content.Children.Add(button);
+                }
+
+                AddChoice("UploadConflictSkip", UploadConflictAction.Skip);
+                if (canReplace)
+                    AddChoice("UploadConflictReplace", UploadConflictAction.Replace);
+                AddChoice("UploadConflictSkipAll", UploadConflictAction.SkipAll);
+                if (canReplace)
+                    AddChoice("UploadConflictReplaceAll", UploadConflictAction.ReplaceAll);
+                dialog.Content = content;
+                var showOperation = dialog.ShowAsync();
+                using var cancellationRegistration = cancellationToken.Register(() =>
+                {
+                    DispatcherQueue.TryEnqueue(dialog.Hide);
+                });
+                await showOperation;
+            });
+
+            cancellationToken.ThrowIfCancellationRequested();
+            if (action == UploadConflictAction.Cancel)
+            {
+                context.Cancellation.Cancel();
+                throw new OperationCanceledException(cancellationToken);
+            }
+            if (action is UploadConflictAction.SkipAll or UploadConflictAction.ReplaceAll)
+                context.ApplyToAll = action;
+            return action is UploadConflictAction.Skip or UploadConflictAction.SkipAll
+                ? UploadConflictAction.Skip
+                : UploadConflictAction.Replace;
+        }
+        finally
+        {
+            context.DialogGate.Release();
+        }
+    }
+
+    private async Task<bool> UploadFileWithProgress(
         StorageFile file,
         string remotePath,
         long fileSize,
         int currentIndex,
         int totalFiles,
         CancellationToken cancellationToken,
+        UploadConflictContext? conflictContext = null,
         SftpClient? transferClient = null,
         FolderUploadProgress? folderProgress = null,
         FolderUploadFile? folderFile = null)
     {
-        var startTime = DateTime.Now;
-        using var stream = await file.OpenStreamForReadAsync();
         var client = transferClient ?? _sftpClient
             ?? throw new InvalidOperationException("SFTP client is unavailable.");
+        var replaceExisting = false;
+        if (conflictContext != null)
+        {
+            var exists = false;
+            var canReplace = false;
+            await RunClientActionAsync(client, token =>
+            {
+                token.ThrowIfCancellationRequested();
+                exists = client.Exists(remotePath);
+                if (exists)
+                {
+                    var existing = client.Get(remotePath);
+                    canReplace = !existing.IsDirectory && !existing.IsSymbolicLink;
+                }
+            }, cancellationToken);
+            if (exists)
+            {
+                var action = await ResolveUploadConflictAsync(
+                    remotePath, isFolder: false, conflictContext, cancellationToken, canReplace);
+                if (action == UploadConflictAction.Skip) return false;
+                replaceExisting = true;
+            }
+        }
+
+        var startTime = DateTime.Now;
+        using var stream = await file.OpenStreamForReadAsync();
         var temporaryRemotePath = CreateRemotePartialPath(remotePath);
-        RegisterRemoteUploadStagingPath(temporaryRemotePath);
         long lastProgressTimestamp = 0;
 
         await RunClientTaskAsync(client, async token =>
@@ -2847,9 +3133,14 @@ public sealed partial class SftpTabContent : UserControl
             token.ThrowIfCancellationRequested();
             if (client.Exists(remotePath))
             {
-                throw new IOException($"Remote destination already exists: {remotePath}");
+                if (!replaceExisting)
+                    throw new IOException($"Remote destination already exists: {remotePath}");
+                var existing = client.Get(remotePath);
+                if (existing.IsDirectory || existing.IsSymbolicLink)
+                    throw new IOException($"Remote destination is not a regular file: {remotePath}");
             }
 
+            RegisterRemoteUploadStagingPath(temporaryRemotePath);
             try
             {
                 var uploadProgress = new InlineProgress<UploadFileProgressReport>(report =>
@@ -2893,12 +3184,24 @@ public sealed partial class SftpTabContent : UserControl
                     token).ConfigureAwait(false);
 
                 token.ThrowIfCancellationRequested();
-                if (client.Exists(remotePath))
+                if (replaceExisting)
                 {
-                    throw new IOException($"Remote destination appeared while uploading: {remotePath}");
+                    if (client.Exists(remotePath))
+                    {
+                        var existing = client.Get(remotePath);
+                        if (existing.IsDirectory || existing.IsSymbolicLink)
+                            throw new IOException($"Remote destination is not a regular file: {remotePath}");
+                    }
+                    CommitRemoteReplacement(client, temporaryRemotePath, remotePath);
                 }
-
-                client.RenameFile(temporaryRemotePath, remotePath);
+                else
+                {
+                    if (client.Exists(remotePath))
+                    {
+                        throw new IOException($"Remote destination appeared while uploading: {remotePath}");
+                    }
+                    client.RenameFile(temporaryRemotePath, remotePath);
+                }
                 UnregisterRemoteUploadStagingPath(temporaryRemotePath);
             }
             catch
@@ -2907,6 +3210,7 @@ public sealed partial class SftpTabContent : UserControl
                 throw;
             }
         }, cancellationToken);
+        return true;
     }
 
     private async void DownloadButton_Click(object sender, RoutedEventArgs e)
@@ -2954,6 +3258,10 @@ public sealed partial class SftpTabContent : UserControl
         int currentFileIndex = 0;
         var summary = new TransferSummary();
         var failures = new System.Collections.Concurrent.ConcurrentQueue<TransferFailure>();
+        using var conflictContext = new UploadConflictContext();
+        using var uploadCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+            _lifetimeCts.Token, conflictContext.Cancellation.Token);
+        var uploadToken = uploadCancellation.Token;
 
         // SDK 1.7+: Show badge with transfer count
         BadgeNotificationService.IncrementTransfer();
@@ -2970,16 +3278,19 @@ public sealed partial class SftpTabContent : UserControl
                         var remotePath = targetPath.TrimEnd('/') + "/" + file.Name;
                         var fileSize = (long)(await file.GetBasicPropertiesAsync()).Size;
 
-                        await UploadFileWithProgress(file, remotePath, fileSize, currentFileIndex, totalFiles, _lifetimeCts.Token);
-                        summary += new TransferSummary(1, 0);
+                        var uploaded = await UploadFileWithProgress(
+                            file, remotePath, fileSize, currentFileIndex, totalFiles,
+                            uploadToken, conflictContext);
+                        summary += uploaded ? new TransferSummary(1, 0) : new TransferSummary(0, 0, 1);
                     }
                     else if (item is StorageFolder folder)
                     {
                         summary += await UploadFolderRecursiveAsync(
                             folder,
                             targetPath,
-                            _lifetimeCts.Token,
-                            failures);
+                            uploadToken,
+                            failures,
+                            conflictContext);
                     }
                 }
                 catch (OperationCanceledException)
@@ -3010,19 +3321,17 @@ public sealed partial class SftpTabContent : UserControl
         {
             // SDK 1.7+: Clear badge when done
             BadgeNotificationService.DecrementTransfer();
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                if (_isDisposed) return;
+                HideProgressBars();
+                RefreshRemoteFiles();
+            });
         }
 
         DispatcherQueue.TryEnqueue(() =>
         {
-            HideProgressBars();
-            RefreshRemoteFiles();
-            StatusText.Text = summary.Failed == 0
-                ? string.Format(LocalizationHelper.GetString("FilesUploaded"), summary.Succeeded)
-                : string.Format(
-                    LocalizationHelper.GetString("UploadCompletedWithErrors"),
-                    summary.Succeeded,
-                    summary.Succeeded + summary.Failed,
-                    summary.Failed);
+            StatusText.Text = FormatUploadSummary(summary);
 
             if (summary.Failed > 0)
             {
@@ -3035,13 +3344,43 @@ public sealed partial class SftpTabContent : UserControl
         StorageFolder folder,
         string remoteBasePath,
         CancellationToken cancellationToken,
-        System.Collections.Concurrent.ConcurrentQueue<TransferFailure> failures)
+        System.Collections.Concurrent.ConcurrentQueue<TransferFailure> failures,
+        UploadConflictContext conflictContext)
     {
         var client = _sftpClient;
         if (client?.IsConnected != true) return new TransferSummary(0, 1);
         cancellationToken.ThrowIfCancellationRequested();
 
         var finalRemotePath = CombineRemotePath(remoteBasePath, folder.Name);
+        var destinationExists = false;
+        var canReplaceFolder = false;
+        await RunClientActionAsync(client, token =>
+        {
+            token.ThrowIfCancellationRequested();
+            destinationExists = client.Exists(finalRemotePath);
+            if (destinationExists)
+            {
+                var existing = client.Get(finalRemotePath);
+                canReplaceFolder = existing.IsDirectory && !existing.IsSymbolicLink;
+            }
+        }, cancellationToken);
+        if (destinationExists)
+        {
+            var action = await ResolveUploadConflictAsync(
+                finalRemotePath, isFolder: true, conflictContext, cancellationToken, canReplaceFolder);
+            if (action == UploadConflictAction.Skip) return new TransferSummary(0, 0, 1);
+            await RunClientActionAsync(client, token =>
+            {
+                token.ThrowIfCancellationRequested();
+                if (!client.Exists(finalRemotePath))
+                    throw new IOException($"Remote destination disappeared: {finalRemotePath}");
+                var existing = client.Get(finalRemotePath);
+                if (!existing.IsDirectory || existing.IsSymbolicLink)
+                    throw new IOException($"Remote destination is not a directory: {finalRemotePath}");
+            }, cancellationToken);
+            return await MergeUploadFolderAsync(folder, finalRemotePath, client, cancellationToken, failures, conflictContext);
+        }
+
         var stagingRemotePath = CombineRemotePath(remoteBasePath, $".sftpexplorer-{Guid.NewGuid():N}.partial");
         RegisterRemoteUploadStagingPath(stagingRemotePath);
         try
@@ -3116,6 +3455,39 @@ public sealed partial class SftpTabContent : UserControl
         }
     }
 
+    private async Task<TransferSummary> MergeUploadFolderAsync(
+        StorageFolder folder,
+        string remotePath,
+        SftpClient client,
+        CancellationToken cancellationToken,
+        System.Collections.Concurrent.ConcurrentQueue<TransferFailure> failures,
+        UploadConflictContext conflictContext)
+    {
+        var plan = await BuildFolderUploadPlanAsync(folder, remotePath, cancellationToken);
+        var summary = new TransferSummary(1, 0);
+        foreach (var directory in plan.Directories)
+        {
+            await RunClientActionAsync(client, token =>
+            {
+                token.ThrowIfCancellationRequested();
+                if (client.Exists(directory))
+                {
+                    var existing = client.Get(directory);
+                    if (!existing.IsDirectory || existing.IsSymbolicLink)
+                    {
+                        throw new IOException($"Remote destination is not a directory: {directory}");
+                    }
+                    return;
+                }
+                client.CreateDirectory(directory);
+            }, cancellationToken);
+        }
+
+        summary += await UploadFolderFilesAsync(
+            plan.Files, folder.Name, client, cancellationToken, failures, conflictContext);
+        return summary;
+    }
+
     private async Task<FolderUploadPlan> BuildFolderUploadPlanAsync(
         StorageFolder folder,
         string remoteFolderPath,
@@ -3178,7 +3550,8 @@ public sealed partial class SftpTabContent : UserControl
         string folderName,
         SftpClient primaryClient,
         CancellationToken cancellationToken,
-        System.Collections.Concurrent.ConcurrentQueue<TransferFailure> failures)
+        System.Collections.Concurrent.ConcurrentQueue<TransferFailure> failures,
+        UploadConflictContext? conflictContext = null)
     {
         if (files.Count == 0)
         {
@@ -3191,11 +3564,11 @@ public sealed partial class SftpTabContent : UserControl
         var workerCount = Math.Min(FolderUploadWorkerCount, files.Count);
         var workers = new List<Task<TransferSummary>>(workerCount)
         {
-            UploadFolderWorkerAsync(pendingFiles, primaryClient, cancellationToken, failures, progress)
+            UploadFolderWorkerAsync(pendingFiles, primaryClient, cancellationToken, failures, progress, conflictContext)
         };
         for (var worker = 1; worker < workerCount; worker++)
         {
-            workers.Add(UploadFolderWorkerAsync(pendingFiles, null, cancellationToken, failures, progress));
+            workers.Add(UploadFolderWorkerAsync(pendingFiles, null, cancellationToken, failures, progress, conflictContext));
         }
 
         try
@@ -3214,7 +3587,8 @@ public sealed partial class SftpTabContent : UserControl
         SftpClient? primaryClient,
         CancellationToken cancellationToken,
         System.Collections.Concurrent.ConcurrentQueue<TransferFailure> failures,
-        FolderUploadProgress progress)
+        FolderUploadProgress progress,
+        UploadConflictContext? conflictContext)
     {
         SftpClient? auxiliaryClient = null;
         var client = primaryClient;
@@ -3247,18 +3621,20 @@ public sealed partial class SftpTabContent : UserControl
                 cancellationToken.ThrowIfCancellationRequested();
                 try
                 {
-                    await UploadFileWithProgress(
+                    var uploaded = await UploadFileWithProgress(
                         file.File,
                         file.RemotePath,
                         file.Size,
                         file.Index,
                         file.TotalFiles,
                         cancellationToken,
+                        conflictContext,
                         client,
                         progress,
                         file);
-                    progress.MarkFileCompleted(file);
-                    summary += new TransferSummary(1, 0);
+                    if (uploaded) progress.MarkFileCompleted(file);
+                    else progress.MarkFileSkipped(file);
+                    summary += uploaded ? new TransferSummary(1, 0) : new TransferSummary(0, 0, 1);
                 }
                 catch (OperationCanceledException)
                 {
@@ -3294,12 +3670,7 @@ public sealed partial class SftpTabContent : UserControl
         var distinctFailures = failures
             .DistinctBy(failure => (failure.Path, failure.Message))
             .ToList();
-        var totalItems = summary.Succeeded + summary.Failed;
-        var message = string.Format(
-            LocalizationHelper.GetString("UploadCompletedWithErrors"),
-            summary.Succeeded,
-            totalItems,
-            summary.Failed);
+        var message = FormatUploadSummary(summary);
 
         if (distinctFailures.Count > 0)
         {
@@ -3618,6 +3989,9 @@ public sealed partial class SftpTabContent : UserControl
 
     private void RemoteFilesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
+        foreach (var item in e.RemovedItems.OfType<FileItem>()) item.SetSelected(false);
+        foreach (var item in e.AddedItems.OfType<FileItem>()) item.SetSelected(true);
+
         var selectedCount = GetSelectedRealItems().Count;
 
         CutButton.IsEnabled = selectedCount > 0;
@@ -4086,6 +4460,7 @@ public sealed partial class SftpTabContent : UserControl
         var virtualRoot = RemoteFiles.FirstOrDefault(item => item.IsVirtualRoot);
         var sorted = sort(RemoteFiles.Where(item => !item.IsVirtualRoot)).ToList();
 
+        EndFileSelectionMarquee();
         RemoteFiles.Clear();
         if (virtualRoot != null)
         {
@@ -5236,6 +5611,7 @@ public sealed partial class SftpTabContent : UserControl
             var initialStats = _fileSystemStatsCache;
             ApplyFileSystemStats(fileItems, initialStats);
 
+            EndFileSelectionMarquee();
             RemoteFiles.Clear();
             UpdateFreeSpaceColumnVisibility();
             if (currentPath == "/")
@@ -8920,6 +9296,7 @@ public sealed partial class SftpTabContent : UserControl
 
     public class FileItem : INotifyPropertyChanged
     {
+        private bool _isSelected;
         public string Name { get; set; } = "";
         public string Size { get; set; } = "";
         public long SizeBytes { get; set; } = 0;
@@ -8961,8 +9338,16 @@ public sealed partial class SftpTabContent : UserControl
         }
         public Visibility SymbolicLinkOverlayVisibility => IsSymbolicLink ? Visibility.Visible : Visibility.Collapsed;
         public Visibility RestrictedOverlayVisibility => CanRead ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility SelectionOutlineVisibility => _isSelected ? Visibility.Visible : Visibility.Collapsed;
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        public void SetSelected(bool selected)
+        {
+            if (_isSelected == selected) return;
+            _isSelected = selected;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectionOutlineVisibility)));
+        }
 
         public void SetFileSystemStats(long totalBytes, long usedBytes, long availableBytes, string freeSpaceText)
         {

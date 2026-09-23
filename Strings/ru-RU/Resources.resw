@@ -969,6 +969,15 @@
   <data name="ConnectionProfileDeleteFailedTitle" xml:space="preserve"><value>Подключение не удалено</value></data>
   <data name="ConnectionProfileDeleteFailedMessage" xml:space="preserve"><value>Подключение сохранено, потому что безопасно записать изменения профиля не удалось. Проверьте доступ к AppData и повторите попытку.</value></data>
   <data name="UploadCompletedWithErrors" xml:space="preserve"><value>Загружено {0} из {1} элементов. Ошибки: {2}</value></data>
+  <data name="UploadCompletedSummary" xml:space="preserve"><value>Загружено: {0}, пропущено: {1}, ошибок: {2}.</value></data>
+  <data name="UploadConflictTitle" xml:space="preserve"><value>Объект уже существует</value></data>
+  <data name="UploadFileConflictMessage" xml:space="preserve"><value>На сервере уже есть файл: {0}. Выберите действие для этого файла.</value></data>
+  <data name="UploadFolderConflictMessage" xml:space="preserve"><value>На сервере уже есть папка: {0}. Замена объединит содержимое папок. Для совпадающих файлов выбор будет предложен отдельно.</value></data>
+  <data name="UploadIncompatibleConflictMessage" xml:space="preserve"><value>На сервере уже есть объект другого типа: {0}. Заменить его этой загрузкой нельзя.</value></data>
+  <data name="UploadConflictSkip" xml:space="preserve"><value>Пропустить</value></data>
+  <data name="UploadConflictReplace" xml:space="preserve"><value>Заменить</value></data>
+  <data name="UploadConflictSkipAll" xml:space="preserve"><value>Пропустить всё</value></data>
+  <data name="UploadConflictReplaceAll" xml:space="preserve"><value>Заменить всё</value></data>
   <data name="DeleteCompletedWithErrors" xml:space="preserve"><value>Удаление завершено, не удалось удалить элементов: {0}.</value></data>
   <data name="TerminalSearchButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve"><value>Поиск по истории терминала</value></data>
   <data name="TerminalSearchTitle" xml:space="preserve"><value>Поиск по истории терминала</value></data>
