@@ -1370,8 +1370,6 @@ public sealed partial class SftpTabContent : UserControl
         _terminalCommandHistory.Clear();
         _terminalRecentPlainOutput = "";
         ClearTerminalSurface();
-        AppendTerminalOutput(LocalizationHelper.GetString("TerminalConnecting") ??
-                             "Connecting SSH terminal...\r\n");
         var terminalLabel = LocalizationHelper.GetString("TerminalTitleLabel");
         TerminalTitle.Text = $"{terminalLabel} · {connectionInfo.Username}@{connectionInfo.Host}:{connectionInfo.Port}";
         var sessionVersion = ++_terminalSessionVersion;
@@ -1438,11 +1436,6 @@ public sealed partial class SftpTabContent : UserControl
             if (terminalReady)
             {
                 FocusTerminal();
-            }
-
-            if (!string.IsNullOrEmpty(_currentRemotePath))
-            {
-                await SetTerminalWorkingDirectoryAsync(_currentRemotePath);
             }
         }
         catch (OperationCanceledException) when (_lifetimeCts.IsCancellationRequested)
@@ -1536,15 +1529,6 @@ public sealed partial class SftpTabContent : UserControl
         {
             _terminalWriteLock.Release();
         }
-    }
-
-    private async Task SetTerminalWorkingDirectoryAsync(string remotePath)
-    {
-        // The terminal is an independent SSH shell. It must establish access with
-        // the connected user's rights; an SFTP listing obtained through sudo does
-        // not grant those rights to this session.
-        var command = $"cd -- {QuoteShellArgument(remotePath)} 2>/dev/null || cd -- \"$HOME\" 2>/dev/null\r";
-        await WriteTerminalAsync(command);
     }
 
     private async Task HandleTerminalInputAsync(string data)
