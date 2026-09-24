@@ -486,7 +486,8 @@
                                     <Grid Grid.Column="0" Width="24" Height="24" Margin="0,0,12,0" IsHitTestVisible="False">
                                         <!-- Yellow filled folder background -->
                                         <FontIcon x:Name="FolderFill" Glyph="&#xE8D5;" FontSize="20" Foreground="Gold"
-                                                  HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                                                  HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                  Visibility="{Binding FolderFillVisibility}"/>
                                         <!-- Main icon -->
                                         <FontIcon Glyph="{Binding Icon}" FontSize="20"
                                                   HorizontalAlignment="Left" VerticalAlignment="Top"/>

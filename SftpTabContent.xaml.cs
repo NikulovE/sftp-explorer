@@ -2702,25 +2702,12 @@ public sealed partial class SftpTabContent : UserControl
             lvi.DragStarting -= RemoteFiles_DragStarting;
             lvi.DragStarting += RemoteFiles_DragStarting;
 
-            // Show yellow folder fill only for directories
-            if (args.Item is FileItem fileItem)
+            if (args.Item is FileItem)
             {
                 var rootGrid = lvi.ContentTemplateRoot as Grid;
                 if (rootGrid != null)
                 {
                     ApplyFreeSpaceColumnWidth(rootGrid);
-
-                    var iconGrid = rootGrid.Children[0] as Grid;
-                    if (iconGrid != null && iconGrid.Children.Count > 0)
-                    {
-                        var folderFill = iconGrid.Children[0] as FontIcon;
-                        if (folderFill != null)
-                        {
-                            folderFill.Visibility = fileItem.IsDirectory
-                                ? Visibility.Visible
-                                : Visibility.Collapsed;
-                        }
-                    }
                 }
             }
         }
@@ -9337,6 +9324,7 @@ public sealed partial class SftpTabContent : UserControl
             }
         }
         public Visibility SymbolicLinkOverlayVisibility => IsSymbolicLink ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility FolderFillVisibility => IsDirectory ? Visibility.Visible : Visibility.Collapsed;
         public Visibility RestrictedOverlayVisibility => CanRead ? Visibility.Collapsed : Visibility.Visible;
         public Visibility SelectionOutlineVisibility => _isSelected ? Visibility.Visible : Visibility.Collapsed;
 
