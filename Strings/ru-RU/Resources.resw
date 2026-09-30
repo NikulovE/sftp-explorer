@@ -443,6 +443,18 @@
   <data name="ReadyStatus.Text" xml:space="preserve">
     <value>Готово</value>
   </data>
+  <data name="SftpConnected" xml:space="preserve">
+    <value>SFTP подключён</value>
+  </data>
+  <data name="SftpDisconnected" xml:space="preserve">
+    <value>SFTP отключён</value>
+  </data>
+  <data name="SftpReconnecting" xml:space="preserve">
+    <value>Повторное подключение к SFTP...</value>
+  </data>
+  <data name="SftpReconnectFailed" xml:space="preserve">
+    <value>Не удалось повторно подключиться к SFTP: {0}</value>
+  </data>
   <data name="Ready" xml:space="preserve">
     <value>Готово</value>
   </data>

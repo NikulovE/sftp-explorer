@@ -132,6 +132,12 @@ public sealed class SshClientFactoryTests
                 // The TOFU decision was persisted for the next connection.
                 var document = File.ReadAllText(Path.Combine(temp.Path, "known-hosts.json"));
                 Assert.Contains($"127.0.0.1:{server.Port}", document);
+
+                client.Disconnect();
+                Assert.False(client.IsConnected);
+                await client.ConnectAsync(CancellationToken.None);
+                Assert.True(client.IsConnected);
+                Assert.NotEmpty(client.ListDirectory("/"));
             }
 
             Assert.True(confirmationCount >= 1);

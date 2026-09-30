@@ -437,6 +437,18 @@
   <data name="ReadyStatus.Text" xml:space="preserve">
     <value>Ready</value>
   </data>
+  <data name="SftpConnected" xml:space="preserve">
+    <value>SFTP connected</value>
+  </data>
+  <data name="SftpDisconnected" xml:space="preserve">
+    <value>SFTP disconnected</value>
+  </data>
+  <data name="SftpReconnecting" xml:space="preserve">
+    <value>Reconnecting to SFTP...</value>
+  </data>
+  <data name="SftpReconnectFailed" xml:space="preserve">
+    <value>SFTP reconnect failed: {0}</value>
+  </data>
   <data name="Ready" xml:space="preserve">
     <value>Ready</value>
   </data>

@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -71,6 +72,8 @@ public sealed partial class SftpTabContent : UserControl
     private Task<IReadOnlyDictionary<string, FileSystemStats>>? _fileSystemStatsLoadTask;
     private int _remoteRefreshVersion;
     private bool _isFreeSpaceColumnVisible;
+    private readonly DispatcherTimer _connectionStatusTimer = new() { Interval = TimeSpan.FromSeconds(2) };
+    private bool? _shownConnectionState;
 
     private static readonly GridLength FreeSpaceColumnVisibleWidth = new(240);
     private static readonly GridLength FreeSpaceColumnHiddenWidth = new(0);
@@ -879,6 +882,8 @@ public sealed partial class SftpTabContent : UserControl
             });
         NativeTerminal.Loaded += NativeTerminal_Loaded;
         _sftpClient = sftpClient;
+        _connectionStatusTimer.Tick += ConnectionStatusTimer_Tick;
+        UpdateConnectionIndicator();
         _session = session;
         _sshClientFactory = factory;
         _confirmHostKeyAsync = (prompt, cancellationToken) =>
@@ -938,16 +943,35 @@ public sealed partial class SftpTabContent : UserControl
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         Log.Debug("SFTP tab content loaded");
+        UpdateConnectionIndicator();
+        _connectionStatusTimer.Start();
         // Using XAML-based `DragOver`/`Drop` handlers for external drag from Explorer.
         // DragDropManager initialization disabled to avoid intercepting external drags.
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
+        _connectionStatusTimer.Stop();
         // Unloaded is transient when switching or reparenting tabs. It is not a
         // disposal signal and must not cancel a folder being prepared.
         EndFileSelectionMarquee();
         Log.Debug("SFTP tab content temporarily unloaded");
+    }
+
+    private void ConnectionStatusTimer_Tick(object? sender, object e) => UpdateConnectionIndicator();
+
+    private void UpdateConnectionIndicator()
+    {
+        var connected = !_isDisposed && _sftpClient?.IsConnected == true;
+        if (_shownConnectionState == connected) return;
+
+        _shownConnectionState = connected;
+        ConnectionIndicator.Fill = new SolidColorBrush(connected
+            ? Windows.UI.Color.FromArgb(255, 46, 125, 50)
+            : Windows.UI.Color.FromArgb(255, 198, 40, 40));
+        ToolTipService.SetToolTip(ConnectionIndicator,
+            LocalizationHelper.GetString(connected ? "SftpConnected" : "SftpDisconnected") ??
+            (connected ? "SFTP connected" : "SFTP disconnected"));
     }
 
     private async void TerminalToggleButton_Click(object sender, RoutedEventArgs e)
@@ -2451,6 +2475,8 @@ public sealed partial class SftpTabContent : UserControl
         }
 
         _isDisposed = true;
+        _connectionStatusTimer.Stop();
+        _connectionStatusTimer.Tick -= ConnectionStatusTimer_Tick;
         _dragPreparationCanceled = true;
         _lifetimeCts.Cancel();
         Interlocked.Exchange(ref _operationCts, null);
@@ -5553,14 +5579,29 @@ public sealed partial class SftpTabContent : UserControl
         var refreshStatusRevision = Volatile.Read(ref _statusRevision);
         var refreshVersion = Interlocked.Increment(ref _remoteRefreshVersion);
 
-        if (_sftpClient?.IsConnected != true)
-        {
-            StatusText.Text = "Cannot refresh: SFTP client not connected";
-            return;
-        }
-
+        var reconnecting = false;
         try
         {
+            var client = _sftpClient ?? throw new InvalidOperationException("SFTP client is unavailable.");
+            if (!client.IsConnected)
+            {
+                reconnecting = true;
+                UpdateConnectionIndicator();
+                StatusText.Text = LocalizationHelper.GetString("SftpReconnecting") ?? "Reconnecting to SFTP...";
+                await RunClientTaskAsync(client, async cancellationToken =>
+                {
+                    if (!client.IsConnected)
+                        await client.ConnectAsync(cancellationToken).ConfigureAwait(false);
+                }, _lifetimeCts.Token);
+
+                if (_isDisposed || refreshVersion != Volatile.Read(ref _remoteRefreshVersion)) return;
+                if (!client.IsConnected)
+                    throw new InvalidOperationException("SFTP client is not connected.");
+
+                UpdateConnectionIndicator();
+                reconnecting = false;
+            }
+
             // Show loading overlay
             LoadingOverlay.Visibility = Visibility.Visible;
 
@@ -5576,8 +5617,6 @@ public sealed partial class SftpTabContent : UserControl
             }
             else
             {
-                var client = _sftpClient
-                    ?? throw new InvalidOperationException("SFTP client is unavailable.");
                 fileItems = await RunClientResultAsync(client, cancellationToken =>
                 {
                     cancellationToken.ThrowIfCancellationRequested();
@@ -5659,10 +5698,13 @@ public sealed partial class SftpTabContent : UserControl
         }
         catch (Exception ex)
         {
+            if (!_isDisposed) UpdateConnectionIndicator();
             if (Volatile.Read(ref _activeDragPreparationCount) == 0 &&
                 refreshStatusRevision == Volatile.Read(ref _statusRevision))
             {
-                StatusText.Text = $"Error loading remote files: {ex.Message}";
+                StatusText.Text = reconnecting
+                    ? string.Format(LocalizationHelper.GetString("SftpReconnectFailed") ?? "SFTP reconnect failed: {0}", ex.Message)
+                    : $"Error loading remote files: {ex.Message}";
             }
             else
             {

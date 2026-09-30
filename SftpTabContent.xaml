@@ -736,15 +736,19 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     
-                    <TextBlock x:Name="ConnectionText" 
-                              Grid.Column="0"
-                              Text="" 
-                              VerticalAlignment="Center" 
-                              Foreground="#1F1F1F"
-                              FontSize="12"
-                              FontFamily="Segoe UI"
-                              TextTrimming="CharacterEllipsis"
-                              TextWrapping="NoWrap"/>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6"
+                                VerticalAlignment="Center">
+                        <Ellipse x:Name="ConnectionIndicator" Width="8" Height="8"
+                                 Fill="#C62828" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="ConnectionText"
+                                   Text=""
+                                   VerticalAlignment="Center"
+                                   Foreground="#1F1F1F"
+                                   FontSize="12"
+                                   FontFamily="Segoe UI"
+                                   TextTrimming="CharacterEllipsis"
+                                   TextWrapping="NoWrap"/>
+                    </StackPanel>
                     
                     <StackPanel Grid.Column="1"
                                 Orientation="Horizontal"
