@@ -1115,7 +1115,7 @@ public sealed partial class SftpTabContent : UserControl
             resultLines.Visibility = Visibility.Visible;
         };
 
-        await dialog.ShowAsync();
+        await MainWindow.ShowDialogAboveTerminalAsync(dialog);
     }
 
     private void TerminalMaximizeButton_Click(object sender, RoutedEventArgs e)
@@ -1355,7 +1355,8 @@ public sealed partial class SftpTabContent : UserControl
 
     internal void RestoreNativeTerminalAfterXamlOverlay(bool wasVisible)
     {
-        if (wasVisible && IsLoaded && TerminalPanel.Visibility == Visibility.Visible)
+        if (wasVisible && IsLoaded && Visibility == Visibility.Visible &&
+            TerminalPanel.Visibility == Visibility.Visible)
         {
             NativeTerminal.Visibility = Visibility.Visible;
         }
@@ -2860,7 +2861,7 @@ public sealed partial class SftpTabContent : UserControl
         };
         dialog.Content = textBox;
 
-        var result = await dialog.ShowAsync();
+        var result = await MainWindow.ShowDialogAboveTerminalAsync(dialog);
         if (result == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(textBox.Text))
         {
             try
@@ -2916,7 +2917,7 @@ public sealed partial class SftpTabContent : UserControl
                 CloseButtonText = LocalizationHelper.GetString("OK"),
                 XamlRoot = this.XamlRoot
             };
-            await dialog.ShowAsync();
+            await MainWindow.ShowDialogAboveTerminalAsync(dialog);
             return;
         }
 
@@ -3072,7 +3073,7 @@ public sealed partial class SftpTabContent : UserControl
                 if (canReplace)
                     AddChoice("UploadConflictReplaceAll", UploadConflictAction.ReplaceAll);
                 dialog.Content = content;
-                var showOperation = dialog.ShowAsync();
+                var showOperation = MainWindow.ShowDialogAboveTerminalAsync(dialog);
                 using var cancellationRegistration = cancellationToken.Register(() =>
                 {
                     DispatcherQueue.TryEnqueue(dialog.Hide);
@@ -3262,7 +3263,7 @@ public sealed partial class SftpTabContent : UserControl
                     CloseButtonText = LocalizationHelper.GetString("OK"),
                     XamlRoot = this.XamlRoot
                 };
-                await dialog.ShowAsync();
+                await MainWindow.ShowDialogAboveTerminalAsync(dialog);
             });
             return;
         }
@@ -3713,7 +3714,7 @@ public sealed partial class SftpTabContent : UserControl
             CloseButtonText = LocalizationHelper.GetString("OK"),
             XamlRoot = dialogRoot
         };
-        await dialog.ShowAsync();
+        await MainWindow.ShowDialogAboveTerminalAsync(dialog);
     }
 
     private async void DeleteButton_Click(object sender, RoutedEventArgs e)
@@ -3733,7 +3734,7 @@ public sealed partial class SftpTabContent : UserControl
             XamlRoot = this.XamlRoot
         };
 
-        var result = await dialog.ShowAsync();
+        var result = await MainWindow.ShowDialogAboveTerminalAsync(dialog);
         if (result == ContentDialogResult.Primary)
         {
             // Prepare cancellation and UI
@@ -3839,7 +3840,7 @@ public sealed partial class SftpTabContent : UserControl
                             CloseButtonText = LocalizationHelper.GetString("OK"),
                             XamlRoot = this.XamlRoot
                         };
-                        await dlg.ShowAsync();
+                        await MainWindow.ShowDialogAboveTerminalAsync(dlg);
                     });
                 }
 
@@ -4038,7 +4039,7 @@ public sealed partial class SftpTabContent : UserControl
         };
         dialog.Content = textBox;
 
-        var result = await dialog.ShowAsync();
+        var result = await MainWindow.ShowDialogAboveTerminalAsync(dialog);
         if (result == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(textBox.Text))
         {
             try
@@ -4384,16 +4385,7 @@ public sealed partial class SftpTabContent : UserControl
         };
         dialog.Content = textBox;
 
-        var restoreNativeTerminal = SuspendNativeTerminalForXamlOverlay();
-        ContentDialogResult result;
-        try
-        {
-            result = await dialog.ShowAsync();
-        }
-        finally
-        {
-            RestoreNativeTerminalAfterXamlOverlay(restoreNativeTerminal);
-        }
+        var result = await MainWindow.ShowDialogAboveTerminalAsync(dialog);
 
         if (result == ContentDialogResult.Primary && !string.IsNullOrWhiteSpace(textBox.Text))
         {
@@ -4532,7 +4524,7 @@ public sealed partial class SftpTabContent : UserControl
             XamlRoot = this.XamlRoot
         };
 
-        await dialog.ShowAsync();
+        await MainWindow.ShowDialogAboveTerminalAsync(dialog);
     }
 
     private async Task ShowFileSystemPropertiesAsync(FileItem item)
@@ -4565,7 +4557,7 @@ public sealed partial class SftpTabContent : UserControl
             XamlRoot = XamlRoot
         };
 
-        await dialog.ShowAsync();
+        await MainWindow.ShowDialogAboveTerminalAsync(dialog);
     }
 
     private async void PathBox_TextChanged(
@@ -4772,7 +4764,7 @@ public sealed partial class SftpTabContent : UserControl
                 CloseButtonText = LocalizationHelper.GetString("OK"),
                 XamlRoot = XamlRoot
             };
-            await dialog.ShowAsync();
+            await MainWindow.ShowDialogAboveTerminalAsync(dialog);
         }
     }
 
@@ -4898,7 +4890,7 @@ public sealed partial class SftpTabContent : UserControl
                 CloseButtonText = LocalizationHelper.GetString("OK"),
                 XamlRoot = this.XamlRoot
             };
-            await dialog.ShowAsync();
+            await MainWindow.ShowDialogAboveTerminalAsync(dialog);
         }
     }
 
@@ -7759,7 +7751,7 @@ public sealed partial class SftpTabContent : UserControl
                     XamlRoot = dialogRoot
                 };
 
-                var result = await dialog.ShowAsync();
+                var result = await MainWindow.ShowDialogAboveTerminalAsync(dialog);
                 if (result != ContentDialogResult.Primary)
                 {
                     completion.TrySetResult(DragTransferAction.Cancel);
@@ -7866,7 +7858,7 @@ public sealed partial class SftpTabContent : UserControl
             XamlRoot = XamlRoot
         };
 
-        if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+        if (await MainWindow.ShowDialogAboveTerminalAsync(dialog) != ContentDialogResult.Primary)
         {
             return;
         }
@@ -7922,7 +7914,7 @@ public sealed partial class SftpTabContent : UserControl
             CloseButtonText = LocalizationHelper.GetString("OK"),
             XamlRoot = XamlRoot
         };
-        await dialog.ShowAsync();
+        await MainWindow.ShowDialogAboveTerminalAsync(dialog);
     }
 
     private async Task TryOpenFileWithSudoAsync(FileItem item, bool showOpenWithDialog = false)
@@ -7945,7 +7937,7 @@ public sealed partial class SftpTabContent : UserControl
             XamlRoot = XamlRoot
         };
 
-        if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+        if (await MainWindow.ShowDialogAboveTerminalAsync(dialog) != ContentDialogResult.Primary)
         {
             return;
         }
@@ -7989,7 +7981,7 @@ public sealed partial class SftpTabContent : UserControl
                 CloseButtonText = LocalizationHelper.GetString("OK"),
                 XamlRoot = XamlRoot
             };
-            await errorDialog.ShowAsync();
+            await MainWindow.ShowDialogAboveTerminalAsync(errorDialog);
         }
     }
 
@@ -8147,7 +8139,7 @@ public sealed partial class SftpTabContent : UserControl
             XamlRoot = dialogRoot
         };
 
-        await dialog.ShowAsync();
+        await MainWindow.ShowDialogAboveTerminalAsync(dialog);
     }
 
     private async Task ShowFolderDragPreparationFailedAsync(string? details = null)
@@ -8176,7 +8168,7 @@ public sealed partial class SftpTabContent : UserControl
             XamlRoot = dialogRoot
         };
 
-        await dialog.ShowAsync();
+        await MainWindow.ShowDialogAboveTerminalAsync(dialog);
     }
 
     private string BuildDragTransferIssuePreview()
@@ -8637,7 +8629,7 @@ public sealed partial class SftpTabContent : UserControl
                 CloseButtonText = LocalizationHelper.GetString("OK"),
                 XamlRoot = this.XamlRoot
             };
-            await dialog.ShowAsync();
+            await MainWindow.ShowDialogAboveTerminalAsync(dialog);
         }
     }
 
@@ -8679,7 +8671,7 @@ public sealed partial class SftpTabContent : UserControl
                 CloseButtonText = LocalizationHelper.GetString("OK"),
                 XamlRoot = this.XamlRoot
             };
-            await dialog.ShowAsync();
+            await MainWindow.ShowDialogAboveTerminalAsync(dialog);
             return;
         }
 

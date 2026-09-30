@@ -42,6 +42,27 @@ public sealed partial class MainWindow : Window
     private UIElement? _currentTitleBar;
     private const int InvalidOperationHResult = unchecked((int)0x800710DD);
 
+    internal static async Task<ContentDialogResult> ShowDialogAboveTerminalAsync(ContentDialog dialog)
+    {
+        if (App.MainWindow is not MainWindow window)
+        {
+            return await dialog.ShowAsync();
+        }
+
+        var terminalTab = window.TabContentArea.Children
+            .OfType<SftpTabContent>()
+            .SingleOrDefault(tab => tab.Visibility == Visibility.Visible);
+        var restoreNativeTerminal = terminalTab?.SuspendNativeTerminalForXamlOverlay() == true;
+        try
+        {
+            return await dialog.ShowAsync();
+        }
+        finally
+        {
+            terminalTab?.RestoreNativeTerminalAfterXamlOverlay(restoreNativeTerminal);
+        }
+    }
+
     public MainWindow()
     {
         try
@@ -226,7 +247,7 @@ public sealed partial class MainWindow : Window
             XamlRoot = this.Content.XamlRoot
         };
 
-        var result = await dialog.ShowAsync();
+        var result = await ShowDialogAboveTerminalAsync(dialog);
         
         if (result == ContentDialogResult.Primary)
         {
@@ -348,18 +369,7 @@ public sealed partial class MainWindow : Window
                 connectionErrorForAttempt as HostKeyChangedException);
         };
 
-        var terminalTab = TabContentArea.Children
-            .OfType<SftpTabContent>()
-            .SingleOrDefault(tab => tab.Visibility == Visibility.Visible);
-        var restoreNativeTerminal = terminalTab?.SuspendNativeTerminalForXamlOverlay() == true;
-        try
-        {
-            await dialog.ShowAsync();
-        }
-        finally
-        {
-            terminalTab?.RestoreNativeTerminalAfterXamlOverlay(restoreNativeTerminal);
-        }
+        await ShowDialogAboveTerminalAsync(dialog);
 
         var connectedInputState = dialog.ConnectedInputState;
         if (connectedInputState == null)
@@ -511,7 +521,7 @@ public sealed partial class MainWindow : Window
                     CloseButtonText = LocalizationHelper.GetString("OK") ?? "OK",
                     XamlRoot = this.Content.XamlRoot
                 };
-                await errorDialog.ShowAsync();
+                await ShowDialogAboveTerminalAsync(errorDialog);
             }
 
             return false;
@@ -568,7 +578,7 @@ public sealed partial class MainWindow : Window
             XamlRoot = Content.XamlRoot
         };
 
-        if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+        if (await ShowDialogAboveTerminalAsync(dialog) != ContentDialogResult.Primary)
         {
             return;
         }
@@ -593,7 +603,7 @@ public sealed partial class MainWindow : Window
                 CloseButtonText = LocalizationHelper.GetString("OK") ?? "OK",
                 XamlRoot = Content.XamlRoot
             };
-            await errorDialog.ShowAsync();
+            await ShowDialogAboveTerminalAsync(errorDialog);
         }
     }
 
@@ -1097,7 +1107,7 @@ public sealed partial class MainWindow : Window
             CloseButtonText = LocalizationHelper.GetString("OK") ?? "OK",
             XamlRoot = Content.XamlRoot
         };
-        await errorDialog.ShowAsync();
+        await ShowDialogAboveTerminalAsync(errorDialog);
     }
 
     private async Task ShowPersistenceWarningAsync(Exception exception)
@@ -1117,7 +1127,7 @@ public sealed partial class MainWindow : Window
             CloseButtonText = LocalizationHelper.GetString("OK") ?? "OK",
             XamlRoot = Content.XamlRoot
         };
-        await dialog.ShowAsync();
+        await ShowDialogAboveTerminalAsync(dialog);
     }
 
     private Task<bool> ConfirmHostKeyAsync(
@@ -1191,7 +1201,7 @@ public sealed partial class MainWindow : Window
         {
             DispatcherQueue.TryEnqueue(dialog.Hide);
         });
-        var result = await dialog.ShowAsync();
+        var result = await ShowDialogAboveTerminalAsync(dialog);
         return !cancellationToken.IsCancellationRequested &&
                result == ContentDialogResult.Primary;
     }
@@ -1406,7 +1416,7 @@ public sealed partial class MainWindow : Window
                 CloseButtonText = LocalizationHelper.GetString("OK") ?? "OK",
                 XamlRoot = this.Content.XamlRoot
             };
-            await errorDialog.ShowAsync();
+            await ShowDialogAboveTerminalAsync(errorDialog);
         }
     }
 
@@ -1508,7 +1518,7 @@ public sealed partial class MainWindow : Window
             DefaultButton = ContentDialogButton.Primary,
             XamlRoot = Content.XamlRoot
         };
-        if (await dialog.ShowAsync() != ContentDialogResult.Primary)
+        if (await ShowDialogAboveTerminalAsync(dialog) != ContentDialogResult.Primary)
         {
             return (false, string.Empty, string.Empty);
         }

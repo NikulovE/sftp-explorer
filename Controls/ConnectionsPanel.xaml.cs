@@ -284,7 +284,7 @@ public sealed partial class ConnectionsPanel : UserControl
                 XamlRoot = this.XamlRoot
             };
 
-            if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+            if (await MainWindow.ShowDialogAboveTerminalAsync(dialog) == ContentDialogResult.Primary)
             {
                 try
                 {
@@ -314,7 +314,7 @@ public sealed partial class ConnectionsPanel : UserControl
             XamlRoot = this.XamlRoot
         };
 
-        if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+        if (await MainWindow.ShowDialogAboveTerminalAsync(dialog) == ContentDialogResult.Primary)
         {
             // Work on a copy so a failed save cannot mutate the object still
             // displayed by the panel and give the impression that it persisted.
@@ -368,6 +368,6 @@ public sealed partial class ConnectionsPanel : UserControl
             DefaultButton = ContentDialogButton.Close,
             XamlRoot = XamlRoot
         };
-        await dialog.ShowAsync();
+        await MainWindow.ShowDialogAboveTerminalAsync(dialog);
     }
 }
