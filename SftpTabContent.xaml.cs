@@ -3073,12 +3073,7 @@ public sealed partial class SftpTabContent : UserControl
                 if (canReplace)
                     AddChoice("UploadConflictReplaceAll", UploadConflictAction.ReplaceAll);
                 dialog.Content = content;
-                var showOperation = MainWindow.ShowDialogAboveTerminalAsync(dialog);
-                using var cancellationRegistration = cancellationToken.Register(() =>
-                {
-                    DispatcherQueue.TryEnqueue(dialog.Hide);
-                });
-                await showOperation;
+                await MainWindow.ShowDialogAboveTerminalAsync(dialog, cancellationToken);
             });
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -3533,8 +3528,11 @@ public sealed partial class SftpTabContent : UserControl
         string remoteFolderPath,
         List<string> directories,
         List<(StorageFile File, string RemotePath, long Size)> filesToUpload,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        int depth = 0)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+        RemoteDirectoryTraversal.CheckDepth(depth);
         var localFiles = await folder.GetFilesAsync();
         foreach (var file in localFiles)
         {
@@ -3555,7 +3553,8 @@ public sealed partial class SftpTabContent : UserControl
                 remoteSubfolderPath,
                 directories,
                 filesToUpload,
-                cancellationToken);
+                cancellationToken,
+                depth + 1);
         }
     }
 
@@ -3858,7 +3857,8 @@ public sealed partial class SftpTabContent : UserControl
             }
             catch (Exception ex)
             {
-                DispatcherQueue.TryEnqueue(() => StatusText.Text = string.Format(LocalizationHelper.GetString("ErrorDeleting"), ex.Message));
+                DispatcherQueue.TryEnqueue(() => StatusText.Text = string.Format(
+                    LocalizationHelper.GetString("ErrorDeleting"), _currentRemotePath, ex.Message));
             }
             finally
             {
@@ -3892,9 +3892,10 @@ public sealed partial class SftpTabContent : UserControl
     }
 
     // Synchronous helper executed on a background thread to delete a directory tree with a per-file callback
-    private void DeleteDirectoryRecursiveWithProgress(string path, Action<string>? onFileDeleted, CancellationToken token, System.Collections.Concurrent.ConcurrentBag<string>? failedPaths = null)
+    private void DeleteDirectoryRecursiveWithProgress(string path, Action<string>? onFileDeleted, CancellationToken token, System.Collections.Concurrent.ConcurrentBag<string>? failedPaths = null, int depth = 0)
     {
         if (_sftpClient?.IsConnected != true) return;
+        RemoteDirectoryTraversal.CheckDepth(depth);
         // We handle exceptions per-entry to avoid aborting the whole operation on permission errors
         try
         {
@@ -3905,12 +3906,12 @@ public sealed partial class SftpTabContent : UserControl
 
                 if (entry.Name == "." || entry.Name == "..") continue;
 
-                if (entry.IsDirectory)
+                if (entry.IsDirectory && !entry.IsSymbolicLink)
                 {
                     var childPath = entry.FullName;
                     try
                     {
-                        DeleteDirectoryRecursiveWithProgress(childPath, onFileDeleted, token, failedPaths);
+                        DeleteDirectoryRecursiveWithProgress(childPath, onFileDeleted, token, failedPaths, depth + 1);
                     }
                     catch (Renci.SshNet.Common.SftpPermissionDeniedException pex)
                     {
@@ -4251,9 +4252,11 @@ public sealed partial class SftpTabContent : UserControl
         string sourcePath,
         string destinationPath,
         ISet<string> visitedSourceDirectories,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        int depth = 0)
     {
         cancellationToken.ThrowIfCancellationRequested();
+        RemoteDirectoryTraversal.CheckDepth(depth);
         var canonicalSource = CanonicalizeRemotePath(sourcePath);
         if (!visitedSourceDirectories.Add(canonicalSource))
         {
@@ -4276,7 +4279,7 @@ public sealed partial class SftpTabContent : UserControl
             var destinationChild = CombineRemotePath(destinationPath, entry.Name);
             if (entry.IsDirectory)
             {
-                CopyRemoteDirectoryInto(client, sourceChild, destinationChild, visitedSourceDirectories, cancellationToken);
+                CopyRemoteDirectoryInto(client, sourceChild, destinationChild, visitedSourceDirectories, cancellationToken, depth + 1);
             }
             else
             {
@@ -6874,8 +6877,9 @@ public sealed partial class SftpTabContent : UserControl
         }
     }
 
-    private static void DeleteOwnedRemoteTree(SftpClient client, string directoryPath)
+    private static void DeleteOwnedRemoteTree(SftpClient client, string directoryPath, int depth = 0)
     {
+        RemoteDirectoryTraversal.CheckDepth(depth);
         if (!client.Exists(directoryPath)) return;
         foreach (var entry in client.ListDirectory(directoryPath))
         {
@@ -6884,7 +6888,7 @@ public sealed partial class SftpTabContent : UserControl
             var childPath = CombineRemotePath(directoryPath, entry.Name);
             if (entry.IsDirectory && !entry.IsSymbolicLink)
             {
-                DeleteOwnedRemoteTree(client, childPath);
+                DeleteOwnedRemoteTree(client, childPath, depth + 1);
             }
             else
             {
@@ -7458,7 +7462,8 @@ public sealed partial class SftpTabContent : UserControl
         int currentFileIndex,
         out bool directoryAvailable,
         string sessionRoot,
-        ISet<string> directoriesCreatedBySession)
+        ISet<string> directoriesCreatedBySession,
+        int depth = 0)
     {
         if (_sftpClient?.IsConnected != true)
         {
@@ -7466,6 +7471,7 @@ public sealed partial class SftpTabContent : UserControl
             return currentFileIndex;
         }
 
+        RemoteDirectoryTraversal.CheckDepth(depth);
         while (true)
         {
             try
@@ -7502,7 +7508,8 @@ public sealed partial class SftpTabContent : UserControl
                             currentFileIndex,
                             out var childDirectoryAvailable,
                             sessionRoot,
-                            directoriesCreatedBySession);
+                            directoriesCreatedBySession,
+                            depth + 1);
 
                         if (!childDirectoryAvailable)
                         {
@@ -8201,7 +8208,7 @@ public sealed partial class SftpTabContent : UserControl
             {
                 if (item.IsDirectory)
                 {
-                    CountFilesAndBytesRecursive(item.FullPath, ref totalFiles, ref totalBytes);
+                    AccumulateDirectoryTotals(item.FullPath, ref totalFiles, ref totalBytes);
                 }
                 else
                 {
@@ -8222,30 +8229,18 @@ public sealed partial class SftpTabContent : UserControl
         }
     }
 
-    private void CountFilesAndBytesRecursive(string remotePath, ref int fileCount, ref long byteCount)
+    private void AccumulateDirectoryTotals(string remotePath, ref int fileCount, ref long byteCount)
     {
         if (_sftpClient?.IsConnected != true) return;
-
         try
         {
-            var entries = _sftpClient.ListDirectory(remotePath).ToList();
-
-            foreach (var entry in entries)
-            {
-                if (entry.Name == "." || entry.Name == "..") continue;
-
-                var remoteItemPath = $"{remotePath.TrimEnd('/')}/{entry.Name}";
-
-                if (entry.IsDirectory)
-                {
-                    CountFilesAndBytesRecursive(remoteItemPath, ref fileCount, ref byteCount);
-                }
-                else
-                {
-                    fileCount++;
-                    byteCount += entry.Length;
-                }
-            }
+            var totals = CountRemoteDirectory(_sftpClient, remotePath, _lifetimeCts.Token);
+            fileCount += totals.FileCount;
+            byteCount += totals.ByteCount;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -8266,7 +8261,7 @@ public sealed partial class SftpTabContent : UserControl
             {
                 if (item.IsDirectory)
                 {
-                    total += CountFilesRecursive(item.FullPath, cancellationToken);
+                    total += CountFilesInDirectory(item.FullPath, cancellationToken);
                 }
                 else
                 {
@@ -8285,31 +8280,12 @@ public sealed partial class SftpTabContent : UserControl
         return Math.Max(1, total); // avoid division by zero
     }
 
-    private int CountFilesRecursive(string remotePath, CancellationToken cancellationToken)
+    private int CountFilesInDirectory(string remotePath, CancellationToken cancellationToken)
     {
         if (_sftpClient?.IsConnected != true) return 0;
-
-        int count = 0;
         try
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            var entries = _sftpClient.ListDirectory(remotePath).ToList();
-            foreach (var entry in entries)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                if (entry.Name == "." || entry.Name == "..") continue;
-                if (entry.IsDirectory)
-                {
-                    if (entry.IsSymbolicLink) continue;
-                    count += CountFilesRecursive(
-                        CombineRemotePath(remotePath, entry.Name),
-                        cancellationToken);
-                }
-                else
-                {
-                    count++;
-                }
-            }
+            return CountRemoteDirectory(_sftpClient, remotePath, cancellationToken).FileCount;
         }
         catch (OperationCanceledException)
         {
@@ -8318,10 +8294,18 @@ public sealed partial class SftpTabContent : UserControl
         catch (Exception ex)
         {
             Log.Warning($"Error counting in {remotePath}: {ex.Message}");
+            return 0;
         }
-
-        return count;
     }
+
+    private static (int FileCount, long ByteCount) CountRemoteDirectory(
+        SftpClient client, string remotePath, CancellationToken cancellationToken) =>
+        RemoteDirectoryTraversal.Count(
+            remotePath,
+            path => client.ListDirectory(path).Select(entry => new RemoteDirectoryEntry(
+                entry.Name, entry.IsDirectory, entry.IsSymbolicLink, entry.Length)),
+            cancellationToken,
+            (path, exception) => Log.Warning($"Failed to count files/bytes in directory: {path}", exception));
 
     private async void RemoteFiles_DragOver(object sender, DragEventArgs e)
     {
@@ -8795,7 +8779,8 @@ public sealed partial class SftpTabContent : UserControl
                     {
                         DispatcherQueue.TryEnqueue(() =>
                         {
-                            StatusText.Text = string.Format(LocalizationHelper.GetString("ErrorDownloading"), ex.Message);
+                            StatusText.Text = string.Format(
+                                LocalizationHelper.GetString("ErrorDownloading"), item.Name, ex.Message);
                         });
                     }
                     finally
@@ -8879,7 +8864,7 @@ public sealed partial class SftpTabContent : UserControl
                         operationToken.ThrowIfCancellationRequested();
                         if (item.IsDirectory)
                         {
-                            var (files, bytes) = await CountFilesAndBytesInDirectoryRecursive(
+                            var (files, bytes) = CountFilesAndBytesInDirectory(
                                 multiBackgroundClient,
                                 item.FullPath,
                                 operationToken);
@@ -9084,66 +9069,14 @@ public sealed partial class SftpTabContent : UserControl
             cancellationToken);
     }
 
-    private async Task<int> CountFilesInDirectory(string remotePath)
-    {
-        int count = 0;
-        try
-        {
-            var files = _sftpClient?.ListDirectory(remotePath);
-            if (files == null) return 0;
-
-            foreach (var file in files.Where(f => f.Name != "." && f.Name != ".."))
-            {
-                if (file.IsDirectory)
-                {
-                    count += await CountFilesInDirectory(file.FullName);
-                }
-                else
-                {
-                    count++;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Warning($"Failed to count files in directory: {remotePath}", ex);
-        }
-        return count;
-    }
-
-    private async Task<(int fileCount, long byteCount)> CountFilesAndBytesInDirectoryRecursive(
+    private (int fileCount, long byteCount) CountFilesAndBytesInDirectory(
         SftpClient client,
         string remotePath,
         CancellationToken cancellationToken)
     {
-        int fileCount = 0;
-        long byteCount = 0;
-
         try
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            var files = client.ListDirectory(remotePath);
-            if (files == null) return (0, 0);
-
-            foreach (var file in files.Where(f => f.Name != "." && f.Name != ".."))
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                if (file.IsDirectory)
-                {
-                    if (file.IsSymbolicLink) continue;
-                    var (subFiles, subBytes) = await CountFilesAndBytesInDirectoryRecursive(
-                        client,
-                        CombineRemotePath(remotePath, file.Name),
-                        cancellationToken);
-                    fileCount += subFiles;
-                    byteCount += subBytes;
-                }
-                else
-                {
-                    fileCount++;
-                    byteCount += file.Length;
-                }
-            }
+            return CountRemoteDirectory(client, remotePath, cancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -9152,9 +9085,8 @@ public sealed partial class SftpTabContent : UserControl
         catch (Exception ex)
         {
             Log.Warning($"Failed to count files/bytes in directory: {remotePath}", ex);
+            return (0, 0L);
         }
-
-        return (fileCount, byteCount);
     }
 
     private async Task DownloadSingleFile(
@@ -9181,9 +9113,11 @@ public sealed partial class SftpTabContent : UserControl
         int totalFiles,
         CancellationToken cancellationToken,
         ICollection<string> failures,
-        ISet<string>? parentReservedNames = null)
+        ISet<string>? parentReservedNames = null,
+        int depth = 0)
     {
         cancellationToken.ThrowIfCancellationRequested();
+        RemoteDirectoryTraversal.CheckDepth(depth);
         var localPath = parentReservedNames == null
             ? LocalPathSafety.CombineChild(localBasePath, folderName)
             : LocalPathSafety.ReserveChild(localBasePath, folderName, parentReservedNames);
@@ -9220,7 +9154,8 @@ public sealed partial class SftpTabContent : UserControl
                         totalFiles,
                         cancellationToken,
                         failures,
-                        reservedNames);
+                        reservedNames,
+                        depth + 1);
                     currentIndex = childResult.CurrentIndex;
                     succeeded += childResult.Succeeded;
                 }

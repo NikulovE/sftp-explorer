@@ -24,9 +24,11 @@
     <Compile Include="..\Services\AtomicJsonFile.cs" Link="Production\Services\AtomicJsonFile.cs" />
     <Compile Include="..\Services\ConnectionManager.cs" Link="Production\Services\ConnectionManager.cs" />
     <Compile Include="..\Services\CredentialStore.cs" Link="Production\Services\CredentialStore.cs" />
+    <Compile Include="..\Services\DialogQueue.cs" Link="Production\Services\DialogQueue.cs" />
     <Compile Include="..\Services\InterprocessFileLock.cs" Link="Production\Services\InterprocessFileLock.cs" />
     <Compile Include="..\Services\KnownHostStore.cs" Link="Production\Services\KnownHostStore.cs" />
     <Compile Include="..\Services\LocalPathSafety.cs" Link="Production\Services\LocalPathSafety.cs" />
+    <Compile Include="..\Services\RemoteDirectoryTraversal.cs" Link="Production\Services\RemoteDirectoryTraversal.cs" />
     <Compile Include="..\Services\SshClientFactory.cs" Link="Production\Services\SshClientFactory.cs" />
     <Compile Include="..\Services\SshConnectionSecurity.cs" Link="Production\Services\SshConnectionSecurity.cs" />
     <Compile Include="..\Services\SshTerminalConnection.cs" Link="Production\Services\SshTerminalConnection.cs" />

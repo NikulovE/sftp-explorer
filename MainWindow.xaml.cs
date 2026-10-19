@@ -34,6 +34,7 @@ public sealed partial class MainWindow : Window
     private readonly object _connectionOwnershipLock = new();
     private readonly SemaphoreSlim _connectionGate = new(1, 1);
     private readonly CancellationTokenSource _windowLifetimeCts = new();
+    private readonly DialogQueue _dialogQueue = new();
     private CancellationTokenSource? _connectionAttemptCts;
     private long _connectionAttemptGeneration;
     private bool _isPaneOpenState = false;
@@ -42,24 +43,59 @@ public sealed partial class MainWindow : Window
     private UIElement? _currentTitleBar;
     private const int InvalidOperationHResult = unchecked((int)0x800710DD);
 
-    internal static async Task<ContentDialogResult> ShowDialogAboveTerminalAsync(ContentDialog dialog)
+    internal static async Task<ContentDialogResult> ShowDialogAboveTerminalAsync(
+        ContentDialog dialog,
+        CancellationToken cancellationToken = default)
     {
-        if (App.MainWindow is not MainWindow window)
+        if (App.MainWindow is not MainWindow window || window._isClosed)
         {
-            return await dialog.ShowAsync();
+            return ContentDialogResult.None;
         }
 
-        var terminalTab = window.TabContentArea.Children
-            .OfType<SftpTabContent>()
-            .SingleOrDefault(tab => tab.Visibility == Visibility.Visible);
-        var restoreNativeTerminal = terminalTab?.SuspendNativeTerminalForXamlOverlay() == true;
+        using var lifetime = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken, window._windowLifetimeCts.Token);
         try
         {
-            return await dialog.ShowAsync();
+            return await window._dialogQueue.ShowAsync(async () =>
+            {
+                if (window._isClosed || dialog.XamlRoot == null)
+                {
+                    return ContentDialogResult.None;
+                }
+
+                // Select the visible terminal only after earlier dialogs have closed.
+                var terminalTab = window.TabContentArea.Children
+                    .OfType<SftpTabContent>()
+                    .SingleOrDefault(tab => tab.Visibility == Visibility.Visible);
+                var restoreNativeTerminal = terminalTab?.SuspendNativeTerminalForXamlOverlay() == true;
+                var isShowing = true;
+                using var registration = lifetime.Token.Register(() =>
+                {
+                    window.DispatcherQueue.TryEnqueue(() =>
+                    {
+                        // Cancellation can arrive after ShowAsync has already completed.
+                        if (isShowing && !window._isClosed) dialog.Hide();
+                    });
+                });
+                try
+                {
+                    lifetime.Token.ThrowIfCancellationRequested();
+                    var result = await dialog.ShowAsync();
+                    return lifetime.IsCancellationRequested ? ContentDialogResult.None : result;
+                }
+                finally
+                {
+                    isShowing = false;
+                    if (!window._isClosed)
+                    {
+                        terminalTab?.RestoreNativeTerminalAfterXamlOverlay(restoreNativeTerminal);
+                    }
+                }
+            }, lifetime.Token);
         }
-        finally
+        catch (OperationCanceledException) when (lifetime.IsCancellationRequested)
         {
-            terminalTab?.RestoreNativeTerminalAfterXamlOverlay(restoreNativeTerminal);
+            return ContentDialogResult.None;
         }
     }
 
@@ -1197,11 +1233,7 @@ public sealed partial class MainWindow : Window
             XamlRoot = Content.XamlRoot
         };
 
-        using var cancellationRegistration = cancellationToken.Register(() =>
-        {
-            DispatcherQueue.TryEnqueue(dialog.Hide);
-        });
-        var result = await ShowDialogAboveTerminalAsync(dialog);
+        var result = await ShowDialogAboveTerminalAsync(dialog, cancellationToken);
         return !cancellationToken.IsCancellationRequested &&
                result == ContentDialogResult.Primary;
     }
