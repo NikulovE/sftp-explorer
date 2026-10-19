@@ -787,6 +787,15 @@
   <data name="InvalidURLMessage" xml:space="preserve">
     <value>Failed to parse URL:</value>
   </data>
+  <data name="UrlPasswordWarningTitle" xml:space="preserve">
+    <value>Password included in link</value>
+  </data>
+  <data name="UrlPasswordWarningMessage" xml:space="preserve">
+    <value>This SFTP link contains a password. Passwords in links may be exposed in command-line history or process listings. Continuing will use the password from this link for this connection. To avoid passing a password in a link, cancel and create the connection manually. Continue?</value>
+  </data>
+  <data name="UrlPasswordContinueButton" xml:space="preserve">
+    <value>Use password and connect</value>
+  </data>
   <data name="Deleting" xml:space="preserve">
     <value>Deleting...</value>
   </data>

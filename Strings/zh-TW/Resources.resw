@@ -1000,4 +1000,13 @@
   <data name="TerminalSearchNoMatches" xml:space="preserve"><value>找不到相符項目。</value></data>
   <data name="TerminalSearchResults" xml:space="preserve"><value>找到 {0} 個相符項目。</value></data>
   <data name="TerminalSearchResultsTruncated" xml:space="preserve"><value>找到 {0} 個相符項目。僅顯示前 {1} 行相符結果。</value></data>
+  <data name="UrlPasswordWarningTitle" xml:space="preserve">
+    <value>連結中包含密碼</value>
+  </data>
+  <data name="UrlPasswordWarningMessage" xml:space="preserve">
+    <value>此 SFTP 連結包含密碼。連結中的密碼可能會在命令列歷程記錄或處理程序清單中洩漏。繼續操作將使用此連結中的密碼建立本次連線。若要避免透過連結傳遞密碼，請取消並手動建立連線。是否繼續？</value>
+  </data>
+  <data name="UrlPasswordContinueButton" xml:space="preserve">
+    <value>使用密碼並連線</value>
+  </data>
 </root>

@@ -45,6 +45,7 @@ A modern, fast **SFTP client for Windows 11** built with [WinUI 3](https://githu
 - **Host-key verification** — known host keys are remembered with their SHA-256 fingerprint; a changed host key blocks the connection and shows an explicit security warning to protect against man-in-the-middle attacks.
 - **`sudo` browsing** — open directories or files that require elevated permissions on the server (passwordless `sudo -n`).
 - **`sftp://` protocol handler** — click an `sftp://user@host/path` link in a browser and SFTP Explorer opens the connection for you.
+  Links containing a password (`sftp://user:password@host:port`) require explicit confirmation before connecting, because passwords in URLs may be exposed in command-line history or process listings.
 
 ### Platform polish
 - Native Windows 11 look: Mica backdrop, custom title bar with document tabs, light/dark theme support.

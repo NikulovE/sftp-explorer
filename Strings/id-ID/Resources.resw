@@ -1000,4 +1000,13 @@ Diterima: {4} SHA256:{5}</value>
   <data name="TerminalSearchNoMatches" xml:space="preserve"><value>Tidak ada hasil yang ditemukan.</value></data>
   <data name="TerminalSearchResults" xml:space="preserve"><value>Ditemukan {0} hasil.</value></data>
   <data name="TerminalSearchResultsTruncated" xml:space="preserve"><value>Ditemukan {0} hasil. Menampilkan {1} baris hasil pertama.</value></data>
+  <data name="UrlPasswordWarningTitle" xml:space="preserve">
+    <value>Kata sandi disertakan dalam tautan</value>
+  </data>
+  <data name="UrlPasswordWarningMessage" xml:space="preserve">
+    <value>Tautan SFTP ini berisi kata sandi. Kata sandi dalam tautan dapat terlihat di riwayat baris perintah atau daftar proses. Jika Anda melanjutkan, kata sandi dari tautan ini akan digunakan untuk koneksi ini. Untuk menghindari pengiriman kata sandi dalam tautan, batalkan dan buat koneksi secara manual. Lanjutkan?</value>
+  </data>
+  <data name="UrlPasswordContinueButton" xml:space="preserve">
+    <value>Gunakan kata sandi dan hubungkan</value>
+  </data>
 </root>

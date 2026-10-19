@@ -1000,4 +1000,13 @@ Recebido: {4} SHA256:{5}</value>
   <data name="TerminalSearchNoMatches" xml:space="preserve"><value>Nenhuma correspondência encontrada.</value></data>
   <data name="TerminalSearchResults" xml:space="preserve"><value>Foram encontradas {0} correspondências.</value></data>
   <data name="TerminalSearchResultsTruncated" xml:space="preserve"><value>Foram encontradas {0} correspondências. Exibindo as primeiras {1} linhas correspondentes.</value></data>
+  <data name="UrlPasswordWarningTitle" xml:space="preserve">
+    <value>Senha incluída no link</value>
+  </data>
+  <data name="UrlPasswordWarningMessage" xml:space="preserve">
+    <value>Este link SFTP contém uma senha. Senhas em links podem ficar expostas no histórico da linha de comando ou na lista de processos. Ao continuar, a senha deste link será usada para esta conexão. Para evitar enviar uma senha em um link, cancele e crie a conexão manualmente. Deseja continuar?</value>
+  </data>
+  <data name="UrlPasswordContinueButton" xml:space="preserve">
+    <value>Usar senha e conectar</value>
+  </data>
 </root>

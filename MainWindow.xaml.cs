@@ -1315,32 +1315,10 @@ public sealed partial class MainWindow : Window
     {
         try
         {
-            if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) ||
-                !string.Equals(uri.Scheme, "sftp", StringComparison.OrdinalIgnoreCase) ||
-                string.IsNullOrWhiteSpace(uri.DnsSafeHost))
-            {
-                throw new FormatException("A valid absolute sftp:// URL with a hostname is required.");
-            }
-
-            if (!string.IsNullOrEmpty(uri.Query) || !string.IsNullOrEmpty(uri.Fragment))
-            {
-                throw new FormatException("SFTP URL query strings and fragments are not supported.");
-            }
-
-            var host = uri.DnsSafeHost;
-            var port = uri.Port is >= 1 and <= 65535 ? uri.Port : 22;
-            var username = Uri.UnescapeDataString(uri.UserInfo);
-            if (username.Contains(':', StringComparison.Ordinal))
-            {
-                throw new FormatException(
-                    "Passwords in sftp:// URLs are blocked because URLs can be exposed in command-line history and process listings. " +
-                    "Use sftp://username@host and enter the password securely.");
-            }
-
-            if (username.Any(char.IsControl))
-            {
-                throw new FormatException("The SFTP URL contains an invalid username.");
-            }
+            var connectionUrl = SftpUrl.Parse(url);
+            var host = connectionUrl.Hostname;
+            var port = connectionUrl.Port;
+            var username = connectionUrl.Username;
 
             this.Activated -= MainWindow_FirstActivated;
             while (Content?.XamlRoot == null)
@@ -1348,9 +1326,15 @@ public sealed partial class MainWindow : Window
                 await Task.Delay(100, _windowLifetimeCts.Token);
             }
 
+            string? password = connectionUrl.Password;
+            if (password != null && !await ConfirmUrlPasswordAsync())
+            {
+                ShowStartupMode();
+                return;
+            }
+
             SavedConnection? savedConnection = null;
-            string? password = null;
-            if (!string.IsNullOrWhiteSpace(username))
+            if (password == null && !string.IsNullOrWhiteSpace(username))
             {
                 try
                 {
@@ -1384,7 +1368,7 @@ public sealed partial class MainWindow : Window
 
             if (string.IsNullOrWhiteSpace(username) || password == null)
             {
-                var credentials = await PromptForUrlCredentialsAsync(host, username);
+                var credentials = await PromptForUrlCredentialsAsync(host, username, password);
                 if (!credentials.Accepted)
                 {
                     ShowStartupMode();
@@ -1494,9 +1478,30 @@ public sealed partial class MainWindow : Window
         }
     }
 
+    private async Task<bool> ConfirmUrlPasswordAsync()
+    {
+        var dialog = new ContentDialog
+        {
+            Title = LocalizationHelper.GetString("UrlPasswordWarningTitle"),
+            Content = new TextBlock
+            {
+                Text = LocalizationHelper.GetString("UrlPasswordWarningMessage"),
+                TextWrapping = TextWrapping.Wrap,
+                MaxWidth = 480
+            },
+            PrimaryButtonText = LocalizationHelper.GetString("UrlPasswordContinueButton"),
+            CloseButtonText = LocalizationHelper.GetString("Cancel"),
+            DefaultButton = ContentDialogButton.Close,
+            XamlRoot = Content.XamlRoot
+        };
+
+        return await ShowDialogAboveTerminalAsync(dialog) == ContentDialogResult.Primary;
+    }
+
     private async Task<(bool Accepted, string Username, string Password)> PromptForUrlCredentialsAsync(
         string hostname,
-        string username)
+        string username,
+        string? password = null)
     {
         var usernameBox = new TextBox
         {
@@ -1508,6 +1513,7 @@ public sealed partial class MainWindow : Window
         };
         var passwordBox = new PasswordBox
         {
+            Password = password ?? string.Empty,
             PlaceholderText = LocalizationHelper.GetString("EnterPasswordLabel") ?? "Enter password",
             Height = 36,
             Width = 320

@@ -1000,4 +1000,13 @@ Recebido: {4} SHA256:{5}</value>
   <data name="TerminalSearchNoMatches" xml:space="preserve"><value>Não foram encontradas correspondências.</value></data>
   <data name="TerminalSearchResults" xml:space="preserve"><value>Foram encontradas {0} correspondências.</value></data>
   <data name="TerminalSearchResultsTruncated" xml:space="preserve"><value>Foram encontradas {0} correspondências. São apresentadas as primeiras {1} linhas correspondentes.</value></data>
+  <data name="UrlPasswordWarningTitle" xml:space="preserve">
+    <value>Palavra-passe incluída na hiperligação</value>
+  </data>
+  <data name="UrlPasswordWarningMessage" xml:space="preserve">
+    <value>Esta hiperligação SFTP contém uma palavra-passe. As palavras-passe em hiperligações podem ficar expostas no histórico da linha de comandos ou na lista de processos. Ao continuar, a palavra-passe desta hiperligação será utilizada para esta ligação. Para evitar enviar uma palavra-passe numa hiperligação, cancele e crie a ligação manualmente. Pretende continuar?</value>
+  </data>
+  <data name="UrlPasswordContinueButton" xml:space="preserve">
+    <value>Usar palavra-passe e ligar</value>
+  </data>
 </root>

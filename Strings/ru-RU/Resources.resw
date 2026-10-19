@@ -1001,4 +1001,13 @@
   <data name="TerminalSearchNoMatches" xml:space="preserve"><value>Совпадений не найдено.</value></data>
   <data name="TerminalSearchResults" xml:space="preserve"><value>Найдено совпадений: {0}.</value></data>
   <data name="TerminalSearchResultsTruncated" xml:space="preserve"><value>Найдено совпадений: {0}. Показаны первые {1} строк с совпадениями.</value></data>
+  <data name="UrlPasswordWarningTitle" xml:space="preserve">
+    <value>Пароль в ссылке</value>
+  </data>
+  <data name="UrlPasswordWarningMessage" xml:space="preserve">
+    <value>Эта SFTP-ссылка содержит пароль. Пароли в ссылках могут быть видны в истории командной строки или списке процессов. При продолжении для этого подключения будет использован пароль из ссылки. Чтобы не передавать пароль в ссылке, отмените действие и создайте подключение вручную. Продолжить?</value>
+  </data>
+  <data name="UrlPasswordContinueButton" xml:space="preserve">
+    <value>Использовать пароль и подключиться</value>
+  </data>
 </root>
