@@ -7396,13 +7396,14 @@ public sealed partial class SftpTabContent : UserControl
         long previousDownloaded = 0;
         long lastProgressTimestamp = 0;
 
-        _lifetimeCts.Token.ThrowIfCancellationRequested();
+        var cancellationToken = _lifetimeCts.Token;
+        cancellationToken.ThrowIfCancellationRequested();
+        if (_dragPreparationCanceled) throw new OperationCanceledException();
         using var fs = new FileStream(localPath, FileMode.CreateNew, FileAccess.Write, FileShare.None);
 
-        _sftpClient!.DownloadFile(remotePath, fs, downloaded =>
+        var progress = new InlineProgress<DownloadFileProgressReport>(report =>
         {
-            _lifetimeCts.Token.ThrowIfCancellationRequested();
-            if (_dragPreparationCanceled) throw new OperationCanceledException();
+            var downloaded = report.TotalBytesDownloaded;
             var delta = (long)downloaded - previousDownloaded;
             previousDownloaded = (long)downloaded;
             Interlocked.Add(ref _dragDownloadedBytes, delta);
@@ -7451,6 +7452,12 @@ public sealed partial class SftpTabContent : UserControl
                 }
             });
         });
+        // The synchronous SSH.NET API can invoke its progress callback on a separate
+        // thread. Cancellation must travel through the download task, not escape
+        // from that callback as an unhandled exception.
+        _sftpClient!.DownloadFileAsync(remotePath, fs, progress, cancellationToken)
+            .GetAwaiter().GetResult();
+        if (_dragPreparationCanceled) throw new OperationCanceledException();
 
         // Увеличиваем счётчик завершённых файлов
         Interlocked.Increment(ref _dragCompletedFiles);
