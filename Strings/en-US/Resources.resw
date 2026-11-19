@@ -1010,4 +1010,16 @@
   <data name="TerminalSearchNoMatches" xml:space="preserve"><value>No matches found.</value></data>
   <data name="TerminalSearchResults" xml:space="preserve"><value>{0} match(es) found.</value></data>
   <data name="TerminalSearchResultsTruncated" xml:space="preserve"><value>{0} match(es) found. Showing the first {1} matching lines.</value></data>
+  <data name="ConnectionSearchBox.PlaceholderText" xml:space="preserve">
+    <value>Search saved connections</value>
+  </data>
+  <data name="ConnectionSearchBox.AutomationProperties.Name" xml:space="preserve">
+    <value>Search saved connections</value>
+  </data>
+  <data name="NoConnectionSearchResults.Text" xml:space="preserve">
+    <value>No connections found</value>
+  </data>
+  <data name="SavedConnectionsCount" xml:space="preserve">
+    <value>Saved connections: {0}</value>
+  </data>
 </root>

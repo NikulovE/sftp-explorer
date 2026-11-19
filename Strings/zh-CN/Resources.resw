@@ -1009,4 +1009,16 @@
   <data name="UrlPasswordContinueButton" xml:space="preserve">
     <value>使用密码并连接</value>
   </data>
+  <data name="ConnectionSearchBox.PlaceholderText" xml:space="preserve">
+    <value>搜索已保存的连接</value>
+  </data>
+  <data name="ConnectionSearchBox.AutomationProperties.Name" xml:space="preserve">
+    <value>搜索已保存的连接</value>
+  </data>
+  <data name="NoConnectionSearchResults.Text" xml:space="preserve">
+    <value>未找到连接</value>
+  </data>
+  <data name="SavedConnectionsCount" xml:space="preserve">
+    <value>已保存的连接：{0}</value>
+  </data>
 </root>

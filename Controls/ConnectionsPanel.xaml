@@ -14,8 +14,8 @@
     <Grid Background="{ThemeResource LayerFillColorDefaultBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <!-- Header -->
@@ -48,8 +48,11 @@
             </Button>
         </Grid>
 
+        <TextBox Grid.Row="1" x:Name="SearchBox" x:Uid="ConnectionSearchBox"
+                 Margin="24,0,24,8" TextChanged="SearchBox_TextChanged"/>
+
         <!-- Connections List -->
-        <ScrollViewer Grid.Row="1"
+        <ScrollViewer Grid.Row="2"
                       Padding="16,0"
                       HorizontalScrollBarVisibility="Disabled"
                       VerticalScrollBarVisibility="Auto">
@@ -192,7 +195,7 @@
         </ScrollViewer>
 
         <!-- Empty State -->
-        <StackPanel Grid.Row="1"
+        <StackPanel Grid.Row="2"
                    x:Name="EmptyState"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
@@ -209,5 +212,9 @@
                       Foreground="{ThemeResource TextFillColorTertiaryBrush}"
                       TextAlignment="Center"/>
         </StackPanel>
+        <TextBlock Grid.Row="2" x:Name="NoSearchResults" x:Uid="NoConnectionSearchResults"
+                   Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center"
+                   TextAlignment="Center" TextWrapping="Wrap" Margin="24"
+                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
     </Grid>
 </UserControl>

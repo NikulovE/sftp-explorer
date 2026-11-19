@@ -70,7 +70,8 @@ public sealed partial class ConnectionsPanel : UserControl
 
     private readonly ConnectionManager? _connectionManager;
     private readonly SshClientFactory _sshClientFactory;
-    private List<SavedConnection> _connections;
+    private List<SavedConnection> _connections = new();
+    private IReadOnlyList<ConnectionGroupSettings> _groupSettings = Array.Empty<ConnectionGroupSettings>();
     private bool _isConnecting = false;
     private Exception? _pendingLoadError;
 
@@ -126,8 +127,23 @@ public sealed partial class ConnectionsPanel : UserControl
             ?? throw new InvalidOperationException("Saved-connections storage is unavailable.");
         _connections = connectionManager.LoadConnections();
 
-        var groupSettings = connectionManager.LoadGroups();
+        _groupSettings = connectionManager.LoadGroups();
+        UpdateConnectionList();
+    }
+
+    private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (_connectionManager != null)
+            UpdateConnectionList();
+    }
+
+    private void UpdateConnectionList()
+    {
+        var search = SearchBox.Text.Trim();
+        var isSearching = search.Length > 0;
+        var groupSettings = _groupSettings;
         var groups = _connections
+            .Where(c => ConnectionSearch.Matches(c, search))
             .GroupBy(
                 c => string.IsNullOrWhiteSpace(c.Group) ? "" : c.Group.Trim(),
                 StringComparer.CurrentCultureIgnoreCase)
@@ -150,19 +166,20 @@ public sealed partial class ConnectionsPanel : UserControl
                     StringComparison.CurrentCultureIgnoreCase))?.Color
                     ?? (string.IsNullOrEmpty(group.Key) ? "#69797E" : ConnectionAppearanceDefaults.DefaultColor),
                 Connections = group.OrderByDescending(c => c.LastUsed).ToList(),
-                IsCollapsible = !string.IsNullOrEmpty(group.Key),
+                IsCollapsible = !isSearching && !string.IsNullOrEmpty(group.Key),
                 IsExpanded = GetGroupExpandedState(group.Key, groupSettings)
             })
             .ToList();
 
         ConnectionsRepeater.ItemsSource = groups;
 
-        // Показываем EmptyState если нет подключений
         EmptyState.Visibility = _connections.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        NoSearchResults.Visibility = _connections.Count > 0 && groups.Count == 0
+            ? Visibility.Visible : Visibility.Collapsed;
 
         SubtitleText.Text = _connections.Count == 0
-            ? "Select a saved connection or create new"
-            : $"{_connections.Count} saved connection(s)";
+            ? LocalizationHelper.GetString("ConnectionsPanelSubtitle/Text")
+            : string.Format(LocalizationHelper.GetString("SavedConnectionsCount"), _connections.Count);
     }
 
     private void NewConnectionButton_Click(object sender, RoutedEventArgs e)
@@ -229,6 +246,15 @@ public sealed partial class ConnectionsPanel : UserControl
         {
             (_connectionManager ?? throw new InvalidOperationException("Saved-connections storage is unavailable."))
                 .SetGroupExpandedState(group.Key, group.IsExpanded);
+            var settings = _groupSettings.FirstOrDefault(item => string.Equals(
+                item.Name, group.Key, StringComparison.CurrentCultureIgnoreCase));
+            if (settings != null)
+                settings.IsExpanded = group.IsExpanded;
+            else
+                _groupSettings = _groupSettings.Append(new ConnectionGroupSettings
+                {
+                    Name = group.Key, IsExpanded = group.IsExpanded
+                }).ToList();
             GroupExpansionChanged?.Invoke(this, EventArgs.Empty);
         }
         catch (Exception ex)

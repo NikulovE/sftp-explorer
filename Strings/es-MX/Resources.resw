@@ -1009,4 +1009,16 @@ Recibido: {4} SHA256:{5}</value>
   <data name="UrlPasswordContinueButton" xml:space="preserve">
     <value>Usar contraseña y conectar</value>
   </data>
+  <data name="ConnectionSearchBox.PlaceholderText" xml:space="preserve">
+    <value>Buscar conexiones guardadas</value>
+  </data>
+  <data name="ConnectionSearchBox.AutomationProperties.Name" xml:space="preserve">
+    <value>Buscar conexiones guardadas</value>
+  </data>
+  <data name="NoConnectionSearchResults.Text" xml:space="preserve">
+    <value>No se encontraron conexiones</value>
+  </data>
+  <data name="SavedConnectionsCount" xml:space="preserve">
+    <value>Conexiones guardadas: {0}</value>
+  </data>
 </root>

@@ -1010,4 +1010,16 @@
   <data name="UrlPasswordContinueButton" xml:space="preserve">
     <value>Использовать пароль и подключиться</value>
   </data>
+  <data name="ConnectionSearchBox.PlaceholderText" xml:space="preserve">
+    <value>Поиск сохранённых подключений</value>
+  </data>
+  <data name="ConnectionSearchBox.AutomationProperties.Name" xml:space="preserve">
+    <value>Поиск сохранённых подключений</value>
+  </data>
+  <data name="NoConnectionSearchResults.Text" xml:space="preserve">
+    <value>Подключения не найдены</value>
+  </data>
+  <data name="SavedConnectionsCount" xml:space="preserve">
+    <value>Сохранённые подключения: {0}</value>
+  </data>
 </root>
